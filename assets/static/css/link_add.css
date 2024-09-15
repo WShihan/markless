@@ -1,0 +1,16 @@
+form {
+    display: flex;
+    flex-direction: column;
+    gap: 1em;
+    input,
+    select,
+    button {
+        height: 2em;
+        padding: 0em .5em;
+    }
+
+    textarea {
+        height: 10em;
+        padding: 1em;
+    }
+}

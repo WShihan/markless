@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+    <link rel=“canonical” href=“https://example.com/sample-page/” />
+    <meta name="description" content="Marky，记录网联网。" />
+    <link rel="icon" href="/static/img/favicon.ico" type="image/x-icon" />
+    <link rel="stylesheet" href="/static/css/template.css" />
+    <title>Marky</title>
+    <style>
+      * {
+        padding: 0px;
+        margin: 0px;
+      }
+
+      :root {
+        --fonts-size: 14px;
+        --sep-color: #cecccc;
+        --base-color: rgb(74, 178, 223);
+      }
+
+      .btn {
+        cursor: pointer;
+        color: var(--base-color);
+
+        svg {
+          width: 20px;
+          height: 20px;
+        }
+
+        a {
+          color: var(--base-color);
+          text-decoration: none;
+        }
+      }
+
+      .btn :hover {
+        text-decoration: underline;
+        transform: scale(1.2);
+      }
+
+      .icon-btn {
+        display: flex;
+        align-items: center;
+        cursor: pointer;
+        border: none;
+        border-radius: 5px;
+        svg {
+          width: 20px;
+          height: 20px;
+        }
+        a {
+          text-decoration: none;
+        }
+      }
+
+      #container {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        width: 620px;
+        min-height: 100vh;
+        padding: 1em;
+        margin: 0px auto;
+        font-size: var(--fonts-size);
+        /* background-color: rgba(236, 236, 239, 0.587); */
+        box-sizing: border-box;
+      }
+
+      header {
+        display: flex;
+        justify-content: space-around;
+        align-items: center;
+        gap: 2em;
+        width: 100%;
+        padding: 0.5em 0em;
+        /* background-color: #f00; */
+        border-bottom: 1px solid var(--sep-color);
+
+        .icon {
+          display: flex;
+          align-items: center;
+          gap: 0.5em;
+          padding: 0px;
+        }
+
+        .navs {
+          flex: 1;
+          display: flex;
+          justify-content: right;
+          gap: 2em;
+
+          .nav-item {
+            cursor: pointer;
+          }
+        }
+      }
+
+      .content {
+        flex: 1;
+      }
+
+      footer {
+        display: block;
+        width: 100%;
+        margin: 2em 0em;
+        padding-top: 1em;
+        text-align: center;
+        border-top: 1px solid var(--sep-color);
+      }
+    </style>
+  </head>
+  <body>
+    <div id="container" class="container">
+      <header>
+        <div class="icon">
+          <svg
+            t="1726392556566"
+            class="icon"
+            viewBox="0 0 1024 1024"
+            version="1.1"
+            xmlns="http://www.w3.org/2000/svg"
+            p-id="8824"
+            width="25"
+            height="25"
+          >
+            <path
+              d="M290.17945 125.041878M928.817686 524.408611C798.773887 394.33309 668.763858 264.224824 538.56861 134.299729c-16.504906-16.463973-32.479739-33.327036-51.724035-47.195905-20.039405-14.436804-40.845267-22.820752-65.433268-22.706141-43.686988 0.209778-87.37193 0.060375-131.057895 0.060375 0 0.01228 0 0.030699-0.00614 0.047072-45.561685 0-91.13258-0.399089-136.690172 0.10847-51.02921 0.567935-90.073458 40.454364-90.133833 91.478458-0.094144 90.289376-0.077771 180.585915 0.071631 270.879384 0.013303 7.040347 0.851391 14.201443 2.325975 21.090341 5.334495 24.89704 20.547988 44.6315 37.609573 61.802578 140.086525 140.993175 280.764522 281.403065 421.418982 421.836491 37.090756 37.024242 98.471732 36.777625 135.612631-0.292666 89.947592-89.769536 179.824575-179.613774 269.462105-269.701558 7.099698-7.127328 13.276375-15.757892 17.809621-24.740474C966.804858 599.405699 958.935634 554.523489 928.817686 524.408611zM375.604028 468.162586c-49.227168-0.157589-89.421612-40.580231-88.944751-89.463568 0.487094-49.28959 40.563858-88.722694 89.958848-88.51394 48.611138 0.211824 88.530312 40.388872 88.477101 89.059362C465.04406 428.368254 424.848593 468.313012 375.604028 468.162586zM376.737852 438.488753"
+              fill="#1296db"
+              p-id="8825"
+            ></path>
+          </svg>
+          <a class="btn" href="http://" target="_blank" rel="noopener noreferrer">Marky</a>
+        </div>
+        <div class="navs">
+          <span class="nav-item btn"><a href="/bookmarks">添加书签</a></span>
+          <span class="nav-item btn"><a href="/settings">设置</a></span>
+          <span class="nav-item btn"><a href="/logout">登出</a></span>
+        </div>
+      </header>
+      <div class="content">
+        <form action="/link/create" style="display: flex;flex-direction:column;gap:1em;" method="post">
+          <input type="text" name="url" placeholder="书签标题" />
+          <select name="tag">
+            <option value="default">读书</option>
+            <option value="default">GIS</option>
+            <option value="default">微信</option>
+          </select>
+          <button type="submit">添加</button>
+        </form>
+      </div>
+      <footer>
+        <span class="footer-item title">Marky made with ❤️</span>
+      </footer>
+    </div>
+  </body>
+</html>

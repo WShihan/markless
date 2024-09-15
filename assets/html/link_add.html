@@ -1,0 +1,16 @@
+{{ define "style"}}
+<link rel="stylesheet" href="/static/css/link_add.css" />
+{{ end }}
+
+{{ define "content"}}
+<form action="/link/create"  method="post">
+    <input type="text" name="url" placeholder="网页地址" />
+    <textarea type="text" name="desc" placeholder="描述信息"></textarea>
+    <select name="tag">
+      <option value="读书">#读书</option>
+      <option value="GIS">#GIS</option>
+      <option value="微信">#微信</option>
+    </select>
+    <button type="submit">添加</button>
+  </form>
+{{ end }}
