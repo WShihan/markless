@@ -6,10 +6,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
     <link rel=“canonical” href=“https://example.com/sample-page/” />
     <meta name="description" content="Marky，记录网联网。" />
-    <link rel="icon" href="/static/img/favicon.ico" type="image/x-icon" />
-    <link rel="stylesheet" href="/static/css/template.css"/>
-    <script defer src="/static/js/user.js"></script>
-    {{ template "style" }}
+    <link rel="icon" href="https://wsh233.cn/arch/favicon.ico" type="image/x-icon" />
+    <link rel="stylesheet" href="{{$.Env.BaseURL}}/static/css/template.css"/>
+    <script defer src="{{$.Env.BaseURL}}/static/js/user.js"></script>
+    {{ template "style" . }}
     <title>{{.Title}}</title>
   </head>
   <body>
@@ -32,14 +32,13 @@
               p-id="8825"
             ></path>
           </svg>
-          <a class="btn" href="/" rel="noopener noreferrer">Marky</a>
+          <a class="btn" href="{{$.Env.BaseURL}}" rel="noopener noreferrer">Marky</a>
         </div>
         <div class="navs">
-          <span class="nav-item btn"><a href="/link/add">+添加书签</a></span>
-          <!-- <span class="nav-item btn"><a href="/link/add">分类</a></span> -->
-          <span class="nav-item btn"><a href="/link/add">标签</a></span>
-          <span class="nav-item btn"><a href="/settings">设置</a></span>
-          <span class="nav-item btn" onclick="logout()">登出</span>
+          <span class="nav-item btn"><a href="{{$.Env.BaseURL}}/link/add">+添加书签</a></span>
+          <span class="nav-item btn"><a href="{{$.Env.BaseURL}}/tags">标签</a></span>
+          <span class="nav-item btn"><a href="{{$.Env.BaseURL}}/settings">设置</a></span>
+          <span class="nav-item btn" onclick="logout('{{$.Env.BaseURL}}/login')">登出</span>
         </div>
       </header>
       <div class="content">

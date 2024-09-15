@@ -3,8 +3,10 @@ package util
 import (
 	"html/template"
 	"log/slog"
+	"marky/model"
 	"os"
 	"path/filepath"
+	"strings"
 )
 
 func FileOrPathExists(filePath string) bool {
@@ -31,4 +33,19 @@ func Find(arr []string, str string) bool {
 		}
 	}
 	return false
+}
+
+// 自定义函数，用于合并多个 User 对象的 FirstName 字段
+func JoinTagNames(tags []model.Tag) string {
+	firstNames := make([]string, len(tags))
+	for i, user := range tags {
+		firstNames[i] = user.Name
+	}
+	return strings.Join(firstNames, ", ")
+}
+
+func GetFuncMap() template.FuncMap {
+	return template.FuncMap{
+		"JoinTagNames": JoinTagNames,
+	}
 }

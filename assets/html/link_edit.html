@@ -1,28 +1,35 @@
 {{ define "style"}}
-<link rel="stylesheet" href="{{$.Env.BaseURL}}/static/css/link_add.css" />
-<link rel="stylesheet" href="{{$.Env.BaseURL}}/static/css/link_edit.css" />
-
+  <link rel="stylesheet" href="{{$.Env.BaseURL}}/static/css/link_add.css" />
+  <link rel="stylesheet" href="{{$.Env.BaseURL}}/static/css/link_edit.css" />
 {{ end }} 
 
 {{ define "content"}}
-<form action="action/link/add" method="post">
+<form action="action/link/update/{{.Data.Link.ID}}" method="post">
   <ul>
     <li>
-      <label for="title">网页链接</label>
-      <input type="text" name="url" value="" placeholder="网页地址" />
+      <label for="title">标题</label>
+      <input type="text" name="title" value="{{.Data.Link.Title}}" placeholder="标题" />
     </li>
     <li>
-      <label for="title">网页描述</label>
-      <input type="text" name="desc" value="" placeholder="网页描述" />
+      <label for="title">地址</label>
+      <input type="text" name="url" value="{{.Data.Link.Url}}" placeholder="地址" />
     </li>
     <li>
-      <input  id="tags" class="invisible" type="text" name="tags" value="" />
+      <label for="title">描述</label>
+      <input type="text" name="desc" value="{{.Data.Link.Desc}}" placeholder="描述" />
+    </li>
+    <li>
+      <input  id="tags" class="invisible" type="text" name="tags" value="{{.Data.Link.Tags | JoinTagNames}}" />
     </li>
   </ul>
   <div class="tag-update">
     <div class="tag-box">
       <label >已应用标签</label>
-      <select id="current-tag"  multiple="multiple" size="10" ></select>
+      <select id="current-tag"  multiple="multiple" size="10" >
+        {{ range .Data.Link.Tags }}
+        <option value="{{.Name }}">{{.Name }}</option>
+        {{ end }}
+        </select>
     </div>
     <div class="tip">
       <p>双击添加和删除</p>
@@ -31,13 +38,13 @@
     <div class="tag-box">
       <label >未应用标签</label>
       <select id="all-tag"  multiple="multiple">
-        {{ range .Data }}
+        {{ range .Data.Tags }}
         <option value="{{.Name }}">{{.Name}}</option>
         {{ end }}
         </select>
     </div>
   </div>
-  <button class="submit" type="submit">添加</button>
+  <button class="submit" type="submit">更新</button>
 </form>
 <script defer>
   let allTagEle = document.getElementById('all-tag')

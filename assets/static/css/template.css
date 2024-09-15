@@ -3,12 +3,28 @@
     margin: 0px;
 }
 
+
+
 :root {
     --base-width: 700px;
     --fonts-size: 14px;
+    --active-color: rgb(37 131 215);
+    --bg-color: #fff;
+    --input-bg-color: #d3d5d757;
     --sep-color: #cecccc;
-    --font-color:#575050;
+    --font-color: #303030;
     --base-color: rgb(74, 178, 223);
+}
+
+@media (min-width:0px) and (max-width: 700px) {
+    :root {
+        --base-width: 100vw;
+
+    }
+}
+
+body {
+    background-color: var(--bg-color);
 }
 
 .btn {
@@ -26,9 +42,35 @@
     }
 }
 
-.btn :hover {
+path {
+    fill: var(--base-color) !important;
+}
+
+.btn:hover {
     text-decoration: underline;
     transform: scale(1.2);
+}
+
+input,
+select,
+textarea {
+    appearance: none;
+    background: var(--input-bg-color);
+    background-image: none;
+    border: 1.5px solid var(--base-color);
+    border-radius: 5px;
+    display: block;
+    max-width: 100%;
+    outline: none;
+    width: 100%;
+}
+
+input:focus-visible {
+    border-color: var(--active-color);
+}
+
+select:focus-visible {
+    border-color: var(--active-color);
 }
 
 .icon-btn {
@@ -44,19 +86,37 @@
     }
 
     a {
+        display: flex;
+        align-items: center;
         text-decoration: none;
     }
 }
 
 button {
+    padding: .5em;
     cursor: pointer;
+    color: var(--font-color);
+    border-radius: .1em;
 }
 
-button :hover {
-    transform: scale(1.2);
+button.submit {
+    border: .5em;
+    background-color: var(--base-color);
+}
+
+button.submit:hover {
+    opacity: 0.7;
+}
+
+button.submit:active {
+    opacity: 0.7;
 }
 
 
+
+a {
+    color: var(--base-color);
+}
 
 #container {
     display: flex;
@@ -114,7 +174,7 @@ header {
 footer {
     display: block;
     width: 100%;
-    margin: 2em 0em;
+    margin: 1em 0em;
     padding-top: 1em;
     text-align: center;
     border-top: 1px solid var(--sep-color);

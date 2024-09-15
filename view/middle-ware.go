@@ -12,6 +12,10 @@ import (
 
 type Middleware func(http.Handler) http.Handler
 
+var (
+	secretKey = []byte("secretKeyffff")
+)
+
 func LogRequest(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		start := time.Now()
@@ -20,10 +24,6 @@ func LogRequest(next http.Handler) http.Handler {
 		log.Printf("Completed %s in %v", r.URL.Path, time.Since(start))
 	})
 }
-
-var (
-	secretKey = []byte("secretKeyffff")
-)
 
 func CreateJWT(msg string) (string, error) {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
@@ -68,7 +68,7 @@ func Protect(next httprouter.Handle) httprouter.Handle {
 		if authHeader == "" {
 			tokenCookie, trr := r.Cookie("marky-token")
 			if trr != nil && authHeader == "" {
-				http.Redirect(w, r, "/login", http.StatusMovedPermanently)
+				Redirect(w, r, "/login")
 				return
 			}
 			jwt = tokenCookie.Value
@@ -78,13 +78,13 @@ func Protect(next httprouter.Handle) httprouter.Handle {
 		}
 
 		if jwt == "" {
-			http.Redirect(w, r, "/login", http.StatusMovedPermanently)
+			Redirect(w, r, "/login")
 			return
 		}
 
 		_, err := validateJWT(jwt)
 		if err != nil {
-			http.Redirect(w, r, "/login", http.StatusMovedPermanently)
+			Redirect(w, r, "/login")
 			return
 		}
 		next(w, r, ps)

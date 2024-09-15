@@ -140,14 +140,14 @@
         </div>
       </header>
       <div class="content">
-        <form action="/link/create" style="display: flex;flex-direction:column;gap:1em;" method="post">
+        <form action="action/link/create" style="display: flex;flex-direction:column;gap:1em;" method="post">
           <input type="text" name="url" placeholder="书签标题" />
           <select name="tag">
             <option value="default">读书</option>
             <option value="default">GIS</option>
             <option value="default">微信</option>
           </select>
-          <button type="submit">添加</button>
+          <button class="submit" type="submit">添加</button>
         </form>
       </div>
       <footer>

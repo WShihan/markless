@@ -6,7 +6,7 @@ import (
 	"gorm.io/gorm"
 )
 
-type Tag struct {
+type Category struct {
 	gorm.Model
 	ID         int       `json:"id"`
 	Name       string    `gorm:"unique" json:"name"`

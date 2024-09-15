@@ -53,7 +53,7 @@ func UserLogin(w http.ResponseWriter, r *http.Request, params httprouter.Params)
 		}
 		// 设置 Cookie
 		http.SetCookie(w, &cookie)
-		http.Redirect(w, r, "/", http.StatusMovedPermanently)
+		Redirect(w, r, "/")
 	} else {
 		ApiFailed(&w, 1, "用户名或密码错误")
 	}
@@ -110,6 +110,7 @@ func InitAdmin(username string, password string) {
 	if user.Username == "" || user.Password == "" {
 		user.Username = username
 		user.Password = password
+		user.Admin = true
 		store.DB.Create(&user)
 	}
 }

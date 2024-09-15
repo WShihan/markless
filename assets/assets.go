@@ -11,4 +11,6 @@ var (
 	CSS embed.FS
 	// //go:embed static/img/*
 	IMG embed.FS
+	// //go:embed static/img/*.ico
+	ICO embed.FS
 )

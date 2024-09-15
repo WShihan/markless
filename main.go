@@ -29,8 +29,12 @@ func main() {
 		Router:  &Mux,
 	}
 	store.InitDB(*DataBaseURL)
+	env := model.BaseInjdection{
+		BaseURL: *BaseURL,
+		Title:   "Marky",
+	}
 	view.LoadApi(router)
-	view.LoadView(router)
+	view.LoadPage(router, env)
 	view.InitAdmin(*adminname, *adminPassword)
 	runAt := fmt.Sprintf("127.0.0.1:%d", *Port)
 

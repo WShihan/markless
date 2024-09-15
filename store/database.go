@@ -18,7 +18,7 @@ func InitDB(databaseURL string) {
 	}
 	DB = db
 	// 迁移 schema
-	er := DB.AutoMigrate(&model.Link{}, &model.User{})
+	er := DB.AutoMigrate(&model.Link{}, &model.User{}, &model.Tag{}, &model.Category{})
 	if err != nil {
 		log.Fatalf("failed to migrate: %v", er)
 	}

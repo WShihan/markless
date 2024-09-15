@@ -1,0 +1,39 @@
+{{ define "style"}}
+<link rel="stylesheet" href="{{$.Env.BaseURL}}/static/css/link_add.css" />
+<style>
+  .tags {
+    display: flex;
+    gap: 1em;
+    margin: 2em 0em;
+    ul {
+      width: 100%;
+      list-style: none;
+      li {
+        display: flex;
+        justify-content: space-around;
+      }
+    }
+  }
+</style>
+{{ end }}
+
+{{ define "content"}}
+<div class="tags">
+  <ul>
+    {{ range $key, $value := .Data }}
+    <li>
+      <a href="{{$.Env.BaseURL}}/?tag={{$key}}">#{{$key}}</a><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{$value}}条</span>
+      </a>
+      <a  href="{{$.Env.BaseURL}}/tag/delete/{{$key}}">删除</a>
+    </li>
+    {{ end }}
+  </ul>
+</div>
+<details open>
+  <summary>添加标签</summary>
+  <form action="{{$.Env.BaseURL}}/tag/add"  method="post">
+    <input type="text" name="tag" placeholder="多个标签用英文逗号隔开" />
+    <button class="submit" type="submit">添加</button>
+  </form>
+</details>
+{{ end }}

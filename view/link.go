@@ -1,46 +1,109 @@
 package view
 
 import (
-	"log/slog"
+	"fmt"
 	"marky/model"
 	"marky/store"
 	"marky/util"
 	"net/http"
+	"net/url"
+	"strings"
 	"time"
 
 	"github.com/julienschmidt/httprouter"
 )
 
-func LinkCreate(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
-	url := r.FormValue("url")
-	desc := r.FormValue("desc")
-	// category := r.FormValue("category")
-	tagName := r.FormValue("tag")
-	title, favicon := util.Parse_Webpage(url)
+func LinkAdd(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
+	webURL := r.FormValue("url")
+	tagNames := strings.Split(r.FormValue("tags"), ",")
+	pageINfo, _ := util.Scrape(webURL, 10)
+	var title, icon, desc string
+	if pageINfo.Preview.Title == "" {
+		title = "未知标题"
+	} else {
+		title = pageINfo.Preview.Title
+	}
+	if pageINfo.Preview.Description == "" {
+		desc = r.FormValue("desc")
+		if desc == "" {
+			desc = title
+		}
+	} else {
+		desc = pageINfo.Preview.Description
+	}
+	if pageINfo.Preview.Icon == "" {
+		// 解析 URL
+		parsedURL, err := url.Parse(webURL)
+		if err != nil {
+			fmt.Println("Error parsing URL:", err)
+			return
+		}
+		// 尝试拼接favicon
+		rootPath := fmt.Sprintf("%s://%s", parsedURL.Scheme, parsedURL.Host)
+		icon = rootPath + "/favicon.ico"
+	} else {
+		icon = pageINfo.Preview.Icon
+	}
+
 	link := model.Link{}
 	user := model.User{}
-	tag := model.Tag{}
 
 	store.DB.First(&user)
-	store.DB.Find(&link, "url = ?", url)
-	store.DB.Find(&tag, "name = ?", tagName)
+	store.DB.Find(&link, "url = ?", webURL)
 	if link.Url == "" {
 		link.Title = title
-		link.Desc = favicon
 		link.Desc = desc
 		link.CreatedAt = time.Now()
-		link.Url = url
+		link.Url = webURL
+		link.Icon = icon
 		link.UserID = user.ID
-		store.DB.Model(&link).Association("Tags").Append(&tag)
+		tags := []model.Tag{}
+		for _, v := range tagNames {
+			if v == "" {
+				continue
+			}
+			tag := model.Tag{}
+			store.DB.Find(&tag, "name = ?", v)
+			tags = append(tags, tag)
+		}
+		store.DB.Model(&link).Association("Tags").Append(&tags)
 		store.DB.Create(&link)
-		http.Redirect(w, r, "/", http.StatusMovedPermanently)
+		Redirect(w, r, "/")
 
 	} else {
-		http.Redirect(w, r, "/link/add", http.StatusMovedPermanently)
-
+		Redirect(w, r, "/link/add")
 	}
-	slog.Info(title + favicon)
 
+}
+func LinkUpdate(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
+	id := params.ByName("id")
+
+	link := model.Link{}
+	store.DB.First(&link, id)
+	link.Title = r.FormValue("title")
+	link.Desc = r.FormValue("desc")
+	link.Url = r.FormValue("url")
+	tagArr := strings.Split(r.FormValue("tags"), ",")
+	tags := []model.Tag{}
+	for _, v := range tagArr {
+		if v == "" {
+			continue
+		}
+		tag := model.Tag{}
+		store.DB.Find(&tag, "name = ?", v)
+		tags = append(tags, tag)
+	}
+	store.DB.Model(&link).Association("Tags").Append(&tags)
+	store.DB.Save(&link)
+	Redirect(w, r, "/")
+}
+func LinkRead(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
+	id := params.ByName("id")
+	link := model.Link{}
+	store.DB.First(&link, id)
+	link.Read = !link.Read
+	store.DB.Save(&link)
+	Redirect(w, r, "/")
 }
 
 func LinkDel(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
@@ -48,5 +111,5 @@ func LinkDel(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
 	link := model.Link{}
 	store.DB.First(&link, id)
 	store.DB.Delete(&link)
-	http.Redirect(w, r, "/", http.StatusMovedPermanently)
+	Redirect(w, r, "/")
 }
