@@ -6,3 +6,4 @@ maphoto_pic/
 *_debug_*
 maphoto.csv
 assets/static/js/pvr.js
+logs/*

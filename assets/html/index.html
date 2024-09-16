@@ -6,7 +6,10 @@
 {{ define "content"}}
   <div class="tag-stastic">
     {{ range $k, $v := .TagStastic }}
-    <span><a class="icon" href="{{$.Env.BaseURL}}/?tag={{$k}}">{{$k}}</a>: {{$v}}</span>
+    <div class="pair">
+      <a class="icon-btn" href="{{$.Env.BaseURL}}/?tag={{$k}}">{{$k}}</a>
+      <span class="count">{{$v}}</span>
+    </div>
     {{ end }}
   </div>
   <div class="search">

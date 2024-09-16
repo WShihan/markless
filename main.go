@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
+	"markee/logging"
 	"markee/model"
 	"markee/store"
 	"markee/util"
@@ -21,6 +22,7 @@ func main() {
 	adminPassword := flag.String("adminpassword", "test123", "初始用户密码")
 
 	flag.Parse()
+	logging.InitLogger()
 
 	Mux := *httprouter.New()
 	// 创建自定义路由器，指定前缀为 /app/go
@@ -49,6 +51,6 @@ func main() {
 		Addr:    runAt,
 		Handler: handler,
 	}
-	fmt.Println("server run in:", runAt+*BaseURL)
+	logging.Logger.Info("server run in:", runAt+*BaseURL)
 	server.ListenAndServe()
 }

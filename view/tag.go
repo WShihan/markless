@@ -16,13 +16,13 @@ func TagAdd(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
 		Redirect(w, r, "/tags")
 		return
 	}
-	tagArr := strings.Split(tagVal, ",")
+	tagArr := strings.Split(tagVal, "&")
 	user := model.User{}
 	store.DB.First(&user)
 	tags := []model.Tag{}
 
 	for _, v := range tagArr {
-		tag := model.Tag{Name: v, UserID: user.ID, CreateTime: time.Now()}
+		tag := model.Tag{Name: strings.Trim(v, " "), UserID: user.ID, CreateTime: time.Now()}
 		tags = append(tags, tag)
 
 	}

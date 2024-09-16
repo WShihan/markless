@@ -8,59 +8,48 @@
 <form action="{{$.Env.BaseURL}}/link/add" method="post">
   <ul>
     <li>
-      <label for="title">网页链接</label>
+      <label for="title">网页链接*</label>
       <input type="text" name="url" value="" placeholder="网页地址" />
     </li>
     <li>
-      <label for="title">网页描述</label>
+      <label for="title">网页描述&nbsp;&nbsp;</label>
       <input type="text" name="desc" value="" placeholder="网页描述" />
     </li>
     <li>
-      <input  id="tags" class="invisible" type="text" name="tags" value="" />
+      <label for="tags">添加标签&nbsp;&nbsp;</label>
+      <textarea  id="tags" type="text" name="tags" value="" placeholder="多个标签用&分隔"></textarea>
     </li>
   </ul>
-  <div class="tag-update">
-    <div class="tag-box">
-      <label >已应用标签</label>
-      <select id="current-tag"  multiple="multiple" size="10" ></select>
+  <details open>
+    <summary>从已有标签添加</summary>
+    <div class="tag-update">
+      <div class="tag-box">
+        <label >直接填写或双击添加下面的已有的标签项</label>
+        <select id="all-tag"  multiple="multiple">
+          {{ range .Data }}
+          <option value="{{.Name }}">{{.Name}}</option>
+          {{ end }}
+          </select>
+      </div>
     </div>
-    <div class="tip">
-      <p>双击添加和删除</p>
-      <p><==></p>
-    </div>
-    <div class="tag-box">
-      <label >未应用标签</label>
-      <select id="all-tag"  multiple="multiple">
-        {{ range .Data }}
-        <option value="{{.Name }}">{{.Name}}</option>
-        {{ end }}
-        </select>
-    </div>
-  </div>
-  <button class="submit" type="submit" onclick="return confirm()">添加</button>
+  </details>
+
+  <button class="submit" type="submit">添加</button>
 </form>
 <script defer>
   let allTagEle = document.getElementById('all-tag')
-  let curTagEle = document.getElementById('current-tag')
   let tagsEle = document.getElementById('tags')
   function changeTageItems(name, flag){
-    let names = tagsEle.value.split(',')
-    if (flag == 1){
-      names.push(name)
-    } else {
-      names.splice(names.indexOf(name), 1)
+    if (tagsEle.value == ''){
+       tagsEle.value = name
+       return
     }
-    tagsEle.value = names.join(',')
-    console.log(tagsEle.value)
+    let names = tagsEle.value.split('&')
+    names.push(name)
+    tagsEle.value = names.join('&')
   }
   allTagEle.addEventListener('dblclick', function(e) {
-    curTagEle.appendChild(e.target)
-    changeTageItems(e.target.value, 1)
-
-  })
-  curTagEle.addEventListener('dblclick', function(e) {
-    allTagEle.appendChild(e.target)
-    changeTageItems(e.target.value, 0)
+    changeTageItems(e.target.value)
   })
 </script>
 {{ end }}

@@ -15,7 +15,7 @@ import (
 
 func LinkAdd(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
 	webURL := r.FormValue("url")
-	tagNames := strings.Split(r.FormValue("tags"), ",")
+	tagNames := strings.Split(r.FormValue("tags"), "&")
 	pageINfo, _ := util.Scrape(webURL, 10)
 	var title, icon, desc string
 	if pageINfo.Preview.Title == "" {
@@ -62,8 +62,11 @@ func LinkAdd(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
 			if v == "" {
 				continue
 			}
-			tag := model.Tag{}
+			tag := model.Tag{Name: strings.Trim(v, " "), UserID: user.ID, CreateTime: time.Now()}
 			store.DB.Find(&tag, "name = ?", v)
+			if tag.ID == 0 {
+				store.DB.Create(&tag)
+			}
 			tags = append(tags, tag)
 		}
 		store.DB.Model(&link).Association("Tags").Append(&tags)
@@ -83,14 +86,14 @@ func LinkUpdate(w http.ResponseWriter, r *http.Request, params httprouter.Params
 	link.Title = r.FormValue("title")
 	link.Desc = r.FormValue("desc")
 	link.Url = r.FormValue("url")
-	tagArr := strings.Split(r.FormValue("tags"), ",")
+	tagArr := strings.Split(r.FormValue("tags"), "&")
 	tags := []model.Tag{}
 	for _, v := range tagArr {
 		if v == "" {
 			continue
 		}
 		tag := model.Tag{}
-		store.DB.Find(&tag, "name = ?", v)
+		store.DB.Find(&tag, "name = ?", strings.Trim(v, " "))
 		tags = append(tags, tag)
 	}
 	store.DB.Model(&link).Association("Tags").Append(&tags)

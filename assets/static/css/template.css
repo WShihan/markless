@@ -12,7 +12,7 @@
     --bg-color: #fff;
     --input-bg-color: #d3d5d757;
     --sep-color: #cecccc;
-    --font-color: #303030;
+    --font-color: #585353;
     --base-color: rgb(74, 178, 223);
 }
 
@@ -54,16 +54,18 @@ path {
 input,
 select,
 textarea {
-    width: 100%;
-    padding: .5em;
-    appearance: none;
-    background: var(--input-bg-color);
-    background-image: none;
-    border: 1.5px solid var(--base-color);
-    border-radius: 5px;
     display: block;
     max-width: 100%;
     outline: none;
+    width: 100%;
+    padding: .5em;
+    border: 1.5px solid var(--base-color);
+    border-radius: 5px;
+    appearance: none;
+    color: var(--font-color);
+    background: var(--input-bg-color);
+    background-image: none;
+
 }
 
 input:focus-visible {
@@ -80,7 +82,7 @@ select:focus-visible {
     cursor: pointer;
     border: none;
     border-radius: 5px;
-
+    font-size: 12px;
     svg {
         width: 20px;
         height: 20px;
@@ -96,7 +98,7 @@ select:focus-visible {
     background-color: var(--active-color);
 }
 .icon-btn:hover {
-    transform: scale(1.2);
+    transform: scale(1.1);
 }
 button {
     padding: .5em;
@@ -106,7 +108,9 @@ button {
 }
 
 button.submit {
-    border: .5em;
+    appearance: none;
+    border-radius: .5em;
+    border: none;
     background-color: var(--base-color);
 }
 

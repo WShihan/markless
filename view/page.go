@@ -8,8 +8,8 @@ import (
 	"strings"
 
 	"html/template"
-	"log/slog"
 	"markee/assets"
+	"markee/logging"
 	"markee/model"
 	"markee/store"
 
@@ -57,7 +57,7 @@ func AssetsFinder(w http.ResponseWriter, r *http.Request, params httprouter.Para
 	}
 	content, err := fs.ReadFile(assetDir)
 	if err != nil {
-		slog.Error(err.Error())
+		logging.Logger.Error(err.Error())
 		return
 	}
 	w.Write(content)
@@ -74,7 +74,10 @@ func IndexPage(w http.ResponseWriter, r *http.Request, params httprouter.Params)
 
 	tt, _ := GetBaseTemplate().ParseFS(assets.HTML, "html/template.html", "html/index.html")
 	links := []model.Link{}
-	store.DB.Where("Title LIKE ? OR Desc LIKE ?", keyword, keyword).Limit(limit).Offset(int(offset)).Find(&links)
+	err := store.DB.Where("Title LIKE ? OR Desc LIKE ?", keyword, keyword).Limit(limit).Offset(int(offset)).Find(&links).Error
+	if err != nil {
+		logging.Logger.Error(err.Error())
+	}
 	for i, v := range links {
 		tags := []model.Tag{}
 		store.DB.Model(&v).Association("Tags").Find(&tags)

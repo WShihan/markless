@@ -1,7 +1,7 @@
 package view
 
 import (
-	"log/slog"
+	"markee/logging"
 	"markee/model"
 	"net/http"
 )
@@ -13,7 +13,7 @@ var (
 
 func Redirect(w http.ResponseWriter, r *http.Request, route string) {
 	http.Redirect(w, r, Env.BaseURL+route, http.StatusMovedPermanently)
-	slog.Info("redirest:" + Env.BaseURL + route)
+	logging.Logger.Info("redirest:" + Env.BaseURL + route)
 }
 
 func LoadApi(router *model.RouterWithPrefix) {
