@@ -4,6 +4,7 @@ import (
 	"markee/logging"
 	"markee/model"
 	"net/http"
+	"strings"
 )
 
 var (
@@ -12,8 +13,13 @@ var (
 )
 
 func Redirect(w http.ResponseWriter, r *http.Request, route string) {
-	http.Redirect(w, r, Env.BaseURL+route, http.StatusMovedPermanently)
-	logging.Logger.Info("redirest:" + Env.BaseURL + route)
+	if strings.Contains(route, Env.BaseURL) {
+		logging.Logger.Info("redirest:" + route)
+		http.Redirect(w, r, route, http.StatusMovedPermanently)
+	} else {
+		logging.Logger.Info("redirest:" + Env.BaseURL + route)
+		http.Redirect(w, r, Env.BaseURL+route, http.StatusMovedPermanently)
+	}
 }
 
 func LoadApi(router *model.RouterWithPrefix) {

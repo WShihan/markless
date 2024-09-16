@@ -118,7 +118,7 @@ func LinkRead(w http.ResponseWriter, r *http.Request, params httprouter.Params) 
 	store.DB.First(&link, id)
 	link.Read = !link.Read
 	store.DB.Save(&link)
-	Redirect(w, r, "/")
+	Redirect(w, r, r.Referer())
 }
 
 func LinkDel(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
@@ -126,5 +126,5 @@ func LinkDel(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
 	link := model.Link{}
 	store.DB.First(&link, id)
 	store.DB.Delete(&link)
-	Redirect(w, r, "/")
+	Redirect(w, r, r.Referer())
 }
