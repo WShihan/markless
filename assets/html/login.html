@@ -10,8 +10,7 @@
     <link rel="icon" href="https://wsh233.cn/arch/favicon.ico" type="image/x-icon" />
     <link rel="stylesheet" href="{{$.Env.BaseURL}}/static/css/template.css"/>
     <script defer src="{{$.Env.BaseURL}}/static/js/user.js"></script>
-    
-<link rel="stylesheet" href="{{$.Env.BaseURL}}/static/css/link_add.css" />
+    <link rel="stylesheet" href="{{$.Env.BaseURL}}/static/css/link_add.css" />
 
     <title>登录</title>
   </head>
@@ -39,13 +38,11 @@
         </div>
       </header>
       <div class="content">
-        
-<form action="{{$.Env.BaseURL}}/user/login" style="display: flex;flex-direction:column;gap:1em;" method="post">
-    <input type="text" name="username" placeholder="用户名" />
-    <input type="password" name="password" placeholder="密码"></textarea>
-    <button class="submit" type="submit">登录</button>
-  </form>
-
+        <form action="{{$.Env.BaseURL}}/user/login" style="display: flex;flex-direction:column;gap:1em;" method="post">
+          <input type="text" name="username" placeholder="用户名" />
+          <input type="password" name="password" placeholder="密码"></textarea>
+          <button class="submit" type="submit">登录</button>
+        </form>
       </div>
       <footer>
         <span class="footer-item title">Made markee  with ❤️</span>

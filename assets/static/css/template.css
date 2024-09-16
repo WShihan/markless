@@ -7,14 +7,16 @@
     --base-width: 700px;
     --fonts-size: 13px;
     --active-color: rgb(37 131 215);
-    --bg-color: #fff;
+    --page-bg-color: #fff;
     --input-bg-color: #d3d5d757;
     --sep-color: #cecccc;
     --font-color: #585353;
-    --base-color: rgb(74, 178, 223);
+    --base-color: rgb(44 156 204);
     --tag-dock-visible: block;
-    --gap-color:#c4cfd1;
+    --gap-color: #c4cfd1;
+    --input-height: 1.2em;
 }
+
 
 @media (min-width:0px) and (max-width: 700px) {
     :root {
@@ -23,14 +25,59 @@
     }
 }
 
+.dark {
+    --active-color: rgb(37 131 215);
+    --page-bg-color: #212020;
+    --input-bg-color: #4042448a;
+    --sep-color: #625d5d;
+    --font-color: #a7a7a7;
+    --base-color: rgb(28 152 206);
+    --gap-color: #c4cfd1;
+}
+
+/* 设置滚动条的样式 */
+html::-webkit-scrollbar {
+    width: 5px;
+    height: 0px;
+}
+
+/* 滚动槽 */
+html::-webkit-scrollbar-track {
+    border-radius: 5px;
+    background: rgb(179, 188, 201);
+}
+
+/* 滚动条滑块 */
+html::-webkit-scrollbar-thumb {
+    border-radius: 5px;
+    background: var(--base-color);
+}
+
+/* 设置滚动条的样式 */
+html::-moz-scrollbar {
+    width: 1px;
+    height: 0px;
+}
+
+/* 滚动槽 */
+html::-moz-scrollbar-track {
+    border-radius: 5px;
+    background: rgb(9, 35, 92);
+}
+
+/* 滚动条滑块 */
+html::-moz-scrollbar-thumb {
+    border-radius: 1px;
+    background: rgb(21, 126, 201);
+}
+
 body {
-    background-color: var(--bg-color);
+    background-color: var(--page-bg-color);
 }
 
 .btn {
     cursor: pointer;
     color: var(--base-color);
-    text-decoration: none;
 
     svg {
         width: 20px;
@@ -39,11 +86,8 @@ body {
 
     a {
         color: var(--base-color);
+        text-decoration: none !important;
     }
-}
-
-path {
-    fill: var(--base-color) !important;
 }
 
 .btn:hover {
@@ -68,6 +112,10 @@ textarea {
 
 }
 
+input {
+    height: var(--input-height);
+}
+
 input:focus-visible {
     border-color: var(--active-color);
 }
@@ -88,6 +136,10 @@ select:focus-visible {
     svg {
         width: 1em;
         height: 1em;
+
+        path {
+            fill: var(--base-color) !important;
+        }
     }
 
     a {
@@ -152,6 +204,7 @@ button.submit:active {
 a {
     color: var(--base-color);
 }
+
 .gap {
     color: var(--gap-color);
 }
@@ -177,8 +230,14 @@ header {
     gap: 2em;
     width: 100%;
     padding: 0.5em 0em;
-    /* background-color: #f00; */
     border-bottom: 1px solid var(--sep-color);
+
+    #theme-switch {
+        svg {
+            width: 2em !important;
+            height: 2em !important;
+        }
+    }
 
     .navs {
         flex: 1;
@@ -194,6 +253,18 @@ header {
             font-weight: bold;
         }
     }
+}
+
+#theme-switch svg:last-child {
+    display: none;
+}
+
+.dark #theme-switch svg:first-child {
+    display: none !important;
+}
+
+.dark #theme-switch svg:last-child {
+    display: block !important;
 }
 
 .content {

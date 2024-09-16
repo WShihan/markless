@@ -53,6 +53,7 @@
 .move {
     display: flex;
     justify-content: space-between;
+    margin: 2em 1em 1em 1em;
 }
 
 .links {
