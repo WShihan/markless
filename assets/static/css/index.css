@@ -21,7 +21,8 @@
     }
 }
 
-.tag-stastic {
+.tag-dock {
+    display: var(--tag-dock-visible);
     position: absolute;
     left: 101%;
     width: 4em;
@@ -38,6 +39,14 @@
         }
     }
 
+
+}
+.tag-dock::before {
+    margin: 0em auto;
+    content: "🔖 标签";
+    text-align: center;
+    font-weight: bold;
+    color: var(--base-color);
 
 }
 

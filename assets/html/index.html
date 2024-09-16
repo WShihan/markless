@@ -4,7 +4,7 @@
 {{ end }} 
 
 {{ define "content"}}
-  <div class="tag-stastic">
+  <div class="tag-dock">
     {{ range $k, $v := .TagStastic }}
     <div class="pair">
       <a class="icon-btn" href="{{$.Env.BaseURL}}/?tag={{$k}}">{{$k}}</a>
@@ -23,7 +23,7 @@
     <div class="link">
       <div class="link-header">
         <img class="favicon" src="{{.Icon}}" alt="icon" />
-        <a href="{{.Url}}" target="_blank" rel="noopener">
+        <a class="url" href="{{.Url}}" target="_blank" rel="noopener">
           <span>{{ .Title }}</span>
         </a>
       </div>
@@ -32,7 +32,7 @@
       </div>
       <div class="link-tags">
         {{ range .Tags }}
-        <a class="tag-item btn" href="{{$.Env.BaseURL}}/?tag={{.Name}}">#{{.Name}}</a>
+        <a class="tag-item icon" href="{{$.Env.BaseURL}}/?tag={{.Name}}">#{{.Name}}</a>
         {{ end }}
       </div>
       <div class="link-opts">
@@ -43,11 +43,11 @@
           {{ else }}
           <span>标为已读</span>
           {{end}}
-        </a>｜
+        </a><span class="gap">｜</span>
         <a href="{{$.Env.BaseURL}}/link/edit/{{.ID}}" class="opt-item icon-btn" title="编辑">
           <svg t="1726443086865" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="949" width="200" height="200"><path d="M834.3 705.7c0 82.2-66.8 149-149 149H325.9c-82.2 0-149-66.8-149-149V346.4c0-82.2 66.8-149 149-149h129.8v-42.7H325.9c-105.7 0-191.7 86-191.7 191.7v359.3c0 105.7 86 191.7 191.7 191.7h359.3c105.7 0 191.7-86 191.7-191.7V575.9h-42.7v129.8z" fill="#1296db" p-id="950"></path><path d="M889.7 163.4c-22.9-22.9-53-34.4-83.1-34.4s-60.1 11.5-83.1 34.4L312 574.9c-16.9 16.9-27.9 38.8-31.2 62.5l-19 132.8c-1.6 11.4 7.3 21.3 18.4 21.3 0.9 0 1.8-0.1 2.7-0.2l132.8-19c23.7-3.4 45.6-14.3 62.5-31.2l411.5-411.5c45.9-45.9 45.9-120.3 0-166.2zM362 585.3L710.3 237 816 342.8 467.8 691.1 362 585.3zM409.7 730l-101.1 14.4L323 643.3c1.4-9.5 4.8-18.7 9.9-26.7L436.3 720c-8 5.2-17.1 8.7-26.6 10z m449.8-430.7l-13.3 13.3-105.7-105.8 13.3-13.3c14.1-14.1 32.9-21.9 52.9-21.9s38.8 7.8 52.9 21.9c29.1 29.2 29.1 76.7-0.1 105.8z" fill="#1296db" p-id="951"></path></svg>
           <span>编辑</span>
-        </a>｜
+        </a><span class="gap">｜</span>
         <a href="{{$.Env.BaseURL}}/link/delete/{{.ID}}" class="opt-item icon-btn" title="删除">
           <svg t="1726443127562" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="1369" width="200" height="200"><path d="M684.56 158H339.44a32 32 0 0 1 0-64h345.12a32 32 0 0 1 0 64zM522.52 736.72a32 32 0 0 1-32-32v-240a32 32 0 1 1 64 0v240a32 32 0 0 1-32 32zM903.42 299H120.58a32 32 0 1 1 0-64h782.84a32 32 0 1 1 0 64z" p-id="1370" fill="#1296db"></path><path d="M669.02 964h-314a188.76 188.76 0 0 1-188.54-188.54V410.1a32 32 0 0 1 64 0v365.36A124.68 124.68 0 0 0 354.98 900h314a124.68 124.68 0 0 0 124.54-124.54V410.1a32 32 0 1 1 64 0v365.36A188.76 188.76 0 0 1 669.02 964z" p-id="1371" fill="#1296db"></path></svg>
           <span>删除</span>
@@ -57,7 +57,12 @@
     {{ end }}
   </div>
   <div class="move">
+    {{ if eq .Search.Page 0 }}
+    <a class="icon disable" href="{{$.Env.BaseURL}}?page={{.Search.PrePage}}">《上一页</a>
+    {{ else }}
     <a class="icon" href="{{$.Env.BaseURL}}?page={{.Search.PrePage}}">《上一页</a>
-    <a class="icon" href="{{$.Env.BaseURL}}?page=2"{{.Search.NextPage}}>下一页》</a>
+    {{ end }}
+    <a class="current icon">第 {{.Search.Page | Increase}} 页，每页{{.Search.Limit }}条</a>
+    <a class="icon" href="{{$.Env.BaseURL}}?page={{.Search.NextPage}}">下一页》</a>
   </div>
 {{ end }}

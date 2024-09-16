@@ -44,8 +44,20 @@ func JoinTagNames(tags []model.Tag) string {
 	return strings.Join(firstNames, ", ")
 }
 
+// 自增模板函数
+func Increase(num int) int {
+	return num + 1
+}
+
+// 自增模板函数
+func Decrease(num int) int {
+	return num - 1
+}
+
 func GetFuncMap() template.FuncMap {
 	return template.FuncMap{
 		"JoinTagNames": JoinTagNames,
+		"Increase":     Increase,
+		"Decrease":     Decrease,
 	}
 }
