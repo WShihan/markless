@@ -4,23 +4,37 @@ import (
 	"embed"
 	"fmt"
 	"net/http"
+	"strconv"
 	"strings"
 
 	"html/template"
 	"log/slog"
-	"marky/assets"
-	"marky/model"
-	"marky/store"
+	"markee/assets"
+	"markee/model"
+	"markee/store"
 
-	"marky/util"
+	"markee/util"
 
 	"github.com/julienschmidt/httprouter"
 )
 
+type Search struct {
+	Keyword  string
+	PrePage  int
+	NextPage int
+	TagName  string
+}
 type Inject struct {
 	Title string
 	Env   model.BaseInjdection
-	Data  interface{}
+	Search
+	Data       interface{}
+	TagStastic map[string]int
+}
+
+func GetBaseTemplate() *template.Template {
+	funcMap := util.GetFuncMap()
+	return template.New("html/template.html").Funcs(funcMap)
 }
 
 func AssetsFinder(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
@@ -48,26 +62,30 @@ func AssetsFinder(w http.ResponseWriter, r *http.Request, params httprouter.Para
 	}
 	w.Write(content)
 }
-func GetBaseTemplate() *template.Template {
-	funcMap := util.GetFuncMap()
-	return template.New("html/template.html").Funcs(funcMap)
-}
 
 func IndexPage(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
-	tagQuery := r.URL.Query().Get("tag")
-	slog.Info(tagQuery)
+	tagName := r.URL.Query().Get("tag")
+	keywordVal := r.URL.Query().Get("keyword")
+	keyword := fmt.Sprintf("%%%s%%", keywordVal)
+
+	pagenum, _ := strconv.ParseInt(r.URL.Query().Get("page"), 10, 64)
+	limit := 20
+	offset := pagenum * int64(limit)
+
 	tt, _ := GetBaseTemplate().ParseFS(assets.HTML, "html/template.html", "html/index.html")
 	links := []model.Link{}
-	store.DB.Find(&links)
+	store.DB.Where("Title LIKE ? OR Desc LIKE ?", keyword, keyword).Limit(limit).Offset(int(offset)).Find(&links)
 	for i, v := range links {
 		tags := []model.Tag{}
 		store.DB.Model(&v).Association("Tags").Find(&tags)
 		links[i].Tags = tags
 	}
 	inject := Inject{
-		Title: "Marky",
-		Env:   Env,
-		Data:  links,
+		Title:      "markee",
+		Env:        Env,
+		Search:     Search{Keyword: keywordVal, PrePage: int(pagenum) - 1, NextPage: int(pagenum) + 1, TagName: tagName},
+		Data:       links,
+		TagStastic: store.TagStat(),
 	}
 	tt.ExecuteTemplate(w, "template", inject)
 }
@@ -113,43 +131,12 @@ func LinkAddPage(w http.ResponseWriter, r *http.Request, params httprouter.Param
 	tt.ExecuteTemplate(w, "template", inject)
 }
 
-type TagStat struct {
-	Name  string
-	Count int
-}
-
 func TagsPage(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
 	tt, _ := GetBaseTemplate().ParseFS(assets.HTML, "html/template.html", "html/tags.html")
-	user := model.User{}
-	store.DB.First(&user)
-	tags := []model.Tag{}
-	links := []model.Link{}
-	store.DB.Model(&user).Association("Links").Find(&links)
-	store.DB.Model(&user).Association("Tags").Find(&tags)
-	staMap := make(map[string]int)
-	// 添加标签
-	for _, v := range tags {
-		staMap[v.Name] = 0
-	}
-
-	// 获取links标签
-	for i, v := range links {
-		tags := []model.Tag{}
-		store.DB.Model(&v).Association("Tags").Find(&tags)
-		links[i].Tags = tags
-	}
-
-	// 统计标签
-	for _, v := range links {
-		for _, vv := range v.Tags {
-			staMap[vv.Name]++
-		}
-
-	}
 	inject := Inject{
 		Title: "标签",
 		Env:   Env,
-		Data:  staMap,
+		Data:  store.TagStat(),
 	}
 	tt.ExecuteTemplate(w, "template", inject)
 }

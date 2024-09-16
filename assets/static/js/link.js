@@ -1,18 +1,13 @@
-function linkHandler(evt) {
-  evt.preventDefault();
-  let id = evt.target.getAttribute('data-id');
-  let operation = evt.target.getAttribute('data-operation');
-  if (id == null) {
-    id = evt.target.parentElement.getAttribute('data-id');
-    operation = evt.target.parentElement.getAttribute('data-operation');
+// 搜索
+function searchLink() {
+  let searchBtn = document.getElementById('link-search');
+  if (searchBtn instanceof HTMLButtonElement) {
+    searchBtn.addEventListener('click', () => {
+      let keyword = '';
+      keyword = document.getElementById('keyword')?.value;
+      if (keyword == '') return;
+      window.location.href = `${window.baseURL}/?keyword=${keyword}`;
+    });
   }
-  fetch('/link/' + operation, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      id: id,
-    }),
-  });
 }
+searchLink();

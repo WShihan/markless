@@ -2,8 +2,8 @@ package view
 
 import (
 	"encoding/json"
-	"marky/model"
-	"marky/store"
+	"markee/model"
+	"markee/store"
 	"net/http"
 
 	"github.com/julienschmidt/httprouter"
@@ -43,7 +43,7 @@ func UserLogin(w http.ResponseWriter, r *http.Request, params httprouter.Params)
 		user.Token = &token
 		store.DB.Save(&user)
 		cookie := http.Cookie{
-			Name:  "marky-token",
+			Name:  "markee-token",
 			Value: *user.Token,
 			Path:  "/",
 			// 其他可选字段

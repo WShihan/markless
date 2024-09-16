@@ -1,36 +1,70 @@
+.search {
+    display: flex;
+    gap: 1em;
+
+    button {
+        width: 4em;
+    }
+
+    svg {
+        width: 1em;
+        height: 1em;
+
+        path {
+            fill: #fff !important;
+        }
+    }
+}
+.tag-stastic {
+    display: flex;
+    flex-wrap: wrap;
+    position: absolute;
+    left: 101%;
+    width: 5em;
+    a {
+        font-weight: bold;
+    }
+}
+.move {
+    display: flex;
+    justify-content: space-between;
+}
 .links {
     flex: 1;
-    padding-top: 1em;
 
     .link {
         display: flex;
         flex-direction: column;
         gap: 0em 0.5em;
         padding: .5em;
-        margin: 1em 0em;
+        margin: .5em 0em;
         border-radius: .2em;
         box-sizing: border-box;
         background-color: var(--input-bg-color);
 
-        .link-header  {
+        .link-header {
             display: flex;
             align-items: center;
             gap: .5em;
+
             img.favicon {
-                width: 1.5em;
-                height: 1.5em;
+                width: 1.2em;
+                height: 1.2em;
                 border-radius: .1em;
             }
+
             a {
                 width: 100%;
                 word-break: break-all;
                 color: var(--base-color);
+                text-decoration: none;
                 overflow: hidden;
                 text-overflow: ellipsis;
                 white-space: nowrap;
             }
 
         }
+
         .link-desc {
             word-break: break-all;
             text-overflow: ellipsis;
@@ -51,12 +85,7 @@
 
         .link-opts {
             display: flex;
-            justify-content: space-around;
-            gap: 0.2em 1em;
             margin-top: 1em;
-            svg :hover {
-                transform: scale(1.3);
-            }
         }
     }
 }

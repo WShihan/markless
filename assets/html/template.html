@@ -5,10 +5,13 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
     <link rel=“canonical” href=“https://example.com/sample-page/” />
-    <meta name="description" content="Marky，记录网联网。" />
+    <meta name="description" content="markee，记录网联网。" />
     <link rel="icon" href="https://wsh233.cn/arch/favicon.ico" type="image/x-icon" />
     <link rel="stylesheet" href="{{$.Env.BaseURL}}/static/css/template.css"/>
     <script defer src="{{$.Env.BaseURL}}/static/js/user.js"></script>
+    <script>
+      window.baseURL = "{{$.Env.BaseURL}}";
+    </script>
     {{ template "style" . }}
     <title>{{.Title}}</title>
   </head>
@@ -32,11 +35,11 @@
               p-id="8825"
             ></path>
           </svg>
-          <a class="btn" href="{{$.Env.BaseURL}}" rel="noopener noreferrer">Marky</a>
+          <a class="btn" href="{{$.Env.BaseURL}}" rel="noopener noreferrer">markee</a>
         </div>
         <div class="navs">
-          <span class="nav-item btn"><a href="{{$.Env.BaseURL}}/link/add">+添加书签</a></span>
-          <span class="nav-item btn"><a href="{{$.Env.BaseURL}}/tags">标签</a></span>
+          <span class="nav-item btn"><a href="{{$.Env.BaseURL}}/link/add">+书签</a></span>
+          <span class="nav-item btn"><a href="{{$.Env.BaseURL}}/tags">+标签</a></span>
           <span class="nav-item btn"><a href="{{$.Env.BaseURL}}/settings">设置</a></span>
           <span class="nav-item btn" onclick="logout('{{$.Env.BaseURL}}/login')">登出</span>
         </div>
@@ -44,9 +47,8 @@
       <div class="content">
         {{ template "content" . }}
       </div>
-      <footer>
-        <span class="footer-item title">Made Marky  with ❤️</span>
-      </footer>
+      <!-- <footer>
+      </footer> -->
     </div>
   </body>
 </html>

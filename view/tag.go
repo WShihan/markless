@@ -1,8 +1,8 @@
 package view
 
 import (
-	"marky/model"
-	"marky/store"
+	"markee/model"
+	"markee/store"
 	"net/http"
 	"strings"
 	"time"

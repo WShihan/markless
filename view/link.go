@@ -2,9 +2,9 @@ package view
 
 import (
 	"fmt"
-	"marky/model"
-	"marky/store"
-	"marky/util"
+	"markee/model"
+	"markee/store"
+	"markee/util"
 	"net/http"
 	"net/url"
 	"strings"

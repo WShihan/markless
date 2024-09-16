@@ -3,7 +3,7 @@ package util
 import (
 	"html/template"
 	"log/slog"
-	"marky/model"
+	"markee/model"
 	"os"
 	"path/filepath"
 	"strings"

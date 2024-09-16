@@ -2,12 +2,12 @@ package view
 
 import (
 	"log/slog"
-	"marky/model"
+	"markee/model"
 	"net/http"
 )
 
 var (
-	BASE_URL = "/marky"
+	BASE_URL = "/markee"
 	Env      model.BaseInjdection
 )
 
@@ -26,7 +26,7 @@ func LoadApi(router *model.RouterWithPrefix) {
 
 func LoadPage(router *model.RouterWithPrefix, env model.BaseInjdection) {
 	Env = env
-	router.GET("", Protect(IndexPage))
+	router.GET("/", Protect(IndexPage))
 	router.GET("/login", Login)
 	router.GET("/link/add", Protect(LinkAddPage))
 	router.GET("/link/edit/:id", Protect(LinkEditPage))

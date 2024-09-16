@@ -3,10 +3,10 @@ package main
 import (
 	"flag"
 	"fmt"
-	"marky/model"
-	"marky/store"
-	"marky/util"
-	"marky/view"
+	"markee/model"
+	"markee/store"
+	"markee/util"
+	"markee/view"
 	"net/http"
 
 	"github.com/julienschmidt/httprouter"
@@ -15,7 +15,7 @@ import (
 
 func main() {
 	BaseURL := flag.String("baseurl", "", "根路由")
-	DataBaseURL := flag.String("databaseurl", util.ExcutePath()+"/marky.db", "数据库地址")
+	DataBaseURL := flag.String("databaseurl", util.ExcutePath()+"/markee.db", "数据库地址")
 	Port := flag.Int("port", 5000, "运行端口")
 	adminname := flag.String("adminname", "wsh", "初始用户名称")
 	adminPassword := flag.String("adminpassword", "test123", "初始用户密码")
@@ -31,7 +31,7 @@ func main() {
 	store.InitDB(*DataBaseURL)
 	env := model.BaseInjdection{
 		BaseURL: *BaseURL,
-		Title:   "Marky",
+		Title:   "markee",
 	}
 	view.LoadApi(router)
 	view.LoadPage(router, env)

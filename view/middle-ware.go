@@ -66,7 +66,7 @@ func Protect(next httprouter.Handle) httprouter.Handle {
 		authHeader := r.Header.Get("Authorization")
 		var jwt = ""
 		if authHeader == "" {
-			tokenCookie, trr := r.Cookie("marky-token")
+			tokenCookie, trr := r.Cookie("markee-token")
 			if trr != nil && authHeader == "" {
 				Redirect(w, r, "/login")
 				return

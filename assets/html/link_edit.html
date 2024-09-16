@@ -4,7 +4,7 @@
 {{ end }} 
 
 {{ define "content"}}
-<form action="action/link/update/{{.Data.Link.ID}}" method="post">
+<form action="{{$.Env.BaseURL}}/link/update/{{.Data.Link.ID}}" method="post">
   <ul>
     <li>
       <label for="title">标题</label>

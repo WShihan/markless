@@ -5,7 +5,7 @@
 {{ end }} 
 
 {{ define "content"}}
-<form action="action/link/add" method="post">
+<form action="{{$.Env.BaseURL}}/link/add" method="post">
   <ul>
     <li>
       <label for="title">网页链接</label>
@@ -37,7 +37,7 @@
         </select>
     </div>
   </div>
-  <button class="submit" type="submit">添加</button>
+  <button class="submit" type="submit" onclick="return confirm()">添加</button>
 </form>
 <script defer>
   let allTagEle = document.getElementById('all-tag')
