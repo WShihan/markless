@@ -1,6 +1,6 @@
 {{ define "style"}}
 <link rel="stylesheet" href="{{$.Env.BaseURL}}/static/css/index.css" />
-<script defer src="{{$.Env.BaseURL}}/static/js/link.js"></script>
+<script defer src="{{$.Env.BaseURL}}/static/js/filter_link.js"></script>
 {{ end }} 
 
 {{ define "content"}}
@@ -13,8 +13,8 @@
     {{ end }}
   </div>
   <div class="search">
-    <input type="text" id="keyword" value="{{.Search.Keyword}}" placeholder="搜索">
-    <button id="link-search" class="submit"  type="submit">
+    <input id="keyword" type="text"  value="{{.Search.Keyword}}" placeholder="搜索">
+    <button id="link-filter-btn" class="submit"  type="submit">
       <svg t="1726445320394" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="980" width="200" height="200"><path d="M426.666667 853.333333C191.146667 853.333333 0 662.442667 0 426.666667S191.146667 0 426.666667 0s426.666667 190.890667 426.666666 426.666667-191.146667 426.666667-426.666666 426.666666z m-4.053334-89.386666a341.333333 341.333333 0 1 0 0-682.666667 341.333333 341.333333 0 0 0 0 682.666667z" fill="#e6e6e6" p-id="981"></path><path d="M695.168 755.498667a42.666667 42.666667 0 0 1 60.330667-60.330667l256 256a42.666667 42.666667 0 0 1-60.330667 60.330667l-256-256z" fill="#e6e6e6" p-id="982"></path></svg>
     </button>
   </div>
@@ -58,11 +58,11 @@
   </div>
   <div class="move">
     {{ if eq .Search.Page 0 }}
-    <a class="icon disable" href="{{$.Env.BaseURL}}?page={{.Search.PrePage}}">《上一页</a>
+    <span  class="icon disable" >《上一页</span>
     {{ else }}
-    <a class="icon" href="{{$.Env.BaseURL}}?page={{.Search.PrePage}}">《上一页</a>
+    <span id="pre-page" class="icon">《上一页</span>
     {{ end }}
-    <a class="current icon">第 {{.Search.Page | Increase}} 页，每页{{.Search.Limit }}条</a>
-    <a class="icon" href="{{$.Env.BaseURL}}?page={{.Search.NextPage}}">下一页》</a>
+    <a id="current-page" data-page="{{.Search.Page}}" class="current icon">第 {{.Search.Page | Increase}} 页，每页{{.Search.Limit }}条</a>
+    <span  id="next-page" class="icon" >下一页》</span>
   </div>
 {{ end }}

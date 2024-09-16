@@ -142,6 +142,7 @@ button.submit:active {
     padding: 0px;
     text-decoration: none;
     color: var(--base-color);
+    cursor: pointer;
 }
 
 .icon:hover {

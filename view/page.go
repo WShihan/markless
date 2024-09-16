@@ -21,6 +21,8 @@ import (
 type Search struct {
 	Keyword  string
 	PrePage  int
+	Page     int
+	Limit    int
 	NextPage int
 	TagName  string
 }
@@ -65,28 +67,56 @@ func AssetsFinder(w http.ResponseWriter, r *http.Request, params httprouter.Para
 
 func IndexPage(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
 	tagName := r.URL.Query().Get("tag")
+	pageVal := r.URL.Query().Get("page")
 	keywordVal := r.URL.Query().Get("keyword")
 	keyword := fmt.Sprintf("%%%s%%", keywordVal)
 
-	pagenum, _ := strconv.ParseInt(r.URL.Query().Get("page"), 10, 64)
+	pagenum, _ := strconv.ParseInt(pageVal, 10, 64)
 	limit := 20
 	offset := pagenum * int64(limit)
+	searchOpt := Search{
+		PrePage:  int(pagenum) - 1,
+		Page:     int(pagenum),
+		Limit:    limit,
+		NextPage: int(pagenum) + 1,
+		TagName:  tagName}
 
 	tt, _ := GetBaseTemplate().ParseFS(assets.HTML, "html/template.html", "html/index.html")
 	links := []model.Link{}
-	err := store.DB.Where("Title LIKE ? OR Desc LIKE ?", keyword, keyword).Limit(limit).Offset(int(offset)).Find(&links).Error
-	if err != nil {
-		logging.Logger.Error(err.Error())
+	if tagName != "" {
+		targetTags := []model.Tag{}
+		store.DB.Where("name = ?", tagName).Find(&targetTags)
+		for _, v := range targetTags {
+			relatedLinks := []model.Link{}
+			store.DB.Model(&v).Association("Links").Find(&relatedLinks)
+			// store.DB.Model(&v).Limit(limit).Offset(int(offset)).Find(&relatedLinks)
+			links = append(links, relatedLinks...)
+		}
+		if int(offset) < len(links) {
+			end := int(offset) + limit
+			if end > len(links) {
+				end = len(links)
+			}
+			links = links[offset:end]
+		}
+		searchOpt.Keyword = "#" + tagName
+	} else {
+		err := store.DB.Where("Title LIKE ? OR Desc LIKE ?", keyword, keyword).Limit(limit).Offset(int(offset)).Find(&links).Error
+		if err != nil {
+			logging.Logger.Error(err.Error())
+		}
+		searchOpt.Keyword = keywordVal
 	}
 	for i, v := range links {
 		tags := []model.Tag{}
 		store.DB.Model(&v).Association("Tags").Find(&tags)
 		links[i].Tags = tags
 	}
+
 	inject := Inject{
 		Title:      "markee",
 		Env:        Env,
-		Search:     Search{Keyword: keywordVal, PrePage: int(pagenum) - 1, NextPage: int(pagenum) + 1, TagName: tagName},
+		Search:     searchOpt,
 		Data:       links,
 		TagStastic: store.TagStat(),
 	}

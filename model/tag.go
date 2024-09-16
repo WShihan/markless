@@ -12,4 +12,5 @@ type Tag struct {
 	Name       string    `gorm:"unique" json:"name"`
 	CreateTime time.Time `json:"create_time"`
 	UserID     int       `json:"user_id"`
+	Links      []Link    `gorm:"many2many:link_tags;"`
 }
