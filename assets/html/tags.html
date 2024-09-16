@@ -11,6 +11,11 @@
       li {
         display: flex;
         justify-content: space-around;
+        span {
+          display: inline-block;
+          min-width:3em;
+          text-align: left;
+        }
       }
     }
   }
@@ -22,8 +27,7 @@
   <ul>
     {{ range $key, $value := .Data }}
     <li>
-      <a href="{{$.Env.BaseURL}}/?tag={{$key}}">#{{$key}}</a><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{$value}}条</span>
-      </a>
+      <a class="pair" href="{{$.Env.BaseURL}}/?tag={{$key}}">#{{$key}}</a><span>{{$value}}条</span></a>
       <a class="icon-btn"  href="{{$.Env.BaseURL}}/tag/delete/{{$key}}">
         <svg t="1726443127562" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="1369" width="200" height="200"><path d="M684.56 158H339.44a32 32 0 0 1 0-64h345.12a32 32 0 0 1 0 64zM522.52 736.72a32 32 0 0 1-32-32v-240a32 32 0 1 1 64 0v240a32 32 0 0 1-32 32zM903.42 299H120.58a32 32 0 1 1 0-64h782.84a32 32 0 1 1 0 64z" p-id="1370" fill="#1296db"></path><path d="M669.02 964h-314a188.76 188.76 0 0 1-188.54-188.54V410.1a32 32 0 0 1 64 0v365.36A124.68 124.68 0 0 0 354.98 900h314a124.68 124.68 0 0 0 124.54-124.54V410.1a32 32 0 1 1 64 0v365.36A188.76 188.76 0 0 1 669.02 964z" p-id="1371" fill="#1296db"></path></svg>
         删除
