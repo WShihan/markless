@@ -1,9 +1,9 @@
 package api
 
 import (
-	"encoding/json"
 	"markee/model"
 	"markee/store"
+	"markee/tool"
 	"markee/util"
 	"net/http"
 
@@ -37,7 +37,8 @@ func UserLogin(w http.ResponseWriter, r *http.Request, params httprouter.Params)
 	if user.Username != "" {
 		token, err := util.CreateJWT(user.Username)
 		if err != nil {
-			model.ApiFailed(&w, 1, err.Error())
+			tool.SetMsg(&w, "用户名或密码错误")
+			util.Redirect(w, r, "/login")
 			return
 		}
 
@@ -48,59 +49,70 @@ func UserLogin(w http.ResponseWriter, r *http.Request, params httprouter.Params)
 			Value: *user.Token,
 			Path:  "/",
 			// 其他可选字段
-			HttpOnly: false, // 使 Cookie 仅通过 HTTP(S) 访问
-			Secure:   false, // 在 HTTPS 下设置为 true
-			MaxAge:   36000, // Cookie 的有效期（秒）
+			HttpOnly: false,       // 使 Cookie 仅通过 HTTP(S) 访问
+			Secure:   false,       // 在 HTTPS 下设置为 true
+			MaxAge:   60 * 60 * 1, // Cookie 的有效期（秒）
 		}
 		// 设置 Cookie
 		http.SetCookie(w, &cookie)
 		util.Redirect(w, r, "/")
 	} else {
-		model.ApiFailed(&w, 1, "用户名或密码错误")
+		tool.SetMsg(&w, "用户不存在")
+		util.Redirect(w, r, "/login")
 	}
 }
 
-func UserConfigGet(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
-	username := r.FormValue("name")
-	var user model.User
-	store.DB.Find(&user, "username = ? ", username)
-	store.DB.Model(&user).Association("Config").Find(&user)
-	if user.Username != "" {
-		res := &model.ApiResponse{Msg: "ok", Data: user}
-		model.ApiSuccess(&w, res)
-	} else {
-		model.ApiFailed(&w, 1, "用户名或密码错误")
+func UserChangePassword(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
+	passwordOld := r.FormValue("password-old")
+	password := r.FormValue("password")
+	passwordConfirm := r.FormValue("password-confirm")
+
+	if password != passwordConfirm {
+		tool.SetMsg(&w, "新密码不一致")
+		util.Redirect(w, r, "/setting")
+		return
 	}
+	user := model.User{}
+	store.DB.Find(&user, "password = ?", passwordOld)
+	if user.ID == 0 {
+		tool.SetMsg(&w, "原始密码错误")
+		util.Redirect(w, r, "/setting")
+		return
+	}
+	user.Password = password
+	store.DB.Save(&user)
+	tool.SetMsg(&w, "密码修改成功")
+	util.Redirect(w, r, "/setting")
+
 }
 
-type configForm struct {
-	Zoom       int     `form:"zoom"`
-	MinZom     int     `form:"minzoom"`
-	MaxZoom    int     `form:"maxzoom"`
-	Tolorance  float32 `form:"tolerance"`
-	Lon        float32 `form:"lon"`
-	Lat        float32 `form:"lat"`
-	IconSize   int     `form:"iconsize"`
-	AutoCenter bool    `form:"autoCenter"`
-}
-
-func UserConfigGetUpate(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
-	uid := r.Header.Get("uid")
-	var user model.User
-	store.DB.Find(&user, "uid = ?", uid)
-	store.DB.Model(&user).Association("Config").Find(&user)
-	if user.Username != "" {
-		decoder := json.NewDecoder(r.Body)
-		var form configForm
-		err := decoder.Decode(&form)
+func UserTokenAdd(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
+	user := model.User{}
+	store.DB.First(&user)
+	if user.ID != 0 {
+		tk, err := util.GenerateRandomKey(64)
 		if err != nil {
-			model.ApiFailed(&w, 1, err.Error())
+			tool.SetMsg(&w, "生成token失败")
+			util.Redirect(w, r, "/setting")
 			return
 		}
+		user.Token = &tk
+		tool.SetMsg(&w, "创建成功")
 
-		res := &model.ApiResponse{Msg: "ok", Data: user}
-		model.ApiSuccess(&w, res)
+		store.DB.Save(&user)
 	} else {
-		model.ApiFailed(&w, 1, "用户名或密码错误")
+		tool.SetMsg(&w, "用户不存在")
 	}
+	util.Redirect(w, r, "/setting")
+
+}
+
+func UserTokenDelete(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
+	user := model.User{}
+	store.DB.First(&user)
+	user.Token = nil
+	store.DB.Save(&user)
+	tool.SetMsg(&w, "删除成功")
+	util.Redirect(w, r, "/setting")
+
 }

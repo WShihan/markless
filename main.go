@@ -34,13 +34,14 @@ func main() {
 		BaseURL: *BaseURL,
 		Router:  &Mux,
 	}
-	store.InitDB(*DataBaseURL)
-	util.InitAdmin(*adminname, *adminPassword)
-
 	env := injection.Env{
 		BaseURL: *BaseURL,
 		Title:   "markee",
 	}
+	store.InitDB(*DataBaseURL)
+	util.InitENV(env)
+	util.InitAdmin(*adminname, *adminPassword)
+
 	api.LoadAPI(router)
 	page.LoadPage(router, env)
 	runAt := fmt.Sprintf("127.0.0.1:%d", *Port)

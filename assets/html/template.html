@@ -9,6 +9,7 @@
     <link rel="icon" href="{{$.Env.BaseURL}}/static/img/favicon.ico" type="image/x-icon" />
     <link rel="stylesheet" href="{{$.Env.BaseURL}}/static/css/template.css"/>
     <script defer src="{{$.Env.BaseURL}}/static/js/user.js"></script>
+    <script defer src="{{$.Env.BaseURL}}/static/js/msg.js"></script>
     <script>
       window.baseURL = "{{$.Env.BaseURL}}";
     </script>
@@ -76,7 +77,7 @@
           <span class="nav-item btn"><a href="{{$.Env.BaseURL}}/unread">未读</a></span>
           <span class="nav-item btn"><a href="{{$.Env.BaseURL}}/link/add">+书签</a></span>
           <span class="nav-item btn"><a href="{{$.Env.BaseURL}}/tags">+标签</a></span>
-          <span class="nav-item btn"><a href="{{$.Env.BaseURL}}/settings">设置</a></span>
+          <span class="nav-item btn"><a href="{{$.Env.BaseURL}}/setting">设置</a></span>
           <span class="nav-item btn" onclick="logout('{{$.Env.BaseURL}}/login')">登出</span>
         </div>
       </header>

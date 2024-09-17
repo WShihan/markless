@@ -85,7 +85,7 @@ func LinkAdd(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
 		}
 		tags = append(tags, tag)
 	}
-	store.DB.Model(&link).Association("Tags").Append(&tags)
+	store.DB.Model(&link).Where("id = ?", link.ID).Association("Tags").Append(&tags)
 	store.DB.Create(&link)
 	util.Redirect(w, r, "/")
 

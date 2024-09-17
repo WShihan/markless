@@ -71,7 +71,35 @@ html::-moz-scrollbar-thumb {
     background: rgb(21, 126, 201);
 }
 
+.popup {
+    position: absolute;
+    width: 100%;
+    top: .5em;
+    box-sizing: border-box;
+
+    .popup-inner {
+        width: var(--base-width);
+        display: flex;
+        margin: 0px auto;
+        padding: 1em;
+        color: var(--font-color);
+        border-radius: .2em;
+        background: var(--base-color);
+
+        .msg {
+            flex: 1;
+        }
+        .close {
+            cursor: pointer;
+        }
+        .close:hover{
+            transform: scale(1.2);
+        }
+    }
+}
+
 body {
+    position: relative;
     background-color: var(--page-bg-color);
 }
 
@@ -137,6 +165,7 @@ select:focus-visible {
         width: 1em;
         height: 1em;
         pointer-events: none;
+
         path {
             fill: var(--base-color) !important;
         }
@@ -145,6 +174,7 @@ select:focus-visible {
     span {
         pointer-events: none;
     }
+
     a {
         display: flex;
         align-items: center;
@@ -170,7 +200,7 @@ select:focus-visible {
 }
 
 button {
-    padding: .5em;
+    padding: 1em;
     cursor: pointer;
     color: var(--font-color);
     border-radius: .1em;
@@ -178,6 +208,7 @@ button {
 
 button.submit {
     appearance: none;
+    padding: .5em;
     border-radius: .5em;
     border: none;
     background-color: var(--base-color);

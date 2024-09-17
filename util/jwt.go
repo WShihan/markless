@@ -14,9 +14,9 @@ var (
 	secretKey = []byte("secretKeyffff")
 )
 
-func CreateJWT(msg string) (string, error) {
+func CreateJWT(name string) (string, error) {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-		"username": "msg",
+		"username": name,
 		"exp":      jwt.NewNumericDate(time.Now().Add(time.Minute * 60)),
 	})
 

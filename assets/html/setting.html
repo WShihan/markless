@@ -1,0 +1,57 @@
+{{ define "style"}}
+<link rel="stylesheet" href="{{$.Env.BaseURL}}/static/css/link_add.css" />
+<link rel="stylesheet" href="{{$.Env.BaseURL}}/static/css/link_edit.css" />
+
+{{ end }} 
+{{ define "content"}}
+<ul>
+  <li>
+    <details>
+      <summary>密码</summary>
+      <form action="{{$.Env.BaseURL}}/user/password" method="post">
+        <ul>
+          <li>
+            <label for="password-old">原始密码</label>
+            <input type="password" name="password-old" value="" />
+          </li>
+          <li>
+            <label for="password">新的密码</label>
+            <input type="password" name="password" value="" />
+          </li>
+          <li>
+            <label for="password-confirm">确认密码</label>
+            <input type="password" name="password-confirm" value="" />
+          </li>
+        </ul>
+        <button class="submit" type="submit">更新</button>
+      </form>
+    </details>
+  </li>
+  <li>
+    <details>
+      <summary>密钥</summary>
+      {{ if .Data.Token }}
+      <form action="{{$.Env.BaseURL}}/user/token/delete" method="post">
+        <ul>
+          <li>
+            <label for="值"></label>
+            <input readonly ="text" name="token" value="{{.Data.Token}}" />
+          </li>
+        </ul>
+        <button class="submit" type="submit">删除</button>
+      </form>
+      {{ else }}
+      <form action="{{$.Env.BaseURL}}/user/token/add" method="post">
+        <ul>
+          <li>
+            <label for="值"></label>
+            <input readonly type="text" name="token" value="" />
+          </li>
+        </ul>
+        <button class="submit" type="submit">创建</button>
+      </form>
+      {{ end }}
+    </details>
+  </li>
+</ul>
+{{ end }}

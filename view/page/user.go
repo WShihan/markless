@@ -6,12 +6,14 @@ import (
 	"html/template"
 	"markee/assets"
 	"markee/injection"
+	"markee/model"
+	"markee/store"
+	"markee/util"
 
 	"github.com/julienschmidt/httprouter"
 )
 
-func Login(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
-	// 读取嵌入的模板文件
+func LoginPage(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
 	t, err := template.ParseFS(assets.HTML, "html/login.html")
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -24,4 +26,16 @@ func Login(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
 	if err := t.Execute(w, inject); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
+}
+
+func SettingPage(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
+	tt, _ := util.GetBaseTemplate().ParseFS(assets.HTML, "html/template.html", "html/setting.html")
+	user := model.User{}
+	store.DB.First(&user)
+	inject := injection.LinkPage{
+		Title: "设置",
+		Env:   Env,
+		Data:  user,
+	}
+	tt.ExecuteTemplate(w, "template", inject)
 }

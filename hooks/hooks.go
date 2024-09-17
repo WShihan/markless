@@ -3,6 +3,8 @@ package hooks
 import (
 	"fmt"
 	"markee/logging"
+	"markee/model"
+	"markee/store"
 	"markee/util"
 	"net/http"
 	"time"
@@ -24,6 +26,16 @@ func LogRequest(next http.Handler) http.Handler {
 
 func Protect(next httprouter.Handle) httprouter.Handle {
 	return func(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
+		// 自定义token校验
+		xToken := r.Header.Get("X-Token")
+		if xToken != "" {
+			user := model.User{}
+			store.DB.Find(&user, "token = ?", xToken)
+			if user.Username != "" {
+				next(w, r, ps)
+				return
+			}
+		}
 		authHeader := r.Header.Get("Authorization")
 		var jwt = ""
 		if authHeader == "" {

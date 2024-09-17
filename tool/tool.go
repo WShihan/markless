@@ -4,6 +4,8 @@ import (
 	"html/template"
 	"log/slog"
 	"markee/model"
+	"net/http"
+	"net/url"
 	"os"
 	"path/filepath"
 	"strings"
@@ -52,4 +54,17 @@ func Increase(num int) int {
 // 自增模板函数
 func Decrease(num int) int {
 	return num - 1
+}
+
+func SetMsg(w *http.ResponseWriter, message string) {
+	http.SetCookie(*w, &http.Cookie{
+		Name:  "message",
+		Value: url.QueryEscape(message),
+		Path:  "/",
+	})
+	http.SetCookie(*w, &http.Cookie{
+		Name:  "message_shown",
+		Value: "false",
+		Path:  "/",
+	})
 }
