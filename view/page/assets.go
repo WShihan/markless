@@ -24,7 +24,7 @@ func AssetsFinder(w http.ResponseWriter, r *http.Request, params httprouter.Para
 		fs = assets.IMG
 		w.Header().Set("Content-Type", "image/x-icon")
 	} else if strings.HasSuffix(fileName, ".ico") {
-		fs = assets.ICO
+		fs = assets.IMG
 		w.Header().Set("Content-Type", "image/x-icon")
 	} else {
 		fs = assets.CSS
