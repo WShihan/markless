@@ -116,9 +116,18 @@ func LinkRead(w http.ResponseWriter, r *http.Request, params httprouter.Params) 
 	id := params.ByName("id")
 	link := model.Link{}
 	store.DB.First(&link, id)
-	link.Read = !link.Read
+	link.Read = true
 	store.DB.Save(&link)
-	Redirect(w, r, r.Referer())
+	ApiSuccess(&w, &ApiResponse{Msg: "ok", Data: link})
+}
+func LinkUnread(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
+	id := params.ByName("id")
+	link := model.Link{}
+	store.DB.First(&link, id)
+	link.Read = false
+	store.DB.Save(&link)
+	ApiSuccess(&w, &ApiResponse{Msg: "ok", Data: link})
+
 }
 
 func LinkDel(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
@@ -126,5 +135,6 @@ func LinkDel(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
 	link := model.Link{}
 	store.DB.First(&link, id)
 	store.DB.Delete(&link)
-	Redirect(w, r, r.Referer())
+	ApiSuccess(&w, &ApiResponse{Msg: "ok", Data: link})
+
 }

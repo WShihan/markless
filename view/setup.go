@@ -28,16 +28,20 @@ func LoadApi(router *model.RouterWithPrefix) {
 	router.POST("/link/update/:id", Protect(LinkUpdate))
 	router.POST("/tag/add", Protect(TagAdd))
 
+	router.GET("/link/read/:id", Protect(LinkRead))
+	router.GET("/link/unread/:id", Protect(LinkUnread))
+
 }
 
 func LoadPage(router *model.RouterWithPrefix, env model.BaseInjdection) {
 	Env = env
-	router.GET("/", Protect(IndexPage))
 	router.GET("/login", Login)
+	router.GET("/", Protect(IndexPage))
+	router.GET("/read", Protect(LinkReadPage))
+	router.GET("/unread", Protect(LinkUnreadPage))
 	router.GET("/link/add", Protect(LinkAddPage))
 	router.GET("/link/edit/:id", Protect(LinkEditPage))
 	router.GET("/link/delete/:id", Protect(LinkDel))
-	router.GET("/link/read/:id", LinkRead)
 	router.GET("/tag/delete/:name", Protect(TagDel))
 
 	router.GET("/tags", Protect(TagsPage))

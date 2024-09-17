@@ -136,15 +136,19 @@ select:focus-visible {
     svg {
         width: 1em;
         height: 1em;
-
+        pointer-events: none;
         path {
             fill: var(--base-color) !important;
         }
     }
 
+    span {
+        pointer-events: none;
+    }
     a {
         display: flex;
         align-items: center;
+
     }
 }
 
@@ -243,7 +247,7 @@ header {
         flex: 1;
         display: flex;
         justify-content: right;
-        gap: 2em;
+        gap: 1em;
 
         .nav-item {
             cursor: pointer;
