@@ -1,4 +1,4 @@
-package view
+package api
 
 import (
 	"fmt"
@@ -23,7 +23,7 @@ func LinkAdd(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
 	var title, icon string
 	if webURL == "" {
 		logging.Logger.Info("link为空")
-		Redirect(w, r, "/link/add")
+		util.Redirect(w, r, "/link/add")
 		return
 	}
 
@@ -34,7 +34,7 @@ func LinkAdd(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
 	// link重复
 	if link.ID != 0 {
 		logging.Logger.Info("link重复" + webURL)
-		Redirect(w, r, "/")
+		util.Redirect(w, r, "/")
 		return
 	}
 
@@ -87,7 +87,7 @@ func LinkAdd(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
 	}
 	store.DB.Model(&link).Association("Tags").Append(&tags)
 	store.DB.Create(&link)
-	Redirect(w, r, "/")
+	util.Redirect(w, r, "/")
 
 }
 func LinkUpdate(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
@@ -110,7 +110,7 @@ func LinkUpdate(w http.ResponseWriter, r *http.Request, params httprouter.Params
 	}
 	store.DB.Model(&link).Association("Tags").Append(&tags)
 	store.DB.Save(&link)
-	Redirect(w, r, "/")
+	util.Redirect(w, r, "/")
 }
 func LinkRead(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
 	id := params.ByName("id")
@@ -118,7 +118,7 @@ func LinkRead(w http.ResponseWriter, r *http.Request, params httprouter.Params) 
 	store.DB.First(&link, id)
 	link.Read = true
 	store.DB.Save(&link)
-	ApiSuccess(&w, &ApiResponse{Msg: "ok", Data: link})
+	model.ApiSuccess(&w, &model.ApiResponse{Msg: "ok", Data: link})
 }
 func LinkUnread(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
 	id := params.ByName("id")
@@ -126,8 +126,7 @@ func LinkUnread(w http.ResponseWriter, r *http.Request, params httprouter.Params
 	store.DB.First(&link, id)
 	link.Read = false
 	store.DB.Save(&link)
-	ApiSuccess(&w, &ApiResponse{Msg: "ok", Data: link})
-
+	model.ApiSuccess(&w, &model.ApiResponse{Msg: "ok", Data: link})
 }
 
 func LinkDel(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
@@ -135,6 +134,5 @@ func LinkDel(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
 	link := model.Link{}
 	store.DB.First(&link, id)
 	store.DB.Delete(&link)
-	ApiSuccess(&w, &ApiResponse{Msg: "ok", Data: link})
-
+	model.ApiSuccess(&w, &model.ApiResponse{Msg: "ok", Data: link})
 }

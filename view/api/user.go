@@ -1,9 +1,10 @@
-package view
+package api
 
 import (
 	"encoding/json"
 	"markee/model"
 	"markee/store"
+	"markee/util"
 	"net/http"
 
 	"github.com/julienschmidt/httprouter"
@@ -19,10 +20,10 @@ func UserAdd(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
 		user.Password = password
 		store.DB.Create(&user)
 
-		res := &ApiResponse{Msg: "ok", Data: []interface{}{username}}
-		ApiSuccess(&w, res)
+		res := &model.ApiResponse{Msg: "ok", Data: []interface{}{username}}
+		model.ApiSuccess(&w, res)
 	} else {
-		ApiFailed(&w, 1, "用户名已存在")
+		model.ApiFailed(&w, 1, "用户名已存在")
 	}
 
 }
@@ -34,9 +35,9 @@ func UserLogin(w http.ResponseWriter, r *http.Request, params httprouter.Params)
 	store.DB.Find(&user, "username = ? AND password = ?", username, password)
 
 	if user.Username != "" {
-		token, err := CreateJWT(user.Username)
+		token, err := util.CreateJWT(user.Username)
 		if err != nil {
-			ApiFailed(&w, 1, err.Error())
+			model.ApiFailed(&w, 1, err.Error())
 			return
 		}
 
@@ -53,9 +54,9 @@ func UserLogin(w http.ResponseWriter, r *http.Request, params httprouter.Params)
 		}
 		// 设置 Cookie
 		http.SetCookie(w, &cookie)
-		Redirect(w, r, "/")
+		util.Redirect(w, r, "/")
 	} else {
-		ApiFailed(&w, 1, "用户名或密码错误")
+		model.ApiFailed(&w, 1, "用户名或密码错误")
 	}
 }
 
@@ -65,10 +66,10 @@ func UserConfigGet(w http.ResponseWriter, r *http.Request, params httprouter.Par
 	store.DB.Find(&user, "username = ? ", username)
 	store.DB.Model(&user).Association("Config").Find(&user)
 	if user.Username != "" {
-		res := &ApiResponse{Msg: "ok", Data: user}
-		ApiSuccess(&w, res)
+		res := &model.ApiResponse{Msg: "ok", Data: user}
+		model.ApiSuccess(&w, res)
 	} else {
-		ApiFailed(&w, 1, "用户名或密码错误")
+		model.ApiFailed(&w, 1, "用户名或密码错误")
 	}
 }
 
@@ -93,24 +94,13 @@ func UserConfigGetUpate(w http.ResponseWriter, r *http.Request, params httproute
 		var form configForm
 		err := decoder.Decode(&form)
 		if err != nil {
-			ApiFailed(&w, 1, err.Error())
+			model.ApiFailed(&w, 1, err.Error())
 			return
 		}
 
-		res := &ApiResponse{Msg: "ok", Data: user}
-		ApiSuccess(&w, res)
+		res := &model.ApiResponse{Msg: "ok", Data: user}
+		model.ApiSuccess(&w, res)
 	} else {
-		ApiFailed(&w, 1, "用户名或密码错误")
-	}
-}
-
-func InitAdmin(username string, password string) {
-	user := model.User{}
-	store.DB.Find(&user, "username = ?", username)
-	if user.Username == "" || user.Password == "" {
-		user.Username = username
-		user.Password = password
-		user.Admin = true
-		store.DB.Create(&user)
+		model.ApiFailed(&w, 1, "用户名或密码错误")
 	}
 }

@@ -1,18 +1,15 @@
-package view
+package page
 
 import (
-	"embed"
 	"fmt"
 	"net/http"
 	"strconv"
-	"strings"
 
-	"html/template"
 	"markee/assets"
+	"markee/injection"
 	"markee/logging"
 	"markee/model"
 	"markee/store"
-
 	"markee/util"
 
 	"github.com/julienschmidt/httprouter"
@@ -22,60 +19,7 @@ var (
 	LIMIT = 20
 )
 
-type Search struct {
-	Keyword    string
-	PrePage    int
-	Page       int
-	Limit      int
-	NextPage   int
-	TagName    string
-	ReadStatus int // 0：所有 1:已读 2:未读
-	Count      int
-}
-type Inject struct {
-	Title string
-	Env   model.BaseInjdection
-	Search
-	Data       interface{}
-	TagStastic map[string]int
-}
-type EditOption struct {
-	Link model.Link
-	Tags []model.Tag
-}
-
-func GetBaseTemplate() *template.Template {
-	funcMap := util.GetFuncMap()
-	return template.New("html/template.html").Funcs(funcMap)
-}
-
-func AssetsFinder(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
-	assettype := params.ByName("assettype")
-	fileName := params.ByName("filename")
-	assetDir := fmt.Sprintf("static/%s/%s", assettype, fileName)
-	var fs embed.FS
-	if strings.HasSuffix(fileName, ".js") || strings.HasSuffix(fileName, ".map") {
-		fs = assets.JS
-		w.Header().Set("Content-Type", "text/js")
-	} else if strings.HasSuffix(fileName, ".png") {
-		fs = assets.IMG
-		w.Header().Set("Content-Type", "image/x-icon")
-	} else if strings.HasSuffix(fileName, ".ico") {
-		fs = assets.ICO
-		w.Header().Set("Content-Type", "image/x-icon")
-	} else {
-		fs = assets.CSS
-		w.Header().Set("Content-Type", "text/css")
-	}
-	content, err := fs.ReadFile(assetDir)
-	if err != nil {
-		logging.Logger.Error(err.Error())
-		return
-	}
-	w.Write(content)
-}
-
-func filterLinkByTag(opt *Search) []model.Link {
+func filterLinkByTag(opt *injection.Search) []model.Link {
 	rawLinks := []model.Link{}
 	offset := opt.Page * opt.Limit
 	targetTag := model.Tag{}
@@ -116,9 +60,8 @@ func filterLinkByTag(opt *Search) []model.Link {
 	}
 
 	return links
-
 }
-func filterLinkByKeyword(opt *Search) []model.Link {
+func filterLinkByKeyword(opt *injection.Search) []model.Link {
 	links := []model.Link{}
 	offset := opt.Page * opt.Limit
 	var count int64
@@ -149,13 +92,13 @@ func filterLinkByKeyword(opt *Search) []model.Link {
 	return links
 }
 
-func IndexPage(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
+func LinkAllPage(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
 	tagName := r.URL.Query().Get("tag")
 	pageVal := r.URL.Query().Get("page")
 	keyword := r.URL.Query().Get("keyword")
 
 	pagenum, _ := strconv.ParseInt(pageVal, 10, 64)
-	searchOpt := Search{
+	searchOpt := injection.Search{
 		PrePage:  int(pagenum) - 1,
 		Page:     int(pagenum),
 		Limit:    LIMIT,
@@ -170,8 +113,8 @@ func IndexPage(w http.ResponseWriter, r *http.Request, params httprouter.Params)
 	} else {
 		links = filterLinkByKeyword(&searchOpt)
 	}
-	tt, _ := GetBaseTemplate().ParseFS(assets.HTML, "html/template.html", "html/index.html")
-	inject := Inject{
+	tt, _ := util.GetBaseTemplate().ParseFS(assets.HTML, "html/template.html", "html/index.html")
+	inject := injection.LinkPage{
 		Title:      fmt.Sprintf("所有书签（%d）", searchOpt.Count),
 		Env:        Env,
 		Search:     searchOpt,
@@ -188,7 +131,7 @@ func LinkUnreadPage(w http.ResponseWriter, r *http.Request, params httprouter.Pa
 
 	pagenum, _ := strconv.ParseInt(pageVal, 10, 64)
 	limit := 20
-	searchOpt := Search{
+	searchOpt := injection.Search{
 		PrePage:    int(pagenum) - 1,
 		Page:       int(pagenum),
 		Limit:      limit,
@@ -205,8 +148,8 @@ func LinkUnreadPage(w http.ResponseWriter, r *http.Request, params httprouter.Pa
 		links = filterLinkByKeyword(&searchOpt)
 	}
 
-	tt, _ := GetBaseTemplate().ParseFS(assets.HTML, "html/template.html", "html/index.html")
-	inject := Inject{
+	tt, _ := util.GetBaseTemplate().ParseFS(assets.HTML, "html/template.html", "html/index.html")
+	inject := injection.LinkPage{
 		Title:      fmt.Sprintf("未读书签(%d)", searchOpt.Count),
 		Env:        Env,
 		Search:     searchOpt,
@@ -223,7 +166,7 @@ func LinkReadPage(w http.ResponseWriter, r *http.Request, params httprouter.Para
 
 	pagenum, _ := strconv.ParseInt(pageVal, 10, 64)
 	limit := 20
-	searchOpt := Search{
+	searchOpt := injection.Search{
 		PrePage:    int(pagenum) - 1,
 		Page:       int(pagenum),
 		Limit:      limit,
@@ -240,8 +183,8 @@ func LinkReadPage(w http.ResponseWriter, r *http.Request, params httprouter.Para
 		links = filterLinkByKeyword(&searchOpt)
 	}
 
-	tt, _ := GetBaseTemplate().ParseFS(assets.HTML, "html/template.html", "html/index.html")
-	inject := Inject{
+	tt, _ := util.GetBaseTemplate().ParseFS(assets.HTML, "html/template.html", "html/index.html")
+	inject := injection.LinkPage{
 		Title:      fmt.Sprintf("已读书签(%d)", searchOpt.Count),
 		Env:        Env,
 		Search:     searchOpt,
@@ -260,72 +203,28 @@ func LinkEditPage(w http.ResponseWriter, r *http.Request, params httprouter.Para
 	store.DB.Model(&link).Association("Tags").Find(&tags)
 	link.Tags = tags
 
-	tt, _ := GetBaseTemplate().ParseFS(assets.HTML, "html/template.html", "html/link_edit.html")
+	tt, _ := util.GetBaseTemplate().ParseFS(assets.HTML, "html/template.html", "html/link_edit.html")
 	user := model.User{}
 	store.DB.First(&user)
 	store.DB.Model(&user).Association("Tags").Find(&alltTags)
-	inject := Inject{
+	inject := injection.LinkPage{
 		Title: "编辑书签",
 		Env:   Env,
-		Data:  EditOption{link, alltTags},
+		Data:  injection.LinkEditInjection{Link: link, Tags: alltTags},
 	}
 	tt.ExecuteTemplate(w, "template", inject)
 }
 
 func LinkAddPage(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
-	tt, _ := GetBaseTemplate().ParseFS(assets.HTML, "html/template.html", "html/link_add.html")
+	tt, _ := util.GetBaseTemplate().ParseFS(assets.HTML, "html/template.html", "html/link_add.html")
 	user := model.User{}
 	store.DB.First(&user)
 	tags := []model.Tag{}
 	store.DB.Model(&user).Association("Tags").Find(&tags)
-	inject := Inject{
+	inject := injection.LinkPage{
 		Title: "添加书签",
 		Env:   Env,
 		Data:  tags,
 	}
 	tt.ExecuteTemplate(w, "template", inject)
-}
-
-func TagsPage(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
-	tt, _ := GetBaseTemplate().ParseFS(assets.HTML, "html/template.html", "html/tags.html")
-	inject := Inject{
-		Title: "标签",
-		Env:   Env,
-		Data:  store.TagStat(),
-	}
-	tt.ExecuteTemplate(w, "template", inject)
-}
-func Login(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
-	// 读取嵌入的模板文件
-	t, err := template.ParseFS(assets.HTML, "html/login.html")
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-	inject := Inject{
-		Env:   Env,
-		Title: "登录",
-	}
-	if err := t.Execute(w, inject); err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-	}
-}
-
-func AdminPage(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
-	inject := Inject{
-		Env:   Env,
-		Title: "首页",
-	}
-	// 读取嵌入的模板文件
-	t, err := template.ParseFS(assets.HTML, "html/admin.html")
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	// 渲染模板并返回给客户端
-	w.Header().Set("Content-Type", "text/html")
-	if err := t.Execute(w, inject); err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-	}
 }

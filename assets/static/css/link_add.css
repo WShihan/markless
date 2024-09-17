@@ -3,7 +3,6 @@ form {
     flex-direction: column;
     input {
         height: 2em;
-        padding: 0em .5em;
     }
 
     textarea {

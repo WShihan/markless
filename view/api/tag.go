@@ -1,8 +1,9 @@
-package view
+package api
 
 import (
 	"markee/model"
 	"markee/store"
+	"markee/util"
 	"net/http"
 	"strings"
 	"time"
@@ -13,7 +14,7 @@ import (
 func TagAdd(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
 	tagVal := r.FormValue("tag")
 	if tagVal == "" {
-		Redirect(w, r, "/tags")
+		util.Redirect(w, r, "/tags")
 		return
 	}
 	tagArr := strings.Split(tagVal, "&")
@@ -28,7 +29,7 @@ func TagAdd(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
 	}
 	store.DB.Model(&user).Association("Tags").Append(&tags)
 	store.DB.Save(&user)
-	Redirect(w, r, "/tags")
+	util.Redirect(w, r, "/tags")
 }
 
 func TagDel(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
@@ -36,5 +37,5 @@ func TagDel(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
 	tag := model.Tag{}
 	store.DB.Find(&tag, "name = ?", name)
 	store.DB.Delete(&tag)
-	Redirect(w, r, "/tags")
+	util.Redirect(w, r, "/tags")
 }

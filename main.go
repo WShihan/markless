@@ -3,11 +3,15 @@ package main
 import (
 	"flag"
 	"fmt"
+	"markee/hooks"
+	"markee/injection"
 	"markee/logging"
 	"markee/model"
 	"markee/store"
+	"markee/tool"
 	"markee/util"
-	"markee/view"
+	"markee/view/api"
+	"markee/view/page"
 	"net/http"
 
 	"github.com/julienschmidt/httprouter"
@@ -16,7 +20,7 @@ import (
 
 func main() {
 	BaseURL := flag.String("baseurl", "", "根路由")
-	DataBaseURL := flag.String("databaseurl", util.ExcutePath()+"/markee.db", "数据库地址")
+	DataBaseURL := flag.String("databaseurl", tool.ExcutePath()+"/markee.db", "数据库地址")
 	Port := flag.Int("port", 5000, "运行端口")
 	adminname := flag.String("adminname", "wsh", "初始用户名称")
 	adminPassword := flag.String("adminpassword", "test123", "初始用户密码")
@@ -31,13 +35,14 @@ func main() {
 		Router:  &Mux,
 	}
 	store.InitDB(*DataBaseURL)
-	env := model.BaseInjdection{
+	util.InitAdmin(*adminname, *adminPassword)
+
+	env := injection.Env{
 		BaseURL: *BaseURL,
 		Title:   "markee",
 	}
-	view.LoadApi(router)
-	view.LoadPage(router, env)
-	view.InitAdmin(*adminname, *adminPassword)
+	api.LoadAPI(router)
+	page.LoadPage(router, env)
 	runAt := fmt.Sprintf("127.0.0.1:%d", *Port)
 
 	cos := cors.New(cors.Options{
@@ -46,7 +51,7 @@ func main() {
 		AllowedHeaders:   []string{"Content-Type", "Authorization", "X-Custom-Header", "uid"},
 		AllowCredentials: true,
 	})
-	handler := cos.Handler(view.ApplyMiddleware(&Mux, view.LogRequest))
+	handler := cos.Handler(hooks.ApplyMiddleware(&Mux, hooks.LogRequest))
 	server := http.Server{
 		Addr:    runAt,
 		Handler: handler,

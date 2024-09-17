@@ -1,4 +1,4 @@
-package util
+package tool
 
 import (
 	"html/template"
@@ -52,12 +52,4 @@ func Increase(num int) int {
 // 自增模板函数
 func Decrease(num int) int {
 	return num - 1
-}
-
-func GetFuncMap() template.FuncMap {
-	return template.FuncMap{
-		"JoinTagNames": JoinTagNames,
-		"Increase":     Increase,
-		"Decrease":     Decrease,
-	}
 }

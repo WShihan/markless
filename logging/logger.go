@@ -1,7 +1,7 @@
 package logging
 
 import (
-	"markee/util"
+	"markee/tool"
 
 	"github.com/donnie4w/go-logger/logger"
 )
@@ -12,7 +12,7 @@ var (
 
 func InitLogger() {
 	Logger = logger.NewLogger()
-	logFilePath := util.ExcutePath() + "/logs"
+	logFilePath := tool.ExcutePath() + "/logs"
 	//按日期分割
 	Logger.SetRollingDaily(logFilePath, "log.txt")
 	//可按 小时，天，月 分割日志
