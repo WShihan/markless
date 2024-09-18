@@ -61,6 +61,7 @@ func filterLinkByTag(opt *injection.Search) []model.Link {
 
 	return links
 }
+
 func filterLinkByKeyword(opt *injection.Search) []model.Link {
 	links := []model.Link{}
 	offset := opt.Page * opt.Limit
@@ -90,6 +91,10 @@ func filterLinkByKeyword(opt *injection.Search) []model.Link {
 	}
 
 	return links
+}
+
+func IndexPage(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
+	util.Redirect(w, r, "/unread")
 }
 
 func LinkAllPage(w http.ResponseWriter, r *http.Request, params httprouter.Params) {

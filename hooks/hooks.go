@@ -41,6 +41,7 @@ func Protect(next httprouter.Handle) httprouter.Handle {
 				logging.Logger.Info("Authorization by user token failed: invalied token")
 			}
 		}
+		// jwt验证
 		authHeader := r.Header.Get("Authorization")
 		var jwt = ""
 		if authHeader == "" {
@@ -61,7 +62,6 @@ func Protect(next httprouter.Handle) httprouter.Handle {
 			util.Redirect(w, r, "/login")
 			return
 		}
-
 		_, err := util.ValidateJWT(jwt)
 		if err != nil {
 			logging.Logger.Info("Authorization  by jwt failed: validate fails")

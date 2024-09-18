@@ -14,7 +14,8 @@ func LoadPage(router *model.RouterWithPrefix, env injection.Env) {
 	Env = env
 	router.GET("/login", LoginPage)
 	router.GET("/setting", hooks.Protect(SettingPage))
-	router.GET("/", hooks.Protect(LinkAllPage))
+	router.GET("/", hooks.Protect(IndexPage))
+	router.GET("/all", hooks.Protect(LinkAllPage))
 	router.GET("/read", hooks.Protect(LinkReadPage))
 	router.GET("/unread", hooks.Protect(LinkUnreadPage))
 	router.GET("/link/add", hooks.Protect(LinkAddPage))
