@@ -35,6 +35,7 @@ func Protect(next httprouter.Handle) httprouter.Handle {
 			store.DB.Find(&user, "token = ?", xToken)
 			if user.Username != "" {
 				logging.Logger.Info("Authorization by user token success:" + user.Username)
+				r.Header.Set("uid", user.Uid)
 				next(w, r, ps)
 				return
 			} else {
@@ -62,12 +63,20 @@ func Protect(next httprouter.Handle) httprouter.Handle {
 			util.Redirect(w, r, "/login")
 			return
 		}
-		_, err := util.ValidateJWT(jwt)
+		uid, err := util.ValidateJWT(jwt)
 		if err != nil {
 			logging.Logger.Info("Authorization  by jwt failed: validate fails")
 			util.Redirect(w, r, "/login")
 			return
 		}
+		user := model.User{}
+		err = store.DB.Find(&user, "uid = ?", uid).Error
+		if err != nil {
+			logging.Logger.Info("Authorization  by jwt failed: validate fails")
+			util.Redirect(w, r, "/login")
+			return
+		}
+		r.Header.Set("uid", uid)
 		logging.Logger.Info("Authorization by jwt token success:" + jwt)
 		next(w, r, ps)
 	}

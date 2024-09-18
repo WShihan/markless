@@ -35,7 +35,7 @@ func UserLogin(w http.ResponseWriter, r *http.Request, params httprouter.Params)
 	store.DB.Find(&user, "username = ? AND password = ?", username, password)
 
 	if user.Username != "" {
-		token, err := util.CreateJWT(user.Username)
+		token, err := util.CreateJWT(user.Uid)
 		if err != nil {
 			tool.SetMsg(&w, "用户名或密码错误")
 			util.Redirect(w, r, "/login")
@@ -61,6 +61,37 @@ func UserLogin(w http.ResponseWriter, r *http.Request, params httprouter.Params)
 	}
 }
 
+func UserRegister(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
+	username := r.FormValue("username")
+	password := r.FormValue("password")
+	passwordConfirm := r.FormValue("password-confirm")
+
+	if password != passwordConfirm {
+		tool.SetMsg(&w, "新密码不一致")
+		util.Redirect(w, r, "/register")
+		return
+	}
+	if len(username) < 3 || len(password) < 6 {
+		tool.SetMsg(&w, "用户名或密码长度不正确")
+		util.Redirect(w, r, "/register")
+		return
+	}
+	user := model.User{}
+	store.DB.Find(&user, "username = ?", username)
+	if user.Username == username {
+		tool.SetMsg(&w, "用户名已存在")
+		util.Redirect(w, r, "/register")
+		return
+	} else {
+		user.Username = username
+		user.Password = password
+		user.Uid = tool.Short_UID(10)
+	}
+	store.DB.Create(&user)
+	util.Redirect(w, r, "/login")
+
+}
+
 func UserChangePassword(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
 	passwordOld := r.FormValue("password-old")
 	password := r.FormValue("password")
@@ -71,9 +102,14 @@ func UserChangePassword(w http.ResponseWriter, r *http.Request, params httproute
 		util.Redirect(w, r, "/setting")
 		return
 	}
-	user := model.User{}
-	store.DB.Find(&user, "password = ?", passwordOld)
-	if user.ID == 0 {
+	user, err := store.GetUserByUID(r.Header.Get("uid"))
+	if err != nil {
+		tool.SetMsg(&w, "用户不存在")
+		util.Redirect(w, r, "/setting")
+		return
+	}
+
+	if user.Password != passwordOld {
 		tool.SetMsg(&w, "原始密码错误")
 		util.Redirect(w, r, "/setting")
 		return
@@ -86,29 +122,33 @@ func UserChangePassword(w http.ResponseWriter, r *http.Request, params httproute
 }
 
 func UserTokenAdd(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
-	user := model.User{}
-	store.DB.First(&user)
-	if user.ID != 0 {
-		tk, err := util.GenerateRandomKey(64)
-		if err != nil {
-			tool.SetMsg(&w, "生成token失败")
-			util.Redirect(w, r, "/setting")
-			return
-		}
-		user.Token = &tk
-		tool.SetMsg(&w, "创建成功")
-
-		store.DB.Save(&user)
-	} else {
+	user, err := store.GetUserByUID(r.Header.Get("uid"))
+	if err != nil {
 		tool.SetMsg(&w, "用户不存在")
+		util.Redirect(w, r, "/setting")
+		return
 	}
+	tk, err := util.GenerateRandomKey(64)
+	if err != nil {
+		tool.SetMsg(&w, "生成token失败")
+		util.Redirect(w, r, "/setting")
+		return
+	}
+	user.Token = &tk
+	tool.SetMsg(&w, "创建成功")
+
+	store.DB.Save(&user)
 	util.Redirect(w, r, "/setting")
 
 }
 
 func UserTokenDelete(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
-	user := model.User{}
-	store.DB.First(&user)
+	user, err := store.GetUserByUID(r.Header.Get("uid"))
+	if err != nil {
+		tool.SetMsg(&w, "用户不存在")
+		util.Redirect(w, r, "/setting")
+		return
+	}
 	user.Token = nil
 	store.DB.Save(&user)
 	tool.SetMsg(&w, "删除成功")

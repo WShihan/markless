@@ -9,7 +9,7 @@ import (
 type Link struct {
 	gorm.Model
 	ID         int       `json:"id"`
-	Url        string    `gorm:"unique" json:"url"`
+	Url        string    `json:"url"`
 	Icon       string    `json:"icon"`
 	Title      string    `json:"title"`
 	Desc       string    `json:"desc"`

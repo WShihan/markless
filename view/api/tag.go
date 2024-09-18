@@ -13,14 +13,13 @@ import (
 )
 
 func TagAdd(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
+	user, _ := store.GetUserByUID(r.Header.Get("uid"))
 	tagVal := r.FormValue("tag")
 	if tagVal == "" {
 		util.Redirect(w, r, "/tags")
 		return
 	}
 	tagArr := strings.Split(tagVal, "&")
-	user := model.User{}
-	store.DB.First(&user)
 	tags := []model.Tag{}
 
 	for _, v := range tagArr {
@@ -39,9 +38,10 @@ func TagAdd(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
 }
 
 func TagDel(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
+	user, _ := store.GetUserByUID(r.Header.Get("uid"))
 	name := params.ByName("name")
 	tag := model.Tag{}
-	store.DB.Find(&tag, "name = ?", name)
+	store.DB.Where("name = ? AND user_id = ?", name, user.ID).Find(&tag)
 	err := store.DB.Unscoped().Delete(&tag).Error
 	if err != nil {
 		logging.Logger.Error("删除失败" + err.Error())

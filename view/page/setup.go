@@ -13,6 +13,7 @@ var (
 func LoadPage(router *model.RouterWithPrefix, env injection.Env) {
 	Env = env
 	router.GET("/login", LoginPage)
+	router.GET("/register", RegisterPage)
 	router.GET("/setting", hooks.Protect(SettingPage))
 	router.GET("/", hooks.Protect(IndexPage))
 	router.GET("/all", hooks.Protect(LinkAllPage))

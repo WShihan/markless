@@ -5,12 +5,16 @@ import (
 	"html/template"
 	"log/slog"
 	"markee/model"
+	"math/big"
+	"math/rand"
 	"net/http"
 	"net/url"
 	"os"
 	"path/filepath"
 	"strings"
 	"time"
+
+	"github.com/google/uuid"
 )
 
 func FileOrPathExists(filePath string) bool {
@@ -78,4 +82,16 @@ func TimeFMT(t time.Time) string {
 	min := t.Minute()
 
 	return fmt.Sprintf("%d-%d-%d %d:%d", year, month, day, hour, min)
+}
+
+func Short_UID(length int) (uid string) {
+	if length > 12 {
+		length = 12
+	}
+	ubyte := []byte(uuid.New().String())
+	idByte := new(big.Int).SetBytes(ubyte)
+	rawID := idByte.String()
+	start := rand.Intn(len(rawID) - length - 1)
+	uid = rawID[start : length+start]
+	return
 }

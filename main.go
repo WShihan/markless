@@ -22,8 +22,8 @@ func main() {
 	BaseURL := flag.String("baseurl", "", "根路由")
 	DataBaseURL := flag.String("databaseurl", tool.ExcutePath()+"/markee.db", "数据库地址")
 	Port := flag.Int("port", 5000, "运行端口")
-	adminname := flag.String("adminname", "wsh", "初始用户名称")
-	adminPassword := flag.String("adminpassword", "test123", "初始用户密码")
+	adminname := flag.String("adminname", "admin", "初始用户名称")
+	adminPassword := flag.String("adminpassword", "markee1234", "初始用户密码")
 
 	flag.Parse()
 	logging.InitLogger()

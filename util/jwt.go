@@ -14,10 +14,10 @@ var (
 	secretKey = []byte("secretKeyffff")
 )
 
-func CreateJWT(name string) (string, error) {
+func CreateJWT(uid string) (string, error) {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-		"username": name,
-		"exp":      jwt.NewNumericDate(time.Now().Add(time.Minute * 60)),
+		"uid": uid,
+		"exp": jwt.NewNumericDate(time.Now().Add(time.Minute * 60)),
 	})
 
 	tokenString, err := token.SignedString(secretKey)
@@ -28,7 +28,7 @@ func CreateJWT(name string) (string, error) {
 	return tokenString, nil
 }
 
-func ValidateJWT(tokenString string) (*jwt.Token, error) {
+func ValidateJWT(tokenString string) (uid string, err error) {
 	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
@@ -37,15 +37,17 @@ func ValidateJWT(tokenString string) (*jwt.Token, error) {
 	})
 
 	if err != nil {
-		return nil, err
+		return "", err
 	}
 
 	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
-		fmt.Println("Username:", claims["username"])
-		fmt.Println("Expires at:", claims["exp"])
+		uid = claims["uid"].(string)
+		exp := claims["exp"]
+		fmt.Println("uid:", uid)
+		fmt.Println("Expires at:", exp)
 	} else {
-		return nil, fmt.Errorf("invalid token")
+		return "", fmt.Errorf("invalid token")
 	}
 
-	return token, nil
+	return uid, nil
 }

@@ -9,7 +9,7 @@ import (
 type Tag struct {
 	gorm.Model
 	ID         int       `json:"id"`
-	Name       string    `gorm:"unique" json:"name"`
+	Name       string    `json:"name"`
 	CreateTime time.Time `json:"create_time"`
 	UserID     int       `json:"user_id"`
 	Links      []Link    `gorm:"many2many:link_tags;"`

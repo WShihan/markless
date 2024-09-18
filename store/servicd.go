@@ -2,9 +2,7 @@ package store
 
 import "markee/model"
 
-func TagStat() map[string]int {
-	user := model.User{}
-	DB.First(&user)
+func TagStat(user model.User) map[string]int {
 	tags := []model.Tag{}
 	links := []model.Link{}
 	DB.Model(&user).Association("Links").Find(&links)

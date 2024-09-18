@@ -12,6 +12,7 @@ var (
 
 func LoadAPI(router *model.RouterWithPrefix) {
 	router.POST("/user/login", UserLogin)
+	router.POST("/user/register", UserRegister)
 	router.POST("/user/password", hooks.Protect(UserChangePassword))
 	router.POST("/user/token/add", hooks.Protect(UserTokenAdd))
 	router.POST("/user/token/delete", hooks.Protect(UserTokenDelete))
