@@ -11,28 +11,36 @@
       <label for="title">网页链接*</label>
       <input type="text" name="url" value="" placeholder="网页地址" />
     </li>
-    <li>
-      <label for="title">网页描述&nbsp;&nbsp;</label>
-      <input type="text" name="desc" value="" placeholder="网页描述" />
-    </li>
-    <li>
-      <label for="tags">添加标签&nbsp;&nbsp;</label>
-      <textarea  id="tags" type="text" name="tags" value="" placeholder="多个标签用&分隔"></textarea>
-    </li>
   </ul>
-  <details>
-    <summary>从已有标签添加</summary>
-    <div class="tag-update">
-      <div class="tag-box">
-        <label >直接填写或双击添加下面的已有的标签项</label>
-        <select id="all-tag"  multiple="multiple">
-          {{ range .Data }}
-          <option value="{{.Name }}">{{.Name}}</option>
-          {{ end }}
-          </select>
-      </div>
-    </div>
-  </details>
+  <ul>
+    <details>
+      <summary>其他信息</summary>
+      <li>
+        <label for="title">网页描述&nbsp;&nbsp;</label>
+        <input type="text" name="desc" value="" placeholder="网页描述" />
+      </li>
+      <li>
+        <label for="tags">添加标签&nbsp;&nbsp;</label>
+        <textarea  id="tags" type="text" name="tags" value="" placeholder="多个标签用&分隔"></textarea>
+      </li>
+      <li>
+        <details>
+          <summary>指定标签</summary>
+          <div class="tag-update">
+            <div class="tag-box">
+              <label >直接填写或双击添加下面的已有的标签项</label>
+              <select id="all-tag"  multiple="multiple">
+                {{ range .Data }}
+                <option value="{{.Name }}">{{.Name}}</option>
+                {{ end }}
+                </select>
+            </div>
+          </div>
+        </details>
+      </li>
+    </details>
+  </ul>
+
 
   <button class="submit" type="submit">添加</button>
 </form>
