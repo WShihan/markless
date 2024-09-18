@@ -16,11 +16,13 @@ type Hooks func(http.Handler) http.Handler
 
 func LogRequest(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Access-Control-Allow-Origin", "*")                   // 允许所有域名
+		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, OPTIONS") // 允许的请求方法
+		w.Header().Set("Access-Control-Allow-Headers", "Content-Type")       // 允许的请求头
 		start := time.Now()
 		logging.Logger.Info(fmt.Sprintf("Started %s %s", r.Method, r.URL.Path))
 		next.ServeHTTP(w, r)
 		logging.Logger.Info(fmt.Printf("Completed %s in %v", r.URL.Path, time.Since(start)))
-
 	})
 }
 
@@ -32,8 +34,11 @@ func Protect(next httprouter.Handle) httprouter.Handle {
 			user := model.User{}
 			store.DB.Find(&user, "token = ?", xToken)
 			if user.Username != "" {
+				logging.Logger.Info("Authorization by user token success:" + user.Username)
 				next(w, r, ps)
 				return
+			} else {
+				logging.Logger.Info("Authorization by user token failed: invalied token")
 			}
 		}
 		authHeader := r.Header.Get("Authorization")
@@ -41,6 +46,7 @@ func Protect(next httprouter.Handle) httprouter.Handle {
 		if authHeader == "" {
 			tokenCookie, trr := r.Cookie("markee-token")
 			if trr != nil && authHeader == "" {
+				logging.Logger.Info("Authorization by jwt failed: no token")
 				util.Redirect(w, r, "/login")
 				return
 			}
@@ -51,15 +57,18 @@ func Protect(next httprouter.Handle) httprouter.Handle {
 		}
 
 		if jwt == "" {
+			logging.Logger.Info("Authorization by jwt failed: no token")
 			util.Redirect(w, r, "/login")
 			return
 		}
 
 		_, err := util.ValidateJWT(jwt)
 		if err != nil {
+			logging.Logger.Info("Authorization  by jwt failed: validate fails")
 			util.Redirect(w, r, "/login")
 			return
 		}
+		logging.Logger.Info("Authorization by jwt token success:" + jwt)
 		next(w, r, ps)
 	}
 }

@@ -126,10 +126,10 @@ body {
 input,
 select,
 textarea {
+    flex: 1;
     display: block;
     max-width: 100%;
     outline: none;
-    width: 100%;
     padding: .5em;
     border: 1.5px solid var(--base-color);
     border-radius: 5px;

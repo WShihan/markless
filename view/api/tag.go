@@ -1,6 +1,7 @@
 package api
 
 import (
+	"markee/logging"
 	"markee/model"
 	"markee/store"
 	"markee/util"
@@ -28,7 +29,12 @@ func TagAdd(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
 
 	}
 	store.DB.Model(&user).Association("Tags").Append(&tags)
-	store.DB.Save(&user)
+	err := store.DB.Save(&user).Error
+	if err != nil {
+		logging.Logger.Error("添加失败" + err.Error())
+		model.ApiSuccess(&w, &model.ApiResponse{Msg: err.Error()})
+		return
+	}
 	util.Redirect(w, r, "/tags")
 }
 
@@ -36,6 +42,11 @@ func TagDel(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
 	name := params.ByName("name")
 	tag := model.Tag{}
 	store.DB.Find(&tag, "name = ?", name)
-	store.DB.Delete(&tag)
+	err := store.DB.Unscoped().Delete(&tag).Error
+	if err != nil {
+		logging.Logger.Error("删除失败" + err.Error())
+		model.ApiSuccess(&w, &model.ApiResponse{Msg: err.Error()})
+		return
+	}
 	util.Redirect(w, r, "/tags")
 }
