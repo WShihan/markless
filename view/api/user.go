@@ -42,11 +42,10 @@ func UserLogin(w http.ResponseWriter, r *http.Request, params httprouter.Params)
 			return
 		}
 
-		user.Token = &token
 		store.DB.Save(&user)
 		cookie := http.Cookie{
 			Name:  "markee-token",
-			Value: *user.Token,
+			Value: token,
 			Path:  "/",
 			// 其他可选字段
 			HttpOnly: false,       // 使 Cookie 仅通过 HTTP(S) 访问
