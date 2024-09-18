@@ -29,7 +29,7 @@
         </a>
       </div>
       <div class="link-desc">
-        <span class="link-desc-text">{{.Desc}}</span>
+        <span class="link-desc-text">{{.CreateTime | TimeFMT }}<span class="gap">｜</span>{{.Desc}}</span>
       </div>
       <div class="link-tags">
         {{ range .Tags }}

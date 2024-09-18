@@ -10,6 +10,7 @@ func GetFuncMap() template.FuncMap {
 		"JoinTagNames": tool.JoinTagNames,
 		"Increase":     tool.Increase,
 		"Decrease":     tool.Decrease,
+		"TimeFMT":      tool.TimeFMT,
 	}
 }
 

@@ -1,6 +1,7 @@
 package tool
 
 import (
+	"fmt"
 	"html/template"
 	"log/slog"
 	"markee/model"
@@ -9,6 +10,7 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"time"
 )
 
 func FileOrPathExists(filePath string) bool {
@@ -67,4 +69,13 @@ func SetMsg(w *http.ResponseWriter, message string) {
 		Value: "false",
 		Path:  "/",
 	})
+}
+func TimeFMT(t time.Time) string {
+	day := t.Day()
+	month := t.Month()
+	year := t.Year()
+	hour := t.Hour()
+	min := t.Minute()
+
+	return fmt.Sprintf("%d-%d-%d %d:%d", year, month, day, hour, min)
 }

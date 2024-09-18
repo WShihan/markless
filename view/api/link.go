@@ -69,7 +69,7 @@ func LinkAdd(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
 	}
 	link.Title = title
 	link.Desc = desc
-	link.CreatedAt = time.Now()
+	link.CreateTime = time.Now()
 	link.Url = webURL
 	link.Icon = icon
 	link.UserID = user.ID

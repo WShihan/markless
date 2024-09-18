@@ -69,13 +69,13 @@ func filterLinkByKeyword(opt *injection.Search) []model.Link {
 	var err error
 	if opt.ReadStatus == 0 {
 		store.DB.Model(&model.Link{}).Where("Title LIKE ? OR Desc LIKE ?", condition, condition).Count(&count)
-		err = store.DB.Where("Title LIKE ? OR Desc LIKE ?", condition, condition).Limit(opt.Limit).Offset(int(offset)).Find(&links).Error
+		err = store.DB.Where("Title LIKE ? OR Desc LIKE ?", condition, condition).Order("created_at DESC").Limit(opt.Limit).Offset(int(offset)).Find(&links).Error
 	} else if opt.ReadStatus == 1 {
 		store.DB.Model(&model.Link{}).Where("Title LIKE ? OR Desc LIKE ?", condition, condition).Where("read = ?", true).Count(&count)
-		err = store.DB.Where("Title LIKE ? OR Desc LIKE ?", condition, condition).Where("read = ?", true).Limit(opt.Limit).Offset(int(offset)).Find(&links).Error
+		err = store.DB.Where("Title LIKE ? OR Desc LIKE ?", condition, condition).Where("read = ?", true).Order("created_at DESC").Limit(opt.Limit).Offset(int(offset)).Find(&links).Error
 	} else {
 		store.DB.Model(&model.Link{}).Where("Title LIKE ? OR Desc LIKE ?", condition, condition).Where("read = ?", false).Count(&count)
-		err = store.DB.Where("Title LIKE ? OR Desc LIKE ?", condition, condition).Where("read = ?", false).Limit(opt.Limit).Offset(int(offset)).Find(&links).Error
+		err = store.DB.Where("Title LIKE ? OR Desc LIKE ?", condition, condition).Where("read = ?", false).Limit(opt.Limit).Order("created_at DESC").Offset(int(offset)).Find(&links).Error
 	}
 	if err != nil {
 		logging.Logger.Error(err.Error())
