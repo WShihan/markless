@@ -6,6 +6,10 @@
 {{ define "content"}}
 <ul>
   <li>
+    <li>
+      <label for="username">用户名</label>
+      <input type="text" disable readonly name="password-old" value="{{.Data.Username}}" />
+    </li>
     <details>
       <summary>密码</summary>
       <form action="{{$.Env.BaseURL}}/user/password" method="post">
