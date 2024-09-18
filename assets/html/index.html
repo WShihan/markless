@@ -2,6 +2,7 @@
 <link rel="stylesheet" href="{{$.Env.BaseURL}}/static/css/index.css" />
 <script defer src="{{$.Env.BaseURL}}/static/js/link_filter.js"></script>
 <script defer src="{{$.Env.BaseURL}}/static/js/link_operate.js"></script>
+<script defer src="{{$.Env.BaseURL}}/static/js/img_lazy.js"></script>
 {{ end }} 
 
 {{ define "content"}}
@@ -23,7 +24,7 @@
     {{ range .Data }}
     <div class="link">
       <div class="link-header">
-        <img class="favicon" src="{{.Icon}}" alt="icon" />
+        <img class="favicon img-lazy" data-src="{{.Icon}}" alt="icon" />
         <a class="url icon" target="_blank" data-id="{{.ID}}" data-url="{{.Url}}" data-operate="view" rel="noopener">
           <span class="disable">{{ .Title }}</span>
         </a>
