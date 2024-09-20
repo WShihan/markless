@@ -1,0 +1,46 @@
+package handler
+
+import (
+	"fmt"
+	"markless/injection"
+	"markless/util"
+	"net/http"
+
+	"github.com/julienschmidt/httprouter"
+	"github.com/rs/cors"
+)
+
+var (
+	Env    *injection.Env
+	Router RouterWithPrefix
+	Server http.Server
+)
+
+func InitEnv(env *injection.Env) {
+	Env = env
+	mux := httprouter.New()
+	Router = RouterWithPrefix{
+		Mux:     mux,
+		BaseURL: Env.BaseURL,
+	}
+	cos := cors.New(cors.Options{
+		AllowedOrigins:   []string{"*"},
+		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+		AllowedHeaders:   []string{"Content-Type", "Authorization", "X-Custom-Header", "uid", "X-Token"},
+		AllowCredentials: true,
+	})
+	handler := cos.Handler(ApplyHooks(Router.Mux, LogRequest))
+	runAt := fmt.Sprintf("127.0.0.1:%d", Env.Port)
+	util.Logger.Info("server run in:", runAt+Env.BaseURL)
+	Server = http.Server{
+		Addr:    runAt,
+		Handler: handler,
+	}
+}
+
+func RunServer() {
+	err := Server.ListenAndServe()
+	if err != nil {
+		fmt.Println("Error starting server:", err)
+	}
+}

@@ -1,0 +1,25 @@
+form {
+    display: flex;
+    flex-direction: column;
+    input {
+        height: 2em;
+    }
+
+    textarea {
+        height: 10em;
+        padding: 1em;
+    }
+
+    button {
+        margin-top: 3em;
+    }
+}
+
+details {
+    width: 100%;
+
+    summary {
+        width: 100%;
+        cursor: pointer;
+    }
+}

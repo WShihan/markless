@@ -1,0 +1,63 @@
+{{ define "style"}}
+<link rel="stylesheet" href="{{$.Env.BaseURL}}/static/css/link_add.css" />
+<link rel="stylesheet" href="{{$.Env.BaseURL}}/static/css/link_edit.css" />
+
+{{ end }} 
+
+{{ define "content"}}
+<form action="{{$.Env.BaseURL}}/link/add" method="post">
+  <ul>
+    <li>
+      <label for="title">网页链接 *</label>
+      <input type="text" name="url" value="" placeholder="网页地址，这是必填项" />
+    </li>
+  </ul>
+  <ul>
+    <details>
+      <summary>其他信息</summary>
+      <li>
+        <label for="title">描述文本&nbsp;&nbsp;</label>
+        <input type="text" name="desc" value="" placeholder="网页描述信息，如果不填写将自动从网页内容获取"/>
+      </li>
+      <li>
+        <label for="tags">添加标签&nbsp;&nbsp;</label>
+        <textarea  id="tags" type="text" name="tags" value="" placeholder="多个标签用&分隔，可以从已有标签中选择，或者直接添加，没有的标签将自动创建"></textarea>
+      </li>
+      <li>
+        <details>
+          <summary>选择标签</summary>
+          <div class="tag-update">
+            <div class="tag-box">
+              <label >双击添加下面已有的标签项</label>
+              <select id="all-tag"  multiple="multiple" size="10">
+                {{ range .Data }}
+                <option value="{{.Name }}">{{.Name}}</option>
+                {{ end }}
+                </select>
+            </div>
+          </div>
+        </details>
+      </li>
+    </details>
+  </ul>
+
+
+  <button class="submit" type="submit" onclick="return confirm('确认添加吗')">添加</button>
+</form>
+<script defer>
+  let allTagEle = document.getElementById('all-tag')
+  let tagsEle = document.getElementById('tags')
+  function changeTageItems(name, flag){
+    if (tagsEle.value == ''){
+       tagsEle.value = name
+       return
+    }
+    let names = tagsEle.value.split('&')
+    names.push(name)
+    tagsEle.value = names.join('&')
+  }
+  allTagEle.addEventListener('dblclick', function(e) {
+    changeTageItems(e.target.value)
+  })
+</script>
+{{ end }}

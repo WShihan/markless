@@ -23,3 +23,13 @@ go.work.sum
 
 # env file
 .env
+chore/*
+build/*
+.vscode/*
+maphoto_pic/
+*.db
+*_debug_*
+maphoto.csv
+assets/static/js/pvr.js
+logs/*
+assets/html/test.html

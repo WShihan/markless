@@ -1,0 +1,89 @@
+{{ define "style"}}
+  <link rel="stylesheet" href="{{$.Env.BaseURL}}/static/css/link_add.css" />
+  <link rel="stylesheet" href="{{$.Env.BaseURL}}/static/css/link_edit.css" />
+{{ end }} 
+
+{{ define "content"}}
+<form action="{{$.Env.BaseURL}}/link/update/{{.Data.Link.ID}}" method="post">
+  <details open>
+    <summary>基础信息</summary>
+    <ul>
+      <li>
+        <label for="title">标题</label>
+        <input type="text" name="title" value="{{.Data.Link.Title}}" placeholder="标题" />
+      </li>
+      <li>
+        <label for="url">地址</label>
+        <input type="text" name="url" value="{{.Data.Link.Url}}" placeholder="地址" />
+      </li>
+      <li>
+        <label for="icon">图标</label>
+        <input type="text" name="icon" value="{{.Data.Link.Icon}}" placeholder="图标" />
+      </li>
+      <li>
+        <label for="desc">描述</label>
+        <input type="text" name="desc" value="{{.Data.Link.Desc}}" placeholder="描述" />
+      </li>
+      <li>
+        <input  id="tags" class="invisible" type="text" name="tags" value="{{.Data.Link.Tags | JoinTagNames}}" />
+      </li>
+    </ul>
+  </details>
+  <details>
+    <summary>修改标签</summary>
+    <div class="tag-update">
+      <div class="tag-box">
+        <label >已应用标签</label>
+        <select id="current-tag"  multiple="multiple" size="5" >
+          {{ range .Data.Link.Tags }}
+          <option value="{{.Name }}">{{.Name }}</option>
+          {{ end }}
+          </select>
+      </div>
+      <div class="tip">
+        <p>双击添加和删除</p>
+        <p>↓&nbsp;&nbsp;↑</p>
+      </div>
+      <div class="tag-box">
+        <label >全部标签</label>
+        <select id="all-tag"  multiple="multiple" size="10">
+          {{ range .Data.Tags }}
+          <option value="{{.Name }}">{{.Name}}</option>
+          {{ end }}
+          </select>
+      </div>
+    </div>
+  </details>
+  <button class="submit" type="submit" onclick="return confirm('确认更新吗')">更新</button>
+</form>
+<script defer>
+  let allTagEle = document.getElementById('all-tag')
+  let curTagEle = document.getElementById('current-tag')
+  let tagsEle = document.getElementById('tags')
+  function changeTageItems(name, flag){
+    let names = tagsEle.value.split(',')
+    if (flag == 1){
+      names.push(name)
+    } else {
+      names.splice(names.indexOf(name), 1)
+    }
+    tagsEle.value = names.join('&')
+    console.log(tagsEle.value)
+  }
+  allTagEle.addEventListener('dblclick', function(e) {
+    if(e.target instanceof HTMLSelectElement){
+      return
+    }
+    curTagEle.appendChild(e.target)
+    changeTageItems(e.target.value, 1)
+
+  })
+  curTagEle.addEventListener('dblclick', function(e) {
+    if(e.target instanceof HTMLSelectElement){
+      return
+    }
+    allTagEle.appendChild(e.target)
+    changeTageItems(e.target.value, 0)
+  })
+</script>
+{{ end }}

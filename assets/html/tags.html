@@ -1,0 +1,110 @@
+{{ define "style"}}
+<link rel="stylesheet" href="{{$.Env.BaseURL}}/static/css/link_add.css" />
+<style>
+  .tags {
+    display: flex;
+    gap: 1em;
+    margin: 2em 0em;
+  }
+  .tag-box {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5em;
+    margin: 1em auto;
+    label {
+      text-align: center;
+    }
+  }
+  .tip {
+    text-align: center;
+  }
+  .submit {
+    width: 100%;
+    margin: 2em auto;
+  }
+</style>
+{{ end }} 
+
+{{ define "content"}}
+<div class="tag-update">
+  <details open>
+    <summary>标签管理</summary>
+    <div class="tag-box">
+      <label>所有标签</label>
+      <select id="current-tag" multiple="multiple" size="10">
+        {{ range $key, $value := .Data }}
+        <option value="{{$key}}">#{{$key}}</option>
+        {{ end }}
+      </select>
+    </div>
+    <div class="tip">
+      <p>双击添加或移除标签</p>
+      <p>↓&nbsp;&nbsp;↑</p>
+    </div>
+    <div class="tag-box">
+      <label>移除标签</label>
+      <select id="all-tag" multiple="multiple" min-size="2"></select>
+    </div>
+    <input  id="tags" class="invisible" type="text" name="tags" value="" />
+    <button class="submit" onclick="deleteTags(event)">删除标签</button>
+  </details>
+</div>
+<details>
+  <summary>添加标签</summary>
+  <form action="{{$.Env.BaseURL}}/tag/add" method="post">
+    <textarea type="text" name="tag" aria-multiline="true" placeholder="多个标签用&隔开"></textarea>
+    <button class="submit" type="submit" onclick="return confirm('确认添加吗')">添加</button>
+  </form>
+</details>
+<script defer>
+  let allTagEle = document.getElementById('all-tag')
+  let curTagEle = document.getElementById('current-tag')
+  let tagsEle = document.getElementById('tags')
+
+  function changeTageItems(name, flag){
+    let names = tagsEle.value.split(',')
+    if (flag == 1){
+      names.push(name)
+    } else {
+      names.splice(names.indexOf(name), 1)
+    }
+    tagsEle.value = names.join('&')
+    console.log(tagsEle.value)
+  }
+  allTagEle.addEventListener('dblclick', function(e) {
+    if(e.target instanceof HTMLSelectElement){
+      return
+    }
+    curTagEle.appendChild(e.target)
+    changeTageItems(e.target.value, 0)
+
+  })
+  curTagEle.addEventListener('dblclick', function(e) {
+    if(e.target instanceof HTMLSelectElement){
+      return
+    }
+    allTagEle.appendChild(e.target)
+    changeTageItems(e.target.value, 1)
+  })
+
+  function deleteTags(){
+    let tags = tagsEle.value
+    if (tags == '') return
+    if(!confirm('确认删除吗')) return
+    fetch('{{$.Env.BaseURL}}/api/tag/delete/' + tags, {
+      method: 'GET',
+      cache: 'no-cache',
+      credentials: 'include',
+    }).then(res => res.json().then(data =>{
+      const {status, msg} = data;
+      if (status){
+        window.location.reload()
+      } else {
+        alert(msg)
+      }
+    })).catch(err => {
+      console.error('删除失败', err)
+    })
+  }
+</script>
+{{ end }}

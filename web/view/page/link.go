@@ -1,0 +1,313 @@
+package page
+
+import (
+	"fmt"
+	"math"
+	"net/http"
+	"strconv"
+	"strings"
+
+	"markless/assets"
+	"markless/injection"
+	"markless/model"
+	"markless/service"
+	"markless/store"
+	"markless/util"
+	"markless/web/handler"
+
+	"github.com/julienschmidt/httprouter"
+)
+
+var (
+	LIMIT = 20
+)
+
+func detectPages(count int, limit int) int {
+	res := float64(count) / float64(limit)
+	return int(math.Ceil(res))
+}
+
+func filterLinkByTag(opt *injection.Search, user model.User) []model.Link {
+	rawLinks := []model.Link{}
+	offset := opt.Page * opt.Limit
+	targetTag := model.Tag{}
+	store.DB.Where("name = ? and user_id", opt.TagName, user.ID).Find(&targetTag)
+	store.DB.Model(&targetTag).Where("user_id = ?", user.ID).Association("Links").Find(&rawLinks)
+	links := rawLinks[:0]
+	if opt.ReadStatus == 0 {
+		links = append(links, rawLinks...)
+	} else if opt.ReadStatus == 1 {
+		for _, v := range rawLinks {
+			if v.Read {
+				links = append(links, v)
+			}
+		}
+	} else if opt.ReadStatus == 2 {
+		for _, v := range rawLinks {
+			if !v.Read {
+				links = append(links, v)
+			}
+		}
+	}
+	opt.Count = len(links)
+	opt.Pages = detectPages(len(links), opt.Limit)
+	opt.Keyword = "#" + opt.TagName
+
+	if int(offset) < len(links) {
+		end := int(offset) + opt.Limit
+		if end > len(links) {
+			end = len(links)
+		}
+		links = links[offset:end]
+	}
+
+	// 绑定标签
+	for i, v := range links {
+		tags := []model.Tag{}
+		store.DB.Model(&v).Association("Tags").Find(&tags)
+		links[i].Tags = tags
+	}
+
+	return links
+}
+
+func filterLinkByKeyword(opt *injection.Search, user model.User) []model.Link {
+	links := []model.Link{}
+	offset := opt.Page * opt.Limit
+	var count int64
+	condition := "%" + opt.Keyword + "%"
+	var err error
+	if opt.ReadStatus == 0 {
+		store.DB.Model(&model.Link{}).Where("user_id = ?", user.ID).Where("Title LIKE ? OR Desc LIKE ?", condition, condition).Count(&count)
+		err = store.DB.Where("user_id = ?", user.ID).Where("Title LIKE ? OR Desc LIKE ?", condition, condition).Order("created_at DESC").Limit(opt.Limit).Offset(int(offset)).Find(&links).Error
+	} else if opt.ReadStatus == 1 {
+		store.DB.Model(&model.Link{}).Where("user_id = ?", user.ID).Where("Title LIKE ? OR Desc LIKE ?", condition, condition).Where("read = ?", true).Count(&count)
+		err = store.DB.Where("user_id = ?", user.ID).Where("Title LIKE ? OR Desc LIKE ?", condition, condition).Where("read = ?", true).Order("created_at DESC").Limit(opt.Limit).Offset(int(offset)).Find(&links).Error
+	} else {
+		store.DB.Model(&model.Link{}).Where("user_id = ?", user.ID).Where("Title LIKE ? OR Desc LIKE ?", condition, condition).Where("read = ?", false).Count(&count)
+		err = store.DB.Where("user_id = ?", user.ID).Where("Title LIKE ? OR Desc LIKE ?", condition, condition).Where("read = ?", false).Limit(opt.Limit).Order("created_at DESC").Offset(int(offset)).Find(&links).Error
+	}
+	if err != nil {
+		util.Logger.Error(err.Error())
+	}
+	opt.Count = int(count)
+	opt.Pages = detectPages(opt.Count, opt.Limit)
+
+	// 绑定标签
+	for i, v := range links {
+		tags := []model.Tag{}
+		store.DB.Model(&v).Association("Tags").Find(&tags)
+		links[i].Tags = tags
+	}
+
+	return links
+}
+
+func IndexPage(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
+	handler.Redirect(w, r, "/all")
+}
+
+func LinkAllPage(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
+	user, _ := store.GetUserByUID(r.Header.Get("uid"))
+	tagName := r.URL.Query().Get("tag")
+	pageVal := r.URL.Query().Get("page")
+	keyword := r.URL.Query().Get("keyword")
+
+	pagenum, _ := strconv.ParseInt(pageVal, 10, 64)
+	searchOpt := injection.Search{
+		PrePage:  int(pagenum) - 1,
+		Page:     int(pagenum),
+		Limit:    LIMIT,
+		NextPage: int(pagenum) + 1,
+		TagName:  tagName,
+		Keyword:  keyword,
+	}
+
+	var links []model.Link
+	if tagName != "" {
+		links = filterLinkByTag(&searchOpt, user)
+	} else {
+		links = filterLinkByKeyword(&searchOpt, user)
+	}
+	tt, _ := util.GetBaseTemplate().ParseFS(assets.HTML, "html/template.html", "html/index.html")
+	inject := injection.LinkPage{
+		Page: injection.PageInjection{
+			Title:  fmt.Sprintf("所有书签（%d）", searchOpt.Count),
+			Active: "all",
+		},
+		Env:        Env,
+		Search:     searchOpt,
+		Data:       links,
+		TagStastic: store.TagStat(user),
+	}
+	tt.ExecuteTemplate(w, "template", inject)
+}
+
+func LinkUnreadPage(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
+	user, _ := store.GetUserByUID(r.Header.Get("uid"))
+	tagName := r.URL.Query().Get("tag")
+	pageVal := r.URL.Query().Get("page")
+	keyword := r.URL.Query().Get("keyword")
+
+	pagenum, _ := strconv.ParseInt(pageVal, 10, 64)
+	limit := 20
+	searchOpt := injection.Search{
+		PrePage:    int(pagenum) - 1,
+		Page:       int(pagenum),
+		Limit:      limit,
+		NextPage:   int(pagenum) + 1,
+		TagName:    tagName,
+		Keyword:    keyword,
+		ReadStatus: 2,
+	}
+
+	var links []model.Link
+	if tagName != "" {
+		links = filterLinkByTag(&searchOpt, user)
+	} else {
+		links = filterLinkByKeyword(&searchOpt, user)
+	}
+
+	tt, _ := util.GetBaseTemplate().ParseFS(assets.HTML, "html/template.html", "html/index.html")
+	inject := injection.LinkPage{
+		Page: injection.PageInjection{
+			Title:  fmt.Sprintf("未读书签(%d)", searchOpt.Count),
+			Active: "unread",
+		},
+		Env:        Env,
+		Search:     searchOpt,
+		Data:       links,
+		TagStastic: store.TagStat(user),
+	}
+	tt.ExecuteTemplate(w, "template", inject)
+}
+
+func LinkReadPage(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
+	user, _ := store.GetUserByUID(r.Header.Get("uid"))
+	tagName := r.URL.Query().Get("tag")
+	pageVal := r.URL.Query().Get("page")
+	keyword := r.URL.Query().Get("keyword")
+
+	pagenum, _ := strconv.ParseInt(pageVal, 10, 64)
+	limit := 20
+	searchOpt := injection.Search{
+		PrePage:    int(pagenum) - 1,
+		Page:       int(pagenum),
+		Limit:      limit,
+		NextPage:   int(pagenum) + 1,
+		TagName:    tagName,
+		Keyword:    keyword,
+		ReadStatus: 1,
+	}
+
+	var links []model.Link
+	if tagName != "" {
+		links = filterLinkByTag(&searchOpt, user)
+	} else {
+		links = filterLinkByKeyword(&searchOpt, user)
+	}
+
+	tt, _ := util.GetBaseTemplate().ParseFS(assets.HTML, "html/template.html", "html/index.html")
+	inject := injection.LinkPage{
+		Page: injection.PageInjection{
+			Title:  fmt.Sprintf("已读书签(%d)", searchOpt.Count),
+			Active: "read",
+		},
+		Env:        Env,
+		Search:     searchOpt,
+		Data:       links,
+		TagStastic: store.TagStat(user),
+	}
+	tt.ExecuteTemplate(w, "template", inject)
+}
+
+func LinkEditPage(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
+	user, _ := store.GetUserByUID(r.Header.Get("uid"))
+	id := params.ByName("id")
+	link := model.Link{}
+	store.DB.Find(&link, id)
+	tags := []model.Tag{}
+	alltTags := []model.Tag{}
+	store.DB.Model(&link).Where("user_id = ?", user.ID).Association("Tags").Find(&tags)
+	link.Tags = tags
+
+	tt, _ := util.GetBaseTemplate().ParseFS(assets.HTML, "html/template.html", "html/link_edit.html")
+	store.DB.Model(&user).Where("user_id = ?", user.ID).Association("Tags").Find(&alltTags)
+	inject := injection.LinkPage{
+		Page: injection.PageInjection{
+			Title:  "编辑书签",
+			Active: "",
+		},
+		Env:  Env,
+		Data: injection.LinkEditInjection{Link: link, Tags: alltTags},
+	}
+	tt.ExecuteTemplate(w, "template", inject)
+}
+
+func LinkAddPage(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
+	user, _ := store.GetUserByUID(r.Header.Get("uid"))
+	tt, _ := util.GetBaseTemplate().ParseFS(assets.HTML, "html/template.html", "html/link_add.html")
+	tags := []model.Tag{}
+	store.DB.Model(&user).Where("user_id = ?", user.ID).Association("Tags").Find(&tags)
+	inject := injection.LinkPage{
+		Page: injection.PageInjection{
+			Title:  "添加书签",
+			Active: "link-find",
+		},
+		Env:  Env,
+		Data: tags,
+	}
+	tt.ExecuteTemplate(w, "template", inject)
+}
+
+func LinkAdd(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
+	user, _ := store.GetUserByUID(r.Header.Get("uid"))
+	webURL := r.FormValue("url")
+	tagNames := strings.Split(r.FormValue("tags"), "&")
+	desc := r.FormValue("desc")
+	if webURL == "" {
+		panic("链接不能为空")
+	}
+
+	link, err := service.LinkCreate(user, webURL, desc)
+	if err != nil {
+		panic(err)
+	}
+	err = store.DB.Create(&link).Error
+	service.LinkAttachTag(user, &link, tagNames)
+
+	if err != nil {
+		panic(err)
+	}
+	util.Logger.Info("添加书签成功：" + webURL)
+}
+
+func LinkUpdate(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
+	user, _ := store.GetUserByUID(r.Header.Get("uid"))
+	id, _ := strconv.ParseInt(params.ByName("id"), 10, 64)
+	link, err := store.GetLinkByUser(user, int(id))
+	if err != nil {
+		panic("链接不存在")
+	} else {
+		link.Title = r.FormValue("title")
+		link.Desc = r.FormValue("desc")
+		link.Url = r.FormValue("url")
+		link.Icon = r.FormValue("icon")
+		tagArr := strings.Split(r.FormValue("tags"), "&")
+		tags := []model.Tag{}
+		for _, v := range tagArr {
+			if v == "" {
+				continue
+			}
+			tag := model.Tag{}
+			store.DB.Find(&tag, "name = ?", strings.Trim(v, " "))
+			tags = append(tags, tag)
+		}
+		store.DB.Model(&link).Association("Tags").Append(&tags)
+		err = store.DB.Save(&link).Error
+		if err != nil {
+			panic("更新失败" + err.Error())
+		}
+	}
+	handler.Redirect(w, r, "/")
+}
