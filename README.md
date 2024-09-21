@@ -23,6 +23,10 @@ Markless
 
 [demo 地址](https://wsh233.cn/webapp/markless)  用户名：`demo` 密码：`demo1234`
 
+
+
+
+
 使用
 ===
 
@@ -41,6 +45,50 @@ markless -h
 * -adminname：默认管理员名称，默认`admin`
 * -password：默认管理员密码，默认`admin1234`
 
+
+
+**通过浏览器插件收集网页**
+
+浏览器的代码也是开源，源代码就在`crx`文件里，[下载](./example/markless-chrome-extension.crx)后，解压安装，
+
+![浏览器插件](./example/broswer-extension.png)
+
+启动实例，然后生成`密钥`
+
+![浏览器插件](./example/token.png)
+
+打开浏览器插件选项，复制后粘贴`实例地址和`密钥`
+
+![浏览器插件](./example/broswer-extension-setting.png)
+
+
+
+然后就能通过收集网页了，*链接*是必填项，其他如*标题*，*描述*等信息不填写的话程序会自动解析。
+
+![浏览器插件](./example/collect.png)
+
+**通过IOS快捷指令收藏网页**
+
+[下载](./example/Markless.shortcut)快捷指令，修改并填写`url`为实例地址，请求头部里的`X-Token`填入前面安装浏览器插件获取的token值。
+
+<img style="width:15em" src="./example/ios-shotcut.jpeg" />
+
+双击快捷指令后，进入详细信息，开启`在共享表单中显示`
+
+
+
+<img style="width:15em" src="./example/enable-share.PNG" />
+
+
+
+<img style="width:15em" src="./example/sharing.PNG" />
+
+`Safari`里分享网页，就能看见Markless了，点击即可收藏该网页。
+
+
+
+
+
 待完成
 ===
 
@@ -51,8 +99,17 @@ markless -h
 
 
 
+
+
+
+感谢
+===
+
 由下面两个开源项目启发而成❤️：
 
 * [linkding](https://github.com/sissbruecker/linkding)
 
 * [miniflux](https://github.com/miniflux/v2)
+
+项目用到许多开源包，感谢那些作者
+
