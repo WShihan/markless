@@ -77,7 +77,7 @@
     {{ else }}
     <span id="pre-page" class="icon">{{i18n "page.all.pre" $.Page.Lang}}</span>
     {{ end }}
-    <a id="current-page" data-page="{{.Search.Page}}" class="current icon">{{i18n "page.all.current-tip" $.Page.Lang}}{{.Search.Page | Increase}} | {{i18n "page.all.per-page" $.Page.Lang}}{{.Search.Limit }} | {{i18n "page.all.per-page" $.Page.Lang}}{{.Search.Pages}}</a>
+    <a id="current-page" data-page="{{.Search.Page}}" class="current icon">{{i18n "page.all.current-tip" $.Page.Lang}}{{.Search.Page | Increase}} | {{i18n "page.all.per-page" $.Page.Lang}} {{.Search.Limit }} | {{i18n "page.all.total-page" $.Page.Lang}} {{.Search.Pages}}</a>
     <span  id="next-page" class="icon" >{{i18n "page.all.next" $.Page.Lang}}</span>
   </div>
   <script defer>

@@ -1,6 +1,6 @@
 BINARY_NAME=markless
 BUILD_DIR=build
-VERSION = 0_0_1
+VERSION = 0_0_2
 OPTIONS = CGO_ENABLED=0
 default: build
 
