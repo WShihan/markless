@@ -70,20 +70,21 @@ markless -h
 **通过IOS快捷指令收藏网页**
 
 [下载](./example/Markless.shortcut)快捷指令，修改并填写`url`为实例地址，请求头部里的`X-Token`填入前面安装浏览器插件获取的token值。
-
-<img style="width:15em" src="./example/ios-shotcut.jpeg" />
+<p align="center"><img style="width:15em" src="./example/ios-shotcut.jpeg" /></p>
 
 双击快捷指令后，进入详细信息，开启`在共享表单中显示`
 
 
 
-<img style="width:15em" src="./example/enable-share.PNG" />
+<p align="center"><img style="width:15em" src="./example/enable-share.PNG" /></p>
 
 
 
-<img style="width:15em" src="./example/sharing.PNG" />
+<p align="center"><img style="width:15em" src="./example/sharing.PNG" /></p>
 
 `Safari`里分享网页，就能看见Markless了，点击即可收藏该网页。
+
+
 
 
 
@@ -96,6 +97,8 @@ markless -h
 
 * 导出书签（json格式，带标签）
 * 快照（保存某一时刻的网页内容，防止链接失效内容消失）
+
+
 
 
 
