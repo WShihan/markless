@@ -21,7 +21,7 @@ type Search struct {
 	Limit      int
 	NextPage   int
 	TagName    string
-	ReadStatus int // 0：所有 1:已读 2:未读
+	ReadStatus int // 0：所有 1:已阅 2:未阅
 	Count      int
 }
 

@@ -5,7 +5,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
     <link rel=“canonical” href=“https://example.com/sample-page/” />
-    <meta name="description" content="markless，记录网联网。" />
+    <meta name="description" content="{{i18n $.Env.Title $.Page.Lang}}，记录网联网。" />
     <link rel="icon" href="{{$.Env.BaseURL}}/static/img/favicon16.ico" sizes="16x16" type="image/x-icon">
     <link rel="icon" href="{{$.Env.BaseURL}}/static/img/favicon32.ico" sizes="32x32" type="image/x-icon">
     <link rel="icon" href="{{$.Env.BaseURL}}/static/img/favicon48.ico" sizes="48x48" type="image/x-icon">
@@ -21,7 +21,7 @@
     <title>{{.Page.Title}}</title>
   </head>
   <body>
-      <!-- 切换显示模式 -->
+      <!-- view mode switch -->
       <script src="{{$.Env.BaseURL}}/static/js/theme.js"></script>
     <div id="container" class="container">
       <header>
@@ -31,37 +31,37 @@
           </span>
         </div>
         <div class="navs">
-          {{ if eq $.Page.Active "all"}}
-          <span class="nav-item btn active"><a href="{{$.Env.BaseURL}}/all">所有</a></span>
+          {{ if eq .Page.Active "all"}}
+          <span class="nav-item btn active"><a href="{{$.Env.BaseURL}}/all">{{i18n "nav.all" $.Page.Lang}}</a></span>
           {{ else }}
-          <span class="nav-item btn"><a href="{{$.Env.BaseURL}}/all">所有</a></span>
+          <span class="nav-item btn"><a href="{{$.Env.BaseURL}}/all">{{i18n "nav.all" $.Page.Lang}}</a></span>
           {{ end }}
-          {{ if eq $.Page.Active "unread"}}
-          <span class="nav-item btn active"><a href="{{$.Env.BaseURL}}/unread">未读</a></span>
+          {{ if eq .Page.Active "unread"}}
+          <span class="nav-item btn active"><a href="{{$.Env.BaseURL}}/unread">{{i18n "nav.unread" $.Page.Lang}}</a></span>
           {{ else }}
-          <span class="nav-item btn"><a href="{{$.Env.BaseURL}}/unread">未读</a></span>
+          <span class="nav-item btn"><a href="{{$.Env.BaseURL}}/unread">{{i18n "nav.unread" $.Page.Lang}}</a></span>
           {{ end }}
-          {{ if eq $.Page.Active "read"}}
-          <span class="nav-item btn active"><a href="{{$.Env.BaseURL}}/read">已读</a></span>
+          {{ if eq .Page.Active "read"}}
+          <span class="nav-item btn active"><a href="{{$.Env.BaseURL}}/read">{{i18n "nav.read" $.Page.Lang}}</a></span>
           {{ else }}
-          <span class="nav-item btn"><a href="{{$.Env.BaseURL}}/read">已读</a></span>
+          <span class="nav-item btn"><a href="{{$.Env.BaseURL}}/read">{{i18n "nav.read" $.Page.Lang}}</a></span>
           {{ end }}
-          {{ if eq $.Page.Active "link-find"}}
-          <span class="nav-item btn active"><a href="{{$.Env.BaseURL}}/link/find">+书签</a></span>
+          {{ if eq .Page.Active "link-find"}}
+          <span class="nav-item btn active"><a href="{{$.Env.BaseURL}}/link/find">{{i18n "nav.link-find" $.Page.Lang}}</a></span>
           {{ else }}
-          <span class="nav-item btn"><a href="{{$.Env.BaseURL}}/link/find">+书签</a></span>
+          <span class="nav-item btn"><a href="{{$.Env.BaseURL}}/link/find">{{i18n "nav.link-find" $.Page.Lang}}</a></span>
           {{ end }}
-          {{ if eq $.Page.Active "tags"}}
-          <span class="nav-item btn active"><a href="{{$.Env.BaseURL}}/tags">标签</a></span>
+          {{ if eq .Page.Active "tags"}}
+          <span class="nav-item btn active"><a href="{{$.Env.BaseURL}}/tags">{{i18n "nav.tags" $.Page.Lang}}</a></span>
           {{ else }}
-          <span class="nav-item btn"><a href="{{$.Env.BaseURL}}/tags">标签</a></span>
+          <span class="nav-item btn"><a href="{{$.Env.BaseURL}}/tags">{{i18n "nav.tags" $.Page.Lang}}</a></span>
           {{ end }}
-          {{ if eq $.Page.Active "setting"}}
-          <span class="nav-item btn active"><a href="{{$.Env.BaseURL}}/setting">设置</a></span>
+          {{ if eq .Page.Active "setting"}}
+          <span class="nav-item btn active"><a href="{{$.Env.BaseURL}}/setting">{{i18n "nav.setting" $.Page.Lang}}</a></span>
           {{ else }}
-          <span class="nav-item btn"><a href="{{$.Env.BaseURL}}/setting">设置</a></span>
+          <span class="nav-item btn"><a href="{{$.Env.BaseURL}}/setting">{{i18n "nav.setting" $.Page.Lang}}</a></span>
           {{ end }}
-          <span class="nav-item btn" onclick="logout('{{$.Env.BaseURL}}/login')">登出</span>
+          <span class="nav-item btn" onclick="logout('{{$.Env.BaseURL}}/login')">{{i18n "nav.logout" $.Page.Lang}}</span>
         </div>
       </header>
       <div class="content">

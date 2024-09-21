@@ -28,9 +28,9 @@
 {{ define "content"}}
 <div class="tag-update">
   <details open>
-    <summary>标签管理</summary>
+    <summary>{{ i18n "page.tags.detail.all.summary" $.Page.Lang }}</summary>
     <div class="tag-box">
-      <label>所有标签</label>
+      <label>{{ i18n "page.tags.detail.all.header" $.Page.Lang }}</label>
       <select id="current-tag" multiple="multiple" size="10">
         {{ range $key, $value := .Data }}
         <option value="{{$key}}">#{{$key}}</option>
@@ -38,22 +38,22 @@
       </select>
     </div>
     <div class="tip">
-      <p>双击添加或移除标签</p>
+      <p>{{ i18n "page.tags.detail.all.tip" $.Page.Lang }}</p>
       <p>↓&nbsp;&nbsp;↑</p>
     </div>
     <div class="tag-box">
-      <label>移除标签</label>
+      <label>{{ i18n "page.tags.detail.delete.header" $.Page.Lang }}</label>
       <select id="all-tag" multiple="multiple" min-size="2"></select>
     </div>
     <input  id="tags" class="invisible" type="text" name="tags" value="" />
-    <button class="submit" onclick="deleteTags(event)">删除标签</button>
+    <button class="submit" onclick="deleteTags(event)">{{ i18n "page.tags.detail.delete.header" $.Page.Lang }}</button>
   </details>
 </div>
 <details>
-  <summary>添加标签</summary>
+  <summary>{{ i18n "page.tags.detail.add.summary" $.Page.Lang }}</summary>
   <form action="{{$.Env.BaseURL}}/tag/add" method="post">
-    <textarea type="text" name="tag" aria-multiline="true" placeholder="多个标签用&隔开"></textarea>
-    <button class="submit" type="submit" onclick="return confirm('确认添加吗')">添加</button>
+    <textarea type="text" name="tag" aria-multiline="true" placeholder="{{ i18n "page.tags.detail.add.placeholder" $.Page.Lang }}"></textarea>
+    <button class="submit" type="submit" onclick="return confirm('{{ i18n "confirm.add" $.Page.Lang }}')">{{ i18n "button.add" $.Page.Lang }}</button>
   </form>
 </details>
 <script defer>
@@ -90,7 +90,7 @@
   function deleteTags(){
     let tags = tagsEle.value
     if (tags == '') return
-    if(!confirm('确认删除吗')) return
+    if(!confirm('{{ i18n "confirm.delete" $.Page.Lang }}')) return
     fetch('{{$.Env.BaseURL}}/api/tag/delete/' + tags, {
       method: 'GET',
       cache: 'no-cache',
@@ -103,7 +103,7 @@
         alert(msg)
       }
     })).catch(err => {
-      console.error('删除失败', err)
+      console.error('{{ i18n "msg.failed" $.Page.Lang }}', err)
     })
   }
 </script>

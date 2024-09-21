@@ -6,34 +6,54 @@
 {{ define "content"}}
 <ul>
   <li>
-    <li>
-      <label for="username">用户名</label>
-      <input type="text" disable readonly name="password-old" value="{{.Data.Username}}" />
-    </li>
-    <details>
-      <summary>密码</summary>
-      <form action="{{$.Env.BaseURL}}/user/password" method="post">
+    <details open>
+      <summary>{{ i18n "page.setting.detail.basic.summary" $.Page.Lang }}</summary>
+      <form action="{{$.Env.BaseURL}}/user/basic/update" method="post" onsubmit="return confirm('{{ i18n "confirm.update" $.Page.Lang }}')">
         <ul>
           <li>
-            <label for="password-old">原始密码</label>
-            <input type="password" name="password-old" value="" />
+            <label for="username">{{ i18n "page.setting.basic.username.label" $.Page.Lang }}</label>
+            <input type="text" disable readonly name="password-old" value="{{.Data.Username}}" />
           </li>
+        <ul>
           <li>
-            <label for="password">新的密码</label>
-            <input type="password" name="password" value="" />
-          </li>
-          <li>
-            <label for="password-confirm">确认密码</label>
-            <input type="password" name="password-confirm" value="" />
+            <label for="username">{{ i18n "page.setting.basic.lang.label" $.Page.Lang }}</label>
+            <select name="lang" id="lang" value="zh-TW">
+              <option value="zh-CN" {{if eq .Data.Lang "zh-CN"}}selected{{end}}>简体中文</option>
+              <option value="zh-TW" {{if eq .Data.Lang "zh-TW"}}selected{{end}}>繁體中文</option>
+              <option value="en" {{if eq .Data.Lang "en"}}selected{{end}}>English</option>
+              <option value="ja" {{if eq .Data.Lang "ja"}}selected{{end}}>日本語</option>
+            </select>
           </li>
         </ul>
-        <button class="submit" onclick="return confirm()" type="submit">更新</button>
+        <button class="submit" type="submit">{{ i18n "button.update" $.Page.Lang }}</button>
       </form>
     </details>
   </li>
   <li>
+      <details>
+        <summary>{{ i18n "page.setting.detail.password.summary" $.Page.Lang }}</summary>
+        <form action="{{$.Env.BaseURL}}/user/password" method="post">
+          <ul>
+            <li>
+              <label for="password-old">{{ i18n "page.setting.password.label" $.Page.Lang }}</label>
+              <input type="password" name="password-old" value="" />
+            </li>
+            <li>
+              <label for="password">{{ i18n "page.setting.password-new.label" $.Page.Lang }}</label>
+              <input type="password" name="password" value="" />
+            </li>
+            <li>
+              <label for="password-confirm">{{ i18n "page.setting.password-confirm.label" $.Page.Lang }}</label>
+              <input type="password" name="password-confirm" value="" />
+            </li>
+          </ul>
+          <button class="submit" onclick="return confirm('{{ i18n "confirm.update" $.Page.Lang }}')" type="submit">{{ i18n "button.update" $.Page.Lang }}</button>
+        </form>
+      </details>
+  </li>
+  <li>
     <details>
-      <summary>密钥</summary>
+      <summary>{{ i18n "page.setting.detail.token.summary" $.Page.Lang }}</summary>
       {{ if .Data.Token }}
       <form action="{{$.Env.BaseURL}}/user/token/delete" method="post">
         <ul>
@@ -42,7 +62,7 @@
             <input readonly ="text" name="token" value="{{.Data.Token}}" />
           </li>
         </ul>
-        <button class="submit" type="submit" onclick="return confirm('确认删除吗')" >删除</button>
+        <button class="submit" type="submit" onclick="return confirm('{{ i18n "confirm.delete" $.Page.Lang }}')" >{{ i18n "button.delete" $.Page.Lang }}</button>
       </form>
       {{ else }}
       <form action="{{$.Env.BaseURL}}/user/token/add" method="post">
@@ -52,7 +72,7 @@
             <input readonly type="text" name="token" value="" />
           </li>
         </ul>
-        <button class="submit" type="submit" onclick="return confirm('确认创建吗')" >创建</button>
+        <button class="submit" type="submit" onclick="return confirm('{{ i18n "confirm.dreate" $.Page.Lang }}')" >{{ i18n "button.create" $.Page.Lang }}</button>
       </form>
       {{ end }}
     </details>

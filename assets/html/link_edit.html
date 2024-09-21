@@ -6,23 +6,23 @@
 {{ define "content"}}
 <form action="{{$.Env.BaseURL}}/link/update/{{.Data.Link.ID}}" method="post">
   <details open>
-    <summary>基础信息</summary>
+    <summary>{{ i18n "page.lin.edit.detail.basic.summary" $.Page.Lang }}</summary>
     <ul>
       <li>
-        <label for="title">标题</label>
-        <input type="text" name="title" value="{{.Data.Link.Title}}" placeholder="标题" />
+        <label for="title">{{ i18n "page.lin.edit.title.label" $.Page.Lang }}</label>
+        <input type="text" name="title" value="{{.Data.Link.Title}}" placeholder="{{ i18n "page.lin.edit.title.label" $.Page.Lang }}" />
       </li>
       <li>
-        <label for="url">地址</label>
-        <input type="text" name="url" value="{{.Data.Link.Url}}" placeholder="地址" />
+        <label for="url">{{ i18n "page.lin.edit.url.label" $.Page.Lang }}</label>
+        <input type="text" name="url" value="{{.Data.Link.Url}}" placeholder="{{ i18n "page.lin.edit.url.label" $.Page.Lang }}" />
       </li>
       <li>
-        <label for="icon">图标</label>
-        <input type="text" name="icon" value="{{.Data.Link.Icon}}" placeholder="图标" />
+        <label for="icon">{{ i18n "page.lin.edit.icon.label" $.Page.Lang }}</label>
+        <input type="text" name="icon" value="{{.Data.Link.Icon}}" placeholder="{{ i18n "page.lin.edit.icon.label" $.Page.Lang }}" />
       </li>
       <li>
-        <label for="desc">描述</label>
-        <input type="text" name="desc" value="{{.Data.Link.Desc}}" placeholder="描述" />
+        <label for="desc">{{ i18n "page.lin.edit.desc.label" $.Page.Lang }}</label>
+        <input type="text" name="desc" value="{{.Data.Link.Desc}}" placeholder="{{ i18n "page.lin.edit.desc.label" $.Page.Lang }}" />
       </li>
       <li>
         <input  id="tags" class="invisible" type="text" name="tags" value="{{.Data.Link.Tags | JoinTagNames}}" />
@@ -30,10 +30,10 @@
     </ul>
   </details>
   <details>
-    <summary>修改标签</summary>
+    <summary>{{ i18n "page.lin.edit.detail.tag.summary" $.Page.Lang }}</summary>
     <div class="tag-update">
       <div class="tag-box">
-        <label >已应用标签</label>
+        <label >{{ i18n "page.lin.edit.applied-tags.label" $.Page.Lang }}</label>
         <select id="current-tag"  multiple="multiple" size="5" >
           {{ range .Data.Link.Tags }}
           <option value="{{.Name }}">{{.Name }}</option>
@@ -41,11 +41,11 @@
           </select>
       </div>
       <div class="tip">
-        <p>双击添加和删除</p>
+        <p>{{ i18n "page.lin.edit.tip" $.Page.Lang }}</p>
         <p>↓&nbsp;&nbsp;↑</p>
       </div>
       <div class="tag-box">
-        <label >全部标签</label>
+        <label >{{ i18n "page.lin.edit.all-tags.label" $.Page.Lang }}</label>
         <select id="all-tag"  multiple="multiple" size="10">
           {{ range .Data.Tags }}
           <option value="{{.Name }}">{{.Name}}</option>
@@ -54,7 +54,7 @@
       </div>
     </div>
   </details>
-  <button class="submit" type="submit" onclick="return confirm('确认更新吗')">更新</button>
+  <button class="submit" type="submit" onclick="return confirm('{{ i18n "confirm.update" $.Page.Lang }}')">{{ i18n "button.update" $.Page.Lang }}</button>
 </form>
 <script defer>
   let allTagEle = document.getElementById('all-tag')

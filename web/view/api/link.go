@@ -2,6 +2,7 @@ package api
 
 import (
 	"encoding/json"
+	"markless/local"
 	"markless/model"
 	"markless/service"
 	"markless/store"
@@ -30,7 +31,7 @@ func LinkAddApi(w http.ResponseWriter, r *http.Request, params httprouter.Params
 		panic(err)
 	}
 	if postBody.Url == "" {
-		panic("链接不能为空")
+		panic(local.Translate("tip.link.empty", user.Lang))
 	}
 	link, err := service.LinkCreate(user, postBody.Url, postBody.Desc)
 	if err != nil {
@@ -43,7 +44,7 @@ func LinkAddApi(w http.ResponseWriter, r *http.Request, params httprouter.Params
 	}
 	service.LinkAttachTag(user, &link, strings.Split(postBody.Tags, "&"))
 
-	util.Logger.Info("添加书签成功：" + postBody.Url)
+	util.Logger.Info("add link success" + postBody.Url)
 	handler.ApiSuccess(&w, &handler.ApiResponse{Msg: "ok", Data: link})
 
 }
@@ -62,7 +63,6 @@ func LinkRead(w http.ResponseWriter, r *http.Request, params httprouter.Params) 
 	link.Read = true
 	err := store.DB.Save(&link).Error
 	if err != nil {
-		// panic("更新失败" + err.Error())
 		handler.ApiSuccess(&w, &handler.ApiResponse{Msg: err.Error()})
 		return
 	}
@@ -76,7 +76,7 @@ func LinkUnread(w http.ResponseWriter, r *http.Request, params httprouter.Params
 	link.Read = false
 	err := store.DB.Save(&link).Error
 	if err != nil {
-		util.Logger.Error("更新失败" + err.Error())
+		util.Logger.Error("update link failed" + err.Error())
 		handler.ApiSuccess(&w, &handler.ApiResponse{Msg: err.Error()})
 		return
 	}
@@ -90,10 +90,10 @@ func LinkDel(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
 	store.DB.Where("user_id = ?", user.ID).First(&link, id)
 	err := store.DB.Unscoped().Delete(&link).Error
 	if err != nil {
-		util.Logger.Error("删除失败" + err.Error())
+		util.Logger.Error("delete link failed" + err.Error())
 		handler.ApiSuccess(&w, &handler.ApiResponse{Msg: err.Error()})
 		return
 	}
-	util.Logger.Info("删除书签成功：" + link.Url)
+	util.Logger.Info("delete link success" + link.Url)
 	handler.ApiSuccess(&w, &handler.ApiResponse{Msg: "ok", Data: link})
 }

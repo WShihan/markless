@@ -39,3 +39,8 @@ func (r *RouterWithPrefix) DELETE(path string, handle httprouter.Handle) {
 func (r *RouterWithPrefix) OPTIONS(path string, handle httprouter.Handle) {
 	r.Mux.OPTIONS(r.BaseURL+path, handle)
 }
+
+// 带前缀的 OPTIONS 方法
+// func (r *RouterWithPrefix) NotFound(path string, handle httprouter.Handle) {
+// 	r.Mux.NotFound = http.HandlerFunc(handle)
+// }

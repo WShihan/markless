@@ -75,10 +75,6 @@ func LinkAttachTag(user model.User, link *model.Link, tagNames []string) {
 		}
 		tag := model.Tag{Name: strings.Trim(v, " "), UserID: user.ID, CreateTime: time.Now()}
 		store.DB.Where("name = ? AND user_id = ?", tag.Name, user.ID).Find(&tag)
-		if tag.ID != 0 {
-			util.Logger.Info("该标签当前用户已存在：" + tag.Name)
-			continue
-		}
 		tags = append(tags, tag)
 	}
 	store.DB.Model(&link).Where("id = ? AND user_id =?", link.ID, user.ID).Association("Tags").Append(&tags)

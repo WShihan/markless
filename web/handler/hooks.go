@@ -21,7 +21,7 @@ func LogRequest(next http.Handler) http.Handler {
 			util.Logger.Info(r.URL.Path)
 			if err := recover(); err != nil {
 				err := errors.New(fmt.Sprint(err))
-				util.Logger.Error(err)
+				util.Logger.Fatal(err)
 				// 接口返回标准数据
 				if strings.Contains(r.URL.Path, "api") {
 					ApiFailed(&w, 1, err.Error())

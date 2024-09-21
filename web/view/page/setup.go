@@ -3,6 +3,7 @@ package page
 import (
 	"markless/injection"
 	"markless/web/handler"
+	"net/http"
 )
 
 var (
@@ -18,6 +19,8 @@ func LoadPage(router *handler.RouterWithPrefix, env *injection.Env) {
 	router.GET("/unread", handler.Protect(LinkUnreadPage))
 	router.GET("/link/find", handler.Protect(LinkAddPage))
 	router.GET("/link/edit/:id", handler.Protect(LinkEditPage))
+	router.GET("/link/mark/read", handler.Protect(LinkMarkAllAsRead))
+	router.GET("/link/mark/unread", handler.Protect(LinkMarkAllAsUnread))
 	router.GET("/tags", handler.Protect(TagsPage))
 	router.GET("/tag/edit/:id", handler.Protect(TagEditPage))
 	router.GET("/register", RegisterPage)
@@ -32,4 +35,10 @@ func LoadPage(router *handler.RouterWithPrefix, env *injection.Env) {
 	router.POST("/user/password", handler.Protect(UserChangePassword))
 	router.POST("/user/token/add", handler.Protect(UserTokenAdd))
 	router.POST("/user/token/delete", handler.Protect(UserTokenDelete))
+	router.POST("/user/basic/update", handler.Protect(UserBasicUpdate))
+
+	// error page
+	router.Mux.NotFound = http.HandlerFunc(NotFoundPage)
+	router.Mux.MethodNotAllowed = http.HandlerFunc(MthodNotAllowedPage)
+
 }

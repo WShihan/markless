@@ -6,6 +6,8 @@ import (
 	"markless/util"
 	"net/http"
 
+	_ "net/http/pprof"
+
 	"github.com/julienschmidt/httprouter"
 	"github.com/rs/cors"
 )
@@ -39,6 +41,7 @@ func InitEnv(env *injection.Env) {
 }
 
 func RunServer() {
+
 	err := Server.ListenAndServe()
 	if err != nil {
 		fmt.Println("Error starting server:", err)

@@ -30,26 +30,26 @@
 <div class="tag-update">
   <div class="tag-info">
     <details open>
-      <summary>基础信息</summary>
+      <summary>{{ i18n "page.tag.edit.detail.basic.summary" $.Page.Lang }}</summary>
       <ul>
         <li>
-          <label for="name">标签名称</label>
-          <input id="tag-update-name" data-id="{{.Data.Tag.ID}}" type="text" name="name" value="{{.Data.Tag.Name}}" placeholder="标签名">
+          <label for="name">{{ i18n "page.tag.edit.name.label" $.Page.Lang }}</label>
+          <input id="tag-update-name" data-id="{{.Data.Tag.ID}}" type="text" name="name" value="{{.Data.Tag.Name}}" placeholder="{{ i18n "page.tag.edit.name.label" $.Page.Lang }}">
         </li>
         <li>
-          <label for="create_time">创建日期</label>
+          <label for="create_time">{{ i18n "page.tag.edit.create-time.label" $.Page.Lang }}</label>
           <input  type="text" readonly  value="{{.Data.Tag.CreateTime | TimeFMT}}" placeholder="标签名">
         </li>
         <li>
-          <button id="tag-update-name-btn" class="submit" type="submit">更新</button>
+          <button id="tag-update-name-btn" class="submit" type="submit">{{ i18n "button.update" $.Page.Lang }}</button>
         </li>
       </ul>
     </details>
   </div>
   <details>
-    <summary>书签</summary>
+    <summary>{{ i18n "page.tag.edit.detail.tag.summary" $.Page.Lang }}</summary>
     <div class="tag-box">
-      <label >已应用书签</label>
+      <label >{{ i18n "page.tag.edit.applied-tags.label" $.Page.Lang }}</label>
       <select id="first-select-box"  multiple="multiple" min-size="10" >
         {{ range .Data.Applied }}
         <option value="{{.ID}}">{{.Title }}</option>
@@ -57,18 +57,18 @@
         </select>
     </div>
     <div class="tip">
-      <p>双击添加或移除书签</p>
+      <p>{{ i18n "page.tag.edit.tip" $.Page.Lang }}</p>
       <p>↓&nbsp;&nbsp;↑</p>
     </div>
     <div class="tag-box">
-      <label >未应用书签</label>
+      <label >{{ i18n "page.tag.edit.all-tags.label" $.Page.Lang }}</label>
       <select id="second-select-box"  multiple="multiple" size="20">
         {{ range .Data.Unapplied }}
         <option value="{{.ID}}">{{.Title }}</option>
         {{ end }}
         </select>
     </div>
-    <button id="tag-update-link-btn" class="submit" type="submit">更新</button>
+    <button id="tag-update-link-btn" class="submit" type="submit">{{ i18n "button.update" $.Page.Lang }}</button>
 
   </details>
 </div>

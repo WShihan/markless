@@ -64,6 +64,11 @@
     justify-content: space-between;
     margin: 2em 1em 1em 1em;
 }
+.link-btns {
+    display: flex;
+    justify-content: space-around;
+    padding: 1em;
+}
 
 .links {
     flex: 1;

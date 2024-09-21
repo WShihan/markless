@@ -23,13 +23,13 @@ func TagDelApi(w http.ResponseWriter, r *http.Request, params httprouter.Params)
 		store.DB.Where("name = ? AND user_id = ?", v, user.ID).Find(&tag)
 		err := store.DB.Unscoped().Delete(&tag).Error
 		if err != nil {
-			util.Logger.Error("删除失败" + err.Error())
+			util.Logger.Error("delete tag failed" + err.Error())
 			panic(err)
 		}
-		util.Logger.Error("删除成功：" + v)
+		util.Logger.Error("deleted tag success" + v)
 	}
 
-	handler.ApiSuccess(&w, &handler.ApiResponse{Msg: "删除成功"})
+	handler.ApiSuccess(&w, &handler.ApiResponse{Msg: "ok"})
 }
 
 type TagUpdateTitlePost struct {
@@ -53,7 +53,7 @@ func TagUpdateName(w http.ResponseWriter, r *http.Request, params httprouter.Par
 		panic(err)
 	}
 
-	handler.ApiSuccess(&w, &handler.ApiResponse{Msg: "删除成功"})
+	handler.ApiSuccess(&w, &handler.ApiResponse{Msg: "ok"})
 }
 
 type TagUpdateLinkPost struct {
@@ -83,5 +83,5 @@ func TagUpdateLink(w http.ResponseWriter, r *http.Request, params httprouter.Par
 		panic(err)
 	}
 
-	handler.ApiSuccess(&w, &handler.ApiResponse{Msg: "删除成功"})
+	handler.ApiSuccess(&w, &handler.ApiResponse{Msg: "ok"})
 }

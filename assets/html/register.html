@@ -1,49 +1,14 @@
+{{ define "style"}}
 
+{{ end}}
 
-<!DOCTYPE html>
-<html lang="zh-CN">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
-    <link rel=“canonical” href=“https://example.com/sample-page/” />
-    <meta name="description" content="markless，记录网联网。" />
-    <link rel="icon" href="{{$.Env.BaseURL}}/static/img/favicon16.ico" sizes="16x16" type="image/x-icon">
-    <link rel="icon" href="{{$.Env.BaseURL}}/static/img/favicon32.ico" sizes="32x32" type="image/x-icon">
-    <link rel="icon" href="{{$.Env.BaseURL}}/static/img/favicon48.ico" sizes="48x48" type="image/x-icon">
-    <link rel="icon" href="{{$.Env.BaseURL}}/static/img/favicon64.ico" sizes="64x64" type="image/x-icon">
-    <link rel="icon" href="{{$.Env.BaseURL}}/static/img/favicon180.ico" sizes="180x180" type="image/x-icon">
-    <link rel="stylesheet" href="{{$.Env.BaseURL}}/static/css/template.css"/>
-    <script defer src="{{$.Env.BaseURL}}/static/js/user.js"></script>
-    <link rel="stylesheet" href="{{$.Env.BaseURL}}/static/css/link_add.css" />
-    <script defer src="{{$.Env.BaseURL}}/static/js/msg.js"></script>
+{{ define "content" }}
+<form action="{{$.Env.BaseURL}}/user/register" style="display: flex;flex-direction:column;gap:1em;" method="post">
+  <input type="text" name="username" placeholder="{{ i18n "page.register.username.label" $.Page.Lang }}" />
+  <input type="password" name="password" placeholder="{{ i18n "page.register.password.label" $.Page.Lang }}"></textarea>
+  <input type="password" name="password-confirm" placeholder="{{ i18n "page.register.password-confirm.label" $.Page.Lang }}"></textarea>
+  <span><a href="{{$.Env.BaseURL}}/login">{{ i18n "page.register.to-register.lable" $.Page.Lang }}</a></span>
+  <button class="submit" type="submit">{{ i18n "button.register" $.Page.Lang }}</button>
+</form>
 
-    <title>注册</title>
-  </head>
-  <body>
-    <!-- 切换显示模式 -->
-    <script src="{{$.Env.BaseURL}}/static/js/theme.js"></script>
-    <div id="container" class="container">
-      <header>
-        <div class="icon">
-          <span id="theme-switch" class="theme-switch" >
-            <svg t="1726691146024" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="1277" width="200" height="200"><path d="M791.272727 89.041455C791.272727 0 698.181818 0 698.181818 0L325.818182 0c0 0-93.090909 0-93.090909 89.041455L232.727273 1024l279.272727-267.124364L791.272727 1024 791.272727 89.041455z" p-id="1278" fill="#1296db"></path></svg>
-          </span>
-        </div>
-        <div class="navs"></div>
-      </header>
-      <div class="content">
-        <form action="{{$.Env.BaseURL}}/user/register" style="display: flex;flex-direction:column;gap:1em;" method="post">
-          <input type="text" name="username" placeholder="用户名" />
-          <input type="password" name="password" placeholder="密码大于6位"></textarea>
-          <input type="password" name="password-confirm" placeholder="确认密码"></textarea>
-          <span><a href="{{$.Env.BaseURL}}/login">去登录</a></span>
-          <button class="submit" type="submit">注册</button>
-        </form>
-      </div>
-      <footer>
-        <span class="footer-item title">Made markless  with ❤️</span>
-      </footer>
-    </div>
-  </body>
-</html>
-
+{{ end }}

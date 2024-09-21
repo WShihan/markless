@@ -9,6 +9,7 @@ import (
 
 	"markless/assets"
 	"markless/injection"
+	"markless/local"
 	"markless/model"
 	"markless/service"
 	"markless/store"
@@ -132,7 +133,8 @@ func LinkAllPage(w http.ResponseWriter, r *http.Request, params httprouter.Param
 	tt, _ := util.GetBaseTemplate().ParseFS(assets.HTML, "html/template.html", "html/index.html")
 	inject := injection.LinkPage{
 		Page: injection.PageInjection{
-			Title:  fmt.Sprintf("所有书签（%d）", searchOpt.Count),
+			Lang:   user.Lang,
+			Title:  fmt.Sprintf("%s（%d）", local.Translate("page.all", user.Lang), searchOpt.Count),
 			Active: "all",
 		},
 		Env:        Env,
@@ -171,7 +173,8 @@ func LinkUnreadPage(w http.ResponseWriter, r *http.Request, params httprouter.Pa
 	tt, _ := util.GetBaseTemplate().ParseFS(assets.HTML, "html/template.html", "html/index.html")
 	inject := injection.LinkPage{
 		Page: injection.PageInjection{
-			Title:  fmt.Sprintf("未读书签(%d)", searchOpt.Count),
+			Lang:   user.Lang,
+			Title:  fmt.Sprintf("%s（%d）", local.Translate("page.unread", user.Lang), searchOpt.Count),
 			Active: "unread",
 		},
 		Env:        Env,
@@ -210,7 +213,8 @@ func LinkReadPage(w http.ResponseWriter, r *http.Request, params httprouter.Para
 	tt, _ := util.GetBaseTemplate().ParseFS(assets.HTML, "html/template.html", "html/index.html")
 	inject := injection.LinkPage{
 		Page: injection.PageInjection{
-			Title:  fmt.Sprintf("已读书签(%d)", searchOpt.Count),
+			Lang:   user.Lang,
+			Title:  fmt.Sprintf("%s（%d）", local.Translate("page.read", user.Lang), searchOpt.Count),
 			Active: "read",
 		},
 		Env:        Env,
@@ -235,7 +239,8 @@ func LinkEditPage(w http.ResponseWriter, r *http.Request, params httprouter.Para
 	store.DB.Model(&user).Where("user_id = ?", user.ID).Association("Tags").Find(&alltTags)
 	inject := injection.LinkPage{
 		Page: injection.PageInjection{
-			Title:  "编辑书签",
+			Lang:   user.Lang,
+			Title:  local.Translate("page.edit", user.Lang),
 			Active: "",
 		},
 		Env:  Env,
@@ -251,7 +256,8 @@ func LinkAddPage(w http.ResponseWriter, r *http.Request, params httprouter.Param
 	store.DB.Model(&user).Where("user_id = ?", user.ID).Association("Tags").Find(&tags)
 	inject := injection.LinkPage{
 		Page: injection.PageInjection{
-			Title:  "添加书签",
+			Title:  local.Translate("page.edit-link", user.Lang),
+			Lang:   user.Lang,
 			Active: "link-find",
 		},
 		Env:  Env,
@@ -266,7 +272,7 @@ func LinkAdd(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
 	tagNames := strings.Split(r.FormValue("tags"), "&")
 	desc := r.FormValue("desc")
 	if webURL == "" {
-		panic("链接不能为空")
+		panic(local.Translate("tip.link.empty", user.Lang))
 	}
 
 	link, err := service.LinkCreate(user, webURL, desc)
@@ -279,7 +285,8 @@ func LinkAdd(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
 	if err != nil {
 		panic(err)
 	}
-	util.Logger.Info("添加书签成功：" + webURL)
+	handler.Redirect(w, r, "/")
+
 }
 
 func LinkUpdate(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
@@ -287,7 +294,7 @@ func LinkUpdate(w http.ResponseWriter, r *http.Request, params httprouter.Params
 	id, _ := strconv.ParseInt(params.ByName("id"), 10, 64)
 	link, err := store.GetLinkByUser(user, int(id))
 	if err != nil {
-		panic("链接不存在")
+		panic(local.Translate("tip.link.not-exist", user.Lang))
 	} else {
 		link.Title = r.FormValue("title")
 		link.Desc = r.FormValue("desc")
@@ -306,8 +313,33 @@ func LinkUpdate(w http.ResponseWriter, r *http.Request, params httprouter.Params
 		store.DB.Model(&link).Association("Tags").Append(&tags)
 		err = store.DB.Save(&link).Error
 		if err != nil {
-			panic("更新失败" + err.Error())
+			panic(local.Translate("msg.failed", user.Lang) + err.Error())
 		}
 	}
 	handler.Redirect(w, r, "/")
+}
+
+func LinkMarkAllAsRead(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
+	user, _ := store.GetUserByUID(r.Header.Get("uid"))
+	link := model.Link{}
+	store.DB.Model(&link).Where("user_id = ?", user.ID).Updates(model.Link{Read: true})
+	msg := local.Translate("tip.link.mark-all-read", user.Lang)
+	util.Logger.Info(msg)
+	handler.SetMsg(&w, msg)
+	handler.Redirect(w, r, r.Referer())
+
+}
+
+func LinkMarkAllAsUnread(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
+	user, _ := store.GetUserByUID(r.Header.Get("uid"))
+	links := []model.Link{}
+	store.DB.Model(&user).Association("Links").Find(&links)
+	for _, v := range links {
+		v.Read = false
+		store.DB.Save(&v)
+	}
+	msg := local.Translate("tip.link.mark-all-unread", user.Lang)
+	util.Logger.Info(msg)
+	handler.SetMsg(&w, msg)
+	handler.Redirect(w, r, r.Referer())
 }

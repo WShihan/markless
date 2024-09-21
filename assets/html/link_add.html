@@ -8,27 +8,27 @@
 <form action="{{$.Env.BaseURL}}/link/add" method="post">
   <ul>
     <li>
-      <label for="title">网页链接 *</label>
-      <input type="text" name="url" value="" placeholder="网页地址，这是必填项" />
+      <label for="title">{{ i18n "page.link-find.form.url.label" $.Page.Lang }} *</label>
+      <input type="text" name="url" value="" placeholder="{{ i18n "page.link-find.form.url.placeholder" $.Page.Lang }}" />
     </li>
   </ul>
   <ul>
     <details>
-      <summary>其他信息</summary>
+      <summary>{{ i18n "page.link-find.details.info.summary" $.Page.Lang }}</summary>
       <li>
-        <label for="title">描述文本&nbsp;&nbsp;</label>
-        <input type="text" name="desc" value="" placeholder="网页描述信息，如果不填写将自动从网页内容获取"/>
+        <label for="title">{{ i18n "page.link-find.form.desc.label" $.Page.Lang }}</label>
+        <input type="text" name="desc" value="" placeholder="{{ i18n "page.link-find.form.desc.placeholder" $.Page.Lang }}"/>
       </li>
       <li>
-        <label for="tags">添加标签&nbsp;&nbsp;</label>
-        <textarea  id="tags" type="text" name="tags" value="" placeholder="多个标签用&分隔，可以从已有标签中选择，或者直接添加，没有的标签将自动创建"></textarea>
+        <label for="tags">{{ i18n "page.link-find.form.tags.label" $.Page.Lang }}</label>
+        <textarea  id="tags" type="text" name="tags" value="" placeholder="{{ i18n "page.link-find.form.tags.placeholder" $.Page.Lang }}"></textarea>
       </li>
       <li>
         <details>
-          <summary>选择标签</summary>
+          <summary>{{ i18n "page.link-find.details.tags.summary" $.Page.Lang }}</summary>
           <div class="tag-update">
             <div class="tag-box">
-              <label >双击添加下面已有的标签项</label>
+              <label >{{ i18n "page.link-find.tags.handle-tip" $.Page.Lang }}</label>
               <select id="all-tag"  multiple="multiple" size="10">
                 {{ range .Data }}
                 <option value="{{.Name }}">{{.Name}}</option>
@@ -42,7 +42,7 @@
   </ul>
 
 
-  <button class="submit" type="submit" onclick="return confirm('确认添加吗')">添加</button>
+  <button class="submit" type="submit" onclick="return confirm('{{ i18n "confirm.add" $.Page.Lang }}')">{{ i18n "button.add" $.Page.Lang }}</button>
 </form>
 <script defer>
   let allTagEle = document.getElementById('all-tag')

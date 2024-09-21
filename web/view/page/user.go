@@ -3,9 +3,9 @@ package page
 import (
 	"net/http"
 
-	"html/template"
 	"markless/assets"
 	"markless/injection"
+	"markless/local"
 	"markless/model"
 	"markless/store"
 	"markless/tool"
@@ -16,33 +16,34 @@ import (
 )
 
 func LoginPage(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
-	t, err := template.ParseFS(assets.HTML, "html/login.html")
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
+	lang := local.GetPreferredLanguage(r)
+
+	tt, _ := util.GetBaseTemplate().ParseFS(assets.HTML, "html/template_unlogin.html", "html/login.html")
+	inject := injection.LinkPage{
+		Page: injection.PageInjection{
+			Title:  local.Translate("page.login", lang),
+			Active: "",
+			Lang:   lang,
+		},
+		Env: Env,
 	}
-	inject := injection.UserLoginPage{
-		Env:   Env,
-		Title: "登录",
-	}
-	if err := t.Execute(w, inject); err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-	}
+	tt.ExecuteTemplate(w, "template", inject)
+
 }
 
 func RegisterPage(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
-	t, err := template.ParseFS(assets.HTML, "html/register.html")
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
+	lang := local.GetPreferredLanguage(r)
+
+	tt, _ := util.GetBaseTemplate().ParseFS(assets.HTML, "html/template_unlogin.html", "html/register.html")
+	inject := injection.LinkPage{
+		Page: injection.PageInjection{
+			Lang:   lang,
+			Title:  local.Translate("page.register", lang),
+			Active: "",
+		},
+		Env: Env,
 	}
-	inject := injection.UserLoginPage{
-		Env:   Env,
-		Title: "注册",
-	}
-	if err := t.Execute(w, inject); err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-	}
+	tt.ExecuteTemplate(w, "template", inject)
 }
 
 func SettingPage(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
@@ -51,7 +52,8 @@ func SettingPage(w http.ResponseWriter, r *http.Request, params httprouter.Param
 	inject := injection.LinkPage{
 		Page: injection.PageInjection{
 			Active: "setting",
-			Title:  "设置",
+			Lang:   user.Lang,
+			Title:  local.Translate("page.setting", user.Lang),
 		},
 		Env:  Env,
 		Data: user,
@@ -63,11 +65,12 @@ func UserLogin(w http.ResponseWriter, r *http.Request, params httprouter.Params)
 	username := r.FormValue("username")
 	password := r.FormValue("password")
 	user := model.User{}
+
 	store.DB.Where("username = ? AND password = ?", username, password).Find(&user)
 
 	if user.Username != "" {
 		if user.Password != password {
-			handler.SetMsg(&w, "密码错误")
+			handler.SetMsg(&w, local.Translate("page.login.error.password", user.Lang))
 			handler.Redirect(w, r, "/login")
 			return
 		}
@@ -92,7 +95,8 @@ func UserLogin(w http.ResponseWriter, r *http.Request, params httprouter.Params)
 		http.SetCookie(w, &cookie)
 		handler.Redirect(w, r, "/")
 	} else {
-		handler.SetMsg(&w, "用户不存在")
+		msg := local.Translate("tip.user.not-exist", user.Lang)
+		handler.SetMsg(&w, msg)
 		handler.Redirect(w, r, "/login")
 	}
 }
@@ -103,24 +107,25 @@ func UserRegister(w http.ResponseWriter, r *http.Request, params httprouter.Para
 	passwordConfirm := r.FormValue("password-confirm")
 
 	if password != passwordConfirm {
-		handler.SetMsg(&w, "新密码不一致")
+		handler.SetMsg(&w, local.Translate("tip.password.not-match", r.FormValue("lang")))
 		handler.Redirect(w, r, "/register")
 		return
 	}
 	if len(username) < 3 || len(password) < 6 {
-		handler.SetMsg(&w, "用户名或密码长度不正确")
+		handler.SetMsg(&w, local.Translate("tip.password.length", r.FormValue("lang")))
 		handler.Redirect(w, r, "/register")
 		return
 	}
 	user := model.User{}
 	store.DB.Find(&user, "username = ?", username)
 	if user.Username == username {
-		handler.SetMsg(&w, "用户名已存在")
+		handler.SetMsg(&w, local.Translate("tip.user.already-exist", r.FormValue("lang")))
 		handler.Redirect(w, r, "/register")
 		return
 	} else {
 		user.Username = username
 		user.Password = password
+		user.Lang = local.GetPreferredLanguage(r)
 		user.Uid = tool.ShortUID(10)
 	}
 	store.DB.Create(&user)
@@ -134,25 +139,25 @@ func UserChangePassword(w http.ResponseWriter, r *http.Request, params httproute
 	passwordConfirm := r.FormValue("password-confirm")
 
 	if password != passwordConfirm {
-		handler.SetMsg(&w, "新密码不一致")
+		handler.SetMsg(&w, local.Translate("tip.password.not-match", r.FormValue("lang")))
 		handler.Redirect(w, r, "/setting")
 		return
 	}
 	user, err := store.GetUserByUID(r.Header.Get("uid"))
 	if err != nil {
-		handler.SetMsg(&w, "用户不存在")
+		handler.SetMsg(&w, local.Translate("tip.user.not-exist", user.Lang))
 		handler.Redirect(w, r, "/setting")
 		return
 	}
 
 	if user.Password != passwordOld {
-		handler.SetMsg(&w, "原始密码错误")
+		handler.SetMsg(&w, local.Translate("tip.password.wrong", user.Lang))
 		handler.Redirect(w, r, "/setting")
 		return
 	}
 	user.Password = password
 	store.DB.Save(&user)
-	handler.SetMsg(&w, "密码修改成功")
+	handler.SetMsg(&w, local.Translate("msg.updated", user.Lang))
 	handler.Redirect(w, r, "/setting")
 
 }
@@ -160,18 +165,18 @@ func UserChangePassword(w http.ResponseWriter, r *http.Request, params httproute
 func UserTokenAdd(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
 	user, err := store.GetUserByUID(r.Header.Get("uid"))
 	if err != nil {
-		handler.SetMsg(&w, "用户不存在")
+		handler.SetMsg(&w, local.Translate("tip.user.not-exist", user.Lang))
 		handler.Redirect(w, r, "/setting")
 		return
 	}
 	tk, err := util.GenerateRandomKey(64)
 	if err != nil {
-		handler.SetMsg(&w, "生成token失败")
+		handler.SetMsg(&w, local.Translate("msg.failed", user.Lang))
 		handler.Redirect(w, r, "/setting")
 		return
 	}
 	user.Token = &tk
-	handler.SetMsg(&w, "创建成功")
+	handler.SetMsg(&w, local.Translate("msg.created", user.Lang))
 
 	store.DB.Save(&user)
 	handler.Redirect(w, r, "/setting")
@@ -181,13 +186,23 @@ func UserTokenAdd(w http.ResponseWriter, r *http.Request, params httprouter.Para
 func UserTokenDelete(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
 	user, err := store.GetUserByUID(r.Header.Get("uid"))
 	if err != nil {
-		handler.SetMsg(&w, "用户不存在")
+		handler.SetMsg(&w, local.Translate("msg.tip.user.not-exist", user.Lang))
 		handler.Redirect(w, r, "/setting")
 		return
 	}
 	user.Token = nil
 	store.DB.Save(&user)
-	handler.SetMsg(&w, "删除成功")
+	handler.SetMsg(&w, local.Translate("msg.deleted", user.Lang))
+	handler.Redirect(w, r, "/setting")
+
+}
+
+func UserBasicUpdate(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
+	user, _ := store.GetUserByUID(r.Header.Get("uid"))
+	lang := r.FormValue("lang")
+	user.Lang = lang
+	store.DB.Save(&user)
+	handler.SetMsg(&w, local.Translate("msg.success", user.Lang))
 	handler.Redirect(w, r, "/setting")
 
 }

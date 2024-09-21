@@ -8,6 +8,7 @@ import (
 
 	"markless/assets"
 	"markless/injection"
+	"markless/local"
 	"markless/model"
 	"markless/store"
 	"markless/util"
@@ -22,7 +23,7 @@ func TagsPage(w http.ResponseWriter, r *http.Request, params httprouter.Params) 
 	stat := store.TagStat(user)
 	inject := injection.TagsPage{
 		Page: injection.PageInjection{
-			Title:  fmt.Sprintf("标签（%d）", len(stat)),
+			Title:  fmt.Sprintf("%s（%d）", local.Translate("page.tags", user.Lang), len(stat)),
 			Active: "tags",
 		},
 		Env:  Env,
@@ -45,7 +46,7 @@ func TagAdd(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
 		tag := model.Tag{Name: strings.Trim(v, " "), UserID: user.ID, CreateTime: time.Now()}
 		store.DB.Where("name = ? AND user_id = ?", tag.Name, user.ID).Find(&tag)
 		if tag.ID != 0 {
-			util.Logger.Info("该标签当前用户已存在：" + tag.Name)
+			util.Logger.Info(local.Translate("tip.tag.unique", user.Lang) + tag.Name)
 			continue
 		}
 		tags = append(tags, tag)
@@ -54,7 +55,7 @@ func TagAdd(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
 	store.DB.Model(&user).Association("Tags").Append(&tags)
 	err := store.DB.Save(&user).Error
 	if err != nil {
-		util.Logger.Error("添加失败" + err.Error())
+		util.Logger.Error(local.Translate("msg.failed", user.Lang) + err.Error())
 		return
 	}
 	handler.Redirect(w, r, "/tags")
@@ -99,7 +100,7 @@ func TagEditPage(w http.ResponseWriter, r *http.Request, params httprouter.Param
 	tt, _ := util.GetBaseTemplate().ParseFS(assets.HTML, "html/template.html", "html/tag_edit.html")
 	inject := injection.TagsPage{
 		Page: injection.PageInjection{
-			Title:  "标签编辑",
+			Title:  local.Translate("page.edit-tag", user.Lang),
 			Active: "",
 		},
 		Env:  Env,
