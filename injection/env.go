@@ -8,4 +8,7 @@ type Env struct {
 	Version     string
 	Commit      string
 	BuildTime   string
+	HmacSecret  string
+	SecretKey   string
+	JWTExpire   int
 }

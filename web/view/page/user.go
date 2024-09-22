@@ -2,6 +2,7 @@ package page
 
 import (
 	"net/http"
+	"time"
 
 	"markless/assets"
 	"markless/injection"
@@ -12,6 +13,7 @@ import (
 	"markless/util"
 	"markless/web/handler"
 
+	"github.com/golang-jwt/jwt/v4"
 	"github.com/julienschmidt/httprouter"
 )
 
@@ -84,8 +86,11 @@ func UserLogin(w http.ResponseWriter, r *http.Request, params httprouter.Params)
 			handler.Redirect(w, r, "/login")
 			return
 		}
-
-		token, err := util.CreateJWT(user.Uid)
+		claims := jwt.MapClaims{
+			"uid": user.Uid,
+			"exp": jwt.NewNumericDate(time.Now().Add(time.Minute * time.Duration(Env.JWTExpire))),
+		}
+		token, err := util.CreateAndEncryptJWT(claims, []byte(Env.HmacSecret), []byte(Env.SecretKey))
 		if err != nil {
 			handler.SetMsg(&w, "用户名或密码错误")
 			handler.Redirect(w, r, "/login")

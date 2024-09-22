@@ -1,26 +1,18 @@
 package util
 
 import (
+	"encoding/base64"
 	"fmt"
 	"net/http"
-	"time"
 
 	"github.com/golang-jwt/jwt/v4"
 )
 
 type Middleware func(http.Handler) http.Handler
 
-var (
-	secretKey = []byte("secretKeyffff")
-)
-
-func CreateJWT(uid string) (string, error) {
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-		"uid": uid,
-		"exp": jwt.NewNumericDate(time.Now().Add(time.Minute * 60)),
-	})
-
-	tokenString, err := token.SignedString(secretKey)
+func CreateJWT(claims jwt.MapClaims, hmacSecret []byte) (string, error) {
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+	tokenString, err := token.SignedString(hmacSecret)
 	if err != nil {
 		return "", err
 	}
@@ -28,7 +20,21 @@ func CreateJWT(uid string) (string, error) {
 	return tokenString, nil
 }
 
-func ValidateJWT(tokenString string) (uid string, err error) {
+func CreateAndEncryptJWT(claims jwt.MapClaims, hmacSecret []byte, secretKey []byte) (string, error) {
+	tokenString, err := CreateJWT(claims, hmacSecret)
+	if err != nil {
+		return "", err
+	}
+	encrypedJWT, err := EncryptMessage(tokenString, secretKey)
+	if err != nil {
+		return "", err
+	} else {
+		// Base64 编码 JWT
+		return base64.StdEncoding.EncodeToString([]byte(encrypedJWT)), nil
+	}
+}
+
+func ValidateJWT(tokenString string, secretKey []byte) (uid string, err error) {
 	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
@@ -42,12 +48,22 @@ func ValidateJWT(tokenString string) (uid string, err error) {
 
 	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
 		uid = claims["uid"].(string)
-		exp := claims["exp"]
-		fmt.Println("uid:", uid)
-		fmt.Println("Expires at:", exp)
 	} else {
 		return "", fmt.Errorf("invalid token")
 	}
 
 	return uid, nil
+}
+
+func DecryptAndVerifyJWT(tokenString string, hmacSecret []byte, secretKey []byte) (uid string, err error) {
+	// Base64 解码 JWT
+	decodedJWT, err := base64.StdEncoding.DecodeString(tokenString)
+	if err != nil {
+		return "", err
+	}
+	tokenString, err = DecryptMessage(string(decodedJWT), secretKey)
+	if err != nil {
+		return "", err
+	}
+	return ValidateJWT(tokenString, hmacSecret)
 }

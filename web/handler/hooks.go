@@ -34,9 +34,9 @@ func LogRequest(next http.Handler) http.Handler {
 			}
 		}()
 
-		w.Header().Set("Access-Control-Allow-Origin", "*")                   // 允许所有域名
-		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, OPTIONS") // 允许的请求方法
-		w.Header().Set("Access-Control-Allow-Headers", "Content-Type")       // 允许的请求头
+		w.Header().Set("Access-Control-Allow-Origin", "*")
+		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
+		w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
 		start := time.Now()
 		util.Logger.Info(fmt.Sprintf("Started %s %s", r.Method, r.URL.Path))
 		next.ServeHTTP(w, r)
@@ -81,7 +81,7 @@ func Protect(next httprouter.Handle) httprouter.Handle {
 			Redirect(w, r, "/login")
 			return
 		}
-		uid, err := util.ValidateJWT(jwt)
+		uid, err := util.DecryptAndVerifyJWT(jwt, []byte(Env.HmacSecret), []byte(Env.SecretKey))
 		if err != nil {
 			util.Logger.Info("Authorization  by jwt failed: validate fails")
 			Redirect(w, r, "/login")

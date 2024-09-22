@@ -63,9 +63,6 @@ func TimeFMT(t time.Time) string {
 }
 
 func ShortUID(length int) (uid string) {
-	if length > 12 {
-		length = 12
-	}
 	ubyte := []byte(uuid.New().String())
 	idByte := new(big.Int).SetBytes(ubyte)
 	rawID := idByte.String()

@@ -20,6 +20,7 @@ var (
 func main() {
 	Title := flag.String("title", "markless", "网站名称")
 	BaseURL := flag.String("baseurl", "", "根路由")
+	JWTExpire := flag.Int("jwtexpire", 60, "jwt过期时间（分）")
 	DataBaseURL := flag.String("databaseurl", tool.ExcutePath()+"/markless.db", "数据库地址")
 	Port := flag.Int("port", 5000, "运行端口")
 	adminName := flag.String("adminname", "admin", "初始用户名称")
@@ -34,6 +35,9 @@ func main() {
 		Version:     Version,
 		Commit:      Commit,
 		BuildTime:   BuildTime,
+		HmacSecret:  tool.ShortUID(12),
+		SecretKey:   tool.ShortUID(32),
+		JWTExpire:   *JWTExpire,
 	}
 	util.InitENV(&env)
 	store.InitDB(*DataBaseURL)
