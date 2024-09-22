@@ -86,3 +86,7 @@ func ValidateHash(hashedPassword, password string) error {
 	// 验证密码
 	return bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(password))
 }
+
+func DefaultLanguage() string {
+	return "zh-CN"
+}

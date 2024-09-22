@@ -41,5 +41,5 @@ func main() {
 	handler.InitEnv(&env)
 	api.LoadAPI(&handler.Router)
 	page.LoadPage(&handler.Router, &env)
-	handler.RunServer()
+	handler.RunServer(&env)
 }

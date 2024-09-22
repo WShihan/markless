@@ -141,6 +141,7 @@ func UserRegister(w http.ResponseWriter, r *http.Request, params httprouter.Para
 		}
 		user.Username = username
 		user.Password = pass
+		user.Lang = tool.DefaultLanguage()
 		user.Lang = local.GetPreferredLanguage(r)
 		user.Uid = tool.ShortUID(10)
 	}

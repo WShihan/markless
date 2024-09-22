@@ -18,6 +18,7 @@ func InitAdmin(username string, password string) {
 		user.Token = &toke
 		user.Username = username
 		user.Password = pass
+		user.Lang = tool.DefaultLanguage()
 		user.Uid = tool.ShortUID(10)
 		user.Admin = true
 		DB.Create(&user)

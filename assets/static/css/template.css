@@ -312,6 +312,7 @@ header {
         gap: 1em;
 
         .nav-item {
+            text-align: center;
             cursor: pointer;
         }
 

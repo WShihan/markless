@@ -33,16 +33,29 @@ func InitEnv(env *injection.Env) {
 	})
 	handler := cos.Handler(ApplyHooks(Router.Mux, LogRequest))
 	runAt := fmt.Sprintf("127.0.0.1:%d", Env.Port)
-	util.Logger.Info(fmt.Sprintf("version:%s\tcommit:%s\tbuild-time:%s", env.Version, env.Commit, env.BuildTime))
-	util.Logger.Info(fmt.Sprintf("server run in:\thttp://%s", runAt+Env.BaseURL))
 	Server = http.Server{
 		Addr:    runAt,
 		Handler: handler,
 	}
 }
 
-func RunServer() {
-
+func RunServer(env *injection.Env) {
+	util.Logger.Info(fmt.Sprintf("version:%s\tcommit:%s\tbuild-time:%s", env.Version, env.Commit, env.BuildTime))
+	util.Logger.Info(fmt.Sprintf("server run in:\thttp://%s", fmt.Sprintf("127.0.0.1:%d", Env.Port)+Env.BaseURL))
+	util.Logger.Info(
+		`
+		
+           ■■■■■■■■■            
+           ■■■■■■■■■            
+           ■■■■■■■■■            
+           ■■■■■■■■■            
+           ■■■■■■■■■            
+           ■■■■ ■■■■            
+           ■■■   ■■■            
+           ■■     ■■            
+           ■       ■            
+                                
+            Markless            `)
 	err := Server.ListenAndServe()
 	if err != nil {
 		fmt.Println("Error starting server:", err)
