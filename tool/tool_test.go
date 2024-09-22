@@ -33,3 +33,17 @@ func TestJoinTagNames(t *testing.T) {
 func TestShort_UID(t *testing.T) {
 	t.Logf("short_uid: %s", ShortUID(10))
 }
+
+func TestHashMessage(t *testing.T) {
+	pass, err := HashMessage("123456ff")
+	if err != nil {
+		t.Errorf(err.Error())
+	}
+	err = ValidateHash(pass, "123456ff")
+	if err != nil {
+		t.Errorf(err.Error())
+	} else {
+		t.Log("验证通过")
+	}
+	t.Logf("%s", pass)
+}

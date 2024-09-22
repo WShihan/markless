@@ -1,9 +1,6 @@
 form {
     display: flex;
     flex-direction: column;
-    input {
-        height: 2em;
-    }
 
     textarea {
         height: 10em;

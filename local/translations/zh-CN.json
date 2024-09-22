@@ -62,8 +62,8 @@
     "page.tag.edit.detail.tag.summary": "书签",
 
     "page.setting.detail.basic.summary": "基础信息",
-    "page.setting.detail.password.summary": "密码",
-    "page.setting.detail.token.summary": "密钥",
+    "page.setting.detail.password.summary": "修改密码",
+    "page.setting.detail.token.summary": "修改密钥",
     "page.setting.basic.username.label": "用户名",
     "page.setting.basic.lang.label": "语    言",
     "page.setting.password.label": "原始密码",
@@ -74,6 +74,7 @@
     "page.login.password.label": "密码",
     "page.login.to-register.lable": "去注册",
     "page.login.btn.label": "密码",
+    "page.login.error.password": "密码错误",
 
     "page.register.username.label": "用户名大于4位",
     "page.register.password.label": "密码大于6位",
@@ -85,6 +86,10 @@
     "link.btn.unread": "标为未阅",
     "link.btn.edit": "编辑",
     "link.btn.delete": "删除",
+    "link.btn.copy": "复制链接",
+    "link.btn.copy.success": "复制成功",
+    "link.btn.copy.failed": "复制失败",
+    "link.btn.image": "快照",
     "link.btn.mark-as-read": "全部标记为已阅",
     "link.btn.mark-as-unread": "全部标记为未阅",
 
@@ -123,5 +128,11 @@
     "tip.link.mark-as-read": "标记所有书签为已阅",
     "tip.link.mark-as-unread": "标记所有书签为未阅",
 
-    "tip.tag.unique": "当前用户标签重复"
+    "tip.tag.unique": "当前用户标签重复",
+
+    "env.title": "应用信息",
+    "env.label.version": "所属版本",
+    "env.label.commit": "GIT提交",
+    "env.label.build-time": "构建时间",
+    "env.label.base-url": "根路由"
 }

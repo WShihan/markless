@@ -36,12 +36,6 @@
 }
 
 /* 设置滚动条的样式 */
-select::-webkit-scrollbar {
-    width: 5px;
-    height: 2px;
-}
-
-/* 设置滚动条的样式 */
 html::-webkit-scrollbar {
     width: 5px;
     height: 0px;
@@ -160,6 +154,13 @@ textarea {
 
 }
 
+details {
+    padding: 1em;
+    box-sizing: border-box;
+    background-color: var(--input-bg-color);
+    border-radius: 5px;
+}
+
 input {
     height: var(--input-height);
 }
@@ -215,6 +216,7 @@ select:focus-visible {
 }
 
 .disable {
+    border: none !important;
     pointer-events: none;
     opacity: 0.7;
 }

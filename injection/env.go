@@ -5,4 +5,7 @@ type Env struct {
 	Title       string
 	DataBaseURL string
 	Port        int
+	Version     string
+	Commit      string
+	BuildTime   string
 }

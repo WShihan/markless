@@ -24,6 +24,7 @@ func TagsPage(w http.ResponseWriter, r *http.Request, params httprouter.Params) 
 	inject := injection.TagsPage{
 		Page: injection.PageInjection{
 			Title:  fmt.Sprintf("%s（%d）", local.Translate("page.tags", user.Lang), len(stat)),
+			Lang:   user.Lang,
 			Active: "tags",
 		},
 		Env:  Env,
@@ -102,6 +103,7 @@ func TagEditPage(w http.ResponseWriter, r *http.Request, params httprouter.Param
 		Page: injection.PageInjection{
 			Title:  local.Translate("page.edit-tag", user.Lang),
 			Active: "",
+			Lang:   user.Lang,
 		},
 		Env:  Env,
 		Data: TagEditPageData{Tag: tag, Applied: links, Unapplied: unapplied},

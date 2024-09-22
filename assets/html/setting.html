@@ -12,7 +12,7 @@
         <ul>
           <li>
             <label for="username">{{ i18n "page.setting.basic.username.label" $.Page.Lang }}</label>
-            <input type="text" disable readonly name="password-old" value="{{.Data.Username}}" />
+            <input class="disable" type="text" disable readonly name="password-old" value="{{.Data.Username}}" />
           </li>
         <ul>
           <li>
@@ -75,6 +75,30 @@
         <button class="submit" type="submit" onclick="return confirm('{{ i18n "confirm.dreate" $.Page.Lang }}')" >{{ i18n "button.create" $.Page.Lang }}</button>
       </form>
       {{ end }}
+    </details>
+  </li>
+  <li>
+    <details>
+      <summary>{{ i18n "env.title" $.Page.Lang }}</summary>
+      <form>
+        <ul>
+          <li>
+            <label for="username">{{ i18n "env.label.version" $.Page.Lang }}</label>
+            <input class="disable" type="text"  readonly  value="{{$.Env.Version}}" />
+          </li>
+          <li>
+            <label for="username">{{ i18n "env.label.commit" $.Page.Lang }}</label>
+            <input class="disable" type="text"  readonly  value="{{$.Env.Commit}}" />
+          </li>
+          <li>
+            <label for="username">{{ i18n "env.label.build-time" $.Page.Lang }}</label>
+            <input class="disable" type="text"  readonly  value="{{$.Env.BuildTime}}" />
+          </li>
+          <li>
+            <label for="username">{{ i18n "env.label.base-url" $.Page.Lang }}</label>
+            <input class="disable" type="text"  readonly  value="{{$.Env.BaseURL}}" />
+          </li>
+      </form>
     </details>
   </li>
 </ul>

@@ -66,14 +66,25 @@ func UserLogin(w http.ResponseWriter, r *http.Request, params httprouter.Params)
 	password := r.FormValue("password")
 	user := model.User{}
 
-	store.DB.Where("username = ? AND password = ?", username, password).Find(&user)
+	store.DB.Where("username = ?", username).Find(&user)
 
 	if user.Username != "" {
-		if user.Password != password {
+		if user.Password == password {
+			// 主要是兼容一开始密码没有保护的情况，新版本第一次登录时会自动hash密码
+			pass, err := tool.HashMessage(password)
+			if err != nil {
+				util.Logger.Error(err.Error())
+			}
+			user.Password = pass
+			store.DB.Save(&user)
+		}
+		err := tool.ValidateHash(user.Password, password)
+		if err != nil {
 			handler.SetMsg(&w, local.Translate("page.login.error.password", user.Lang))
 			handler.Redirect(w, r, "/login")
 			return
 		}
+
 		token, err := util.CreateJWT(user.Uid)
 		if err != nil {
 			handler.SetMsg(&w, "用户名或密码错误")
@@ -81,7 +92,6 @@ func UserLogin(w http.ResponseWriter, r *http.Request, params httprouter.Params)
 			return
 		}
 
-		store.DB.Save(&user)
 		cookie := http.Cookie{
 			Name:  "markless-token",
 			Value: token,
@@ -123,8 +133,14 @@ func UserRegister(w http.ResponseWriter, r *http.Request, params httprouter.Para
 		handler.Redirect(w, r, "/register")
 		return
 	} else {
+		pass, err := tool.HashMessage(password)
+		if err != nil {
+			handler.SetMsg(&w, local.Translate("msg.failed", r.FormValue("lang")))
+			handler.Redirect(w, r, "/register")
+			return
+		}
 		user.Username = username
-		user.Password = password
+		user.Password = pass
 		user.Lang = local.GetPreferredLanguage(r)
 		user.Uid = tool.ShortUID(10)
 	}
@@ -150,12 +166,19 @@ func UserChangePassword(w http.ResponseWriter, r *http.Request, params httproute
 		return
 	}
 
-	if user.Password != passwordOld {
+	err = tool.ValidateHash(user.Password, passwordOld)
+	if err != nil {
 		handler.SetMsg(&w, local.Translate("tip.password.wrong", user.Lang))
 		handler.Redirect(w, r, "/setting")
 		return
 	}
-	user.Password = password
+	passwordUpdated, err := tool.HashMessage(password)
+	if err != nil {
+		handler.SetMsg(&w, local.Translate("msg.failed", user.Lang))
+		handler.Redirect(w, r, "/setting")
+		return
+	}
+	user.Password = passwordUpdated
 	store.DB.Save(&user)
 	handler.SetMsg(&w, local.Translate("msg.updated", user.Lang))
 	handler.Redirect(w, r, "/setting")

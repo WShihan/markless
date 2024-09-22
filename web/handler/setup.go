@@ -33,7 +33,8 @@ func InitEnv(env *injection.Env) {
 	})
 	handler := cos.Handler(ApplyHooks(Router.Mux, LogRequest))
 	runAt := fmt.Sprintf("127.0.0.1:%d", Env.Port)
-	util.Logger.Info("server run in:", runAt+Env.BaseURL)
+	util.Logger.Info(fmt.Sprintf("version:%s\tcommit:%s\tbuild-time:%s", env.Version, env.Commit, env.BuildTime))
+	util.Logger.Info(fmt.Sprintf("server run in:\thttp://%s", runAt+Env.BaseURL))
 	Server = http.Server{
 		Addr:    runAt,
 		Handler: handler,

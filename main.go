@@ -11,6 +11,12 @@ import (
 	"markless/web/view/page"
 )
 
+var (
+	Commit    string
+	Version   string
+	BuildTime string
+)
+
 func main() {
 	Title := flag.String("title", "markless", "网站名称")
 	BaseURL := flag.String("baseurl", "", "根路由")
@@ -25,6 +31,9 @@ func main() {
 		Title:       *Title,
 		DataBaseURL: *DataBaseURL,
 		Port:        *Port,
+		Version:     Version,
+		Commit:      Commit,
+		BuildTime:   BuildTime,
 	}
 	util.InitENV(&env)
 	store.InitDB(*DataBaseURL)

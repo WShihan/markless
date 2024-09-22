@@ -13,6 +13,7 @@ import (
 	"time"
 
 	"github.com/google/uuid"
+	"golang.org/x/crypto/bcrypt"
 )
 
 func FileOrPathExists(filePath string) bool {
@@ -71,4 +72,17 @@ func ShortUID(length int) (uid string) {
 	start := rand.Intn(len(rawID) - length - 1)
 	uid = rawID[start : length+start]
 	return
+}
+
+func HashMessage(password string) (string, error) {
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+	if err != nil {
+		return "", err
+	}
+	return string(hashedPassword), nil
+}
+
+func ValidateHash(hashedPassword, password string) error {
+	// 验证密码
+	return bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(password))
 }
