@@ -1,5 +1,6 @@
   form {
       width: 100%;
+      gap: 1em;
   }
 
   ul {
@@ -11,10 +12,12 @@
           justify-content: space-around;
           gap: 1em;
           margin: 1em 0em;
-
           input,
           textarea {
               flex: 1;
+          }
+          label {
+            min-width: 6em;
           }
       }
   }

@@ -1,5 +1,6 @@
 {{ define "style"}}
 <link rel="stylesheet" href="{{$.Env.BaseURL}}/static/css/link_add.css" />
+<link rel="stylesheet" href="{{$.Env.BaseURL}}/static/css/link_edit.css" />
 <style>
   .tags {
     display: flex;
@@ -48,14 +49,15 @@
     <input  id="tags" class="invisible" type="text" name="tags" value="" />
     <button class="submit" onclick="deleteTags(event)">{{ i18n "page.tags.detail.delete.header" $.Page.Lang }}</button>
   </details>
+  <details>
+    <summary>{{ i18n "page.tags.detail.add.summary" $.Page.Lang }}</summary>
+    <form action="{{$.Env.BaseURL}}/tag/add" method="post">
+      <textarea type="text" name="tag" aria-multiline="true" placeholder="{{ i18n "page.tags.detail.add.placeholder" $.Page.Lang }}"></textarea>
+      <button class="submit" type="submit" onclick="return confirm('{{ i18n "confirm.add" $.Page.Lang }}')">{{ i18n "button.add" $.Page.Lang }}</button>
+    </form>
+  </details>
 </div>
-<details>
-  <summary>{{ i18n "page.tags.detail.add.summary" $.Page.Lang }}</summary>
-  <form action="{{$.Env.BaseURL}}/tag/add" method="post">
-    <textarea type="text" name="tag" aria-multiline="true" placeholder="{{ i18n "page.tags.detail.add.placeholder" $.Page.Lang }}"></textarea>
-    <button class="submit" type="submit" onclick="return confirm('{{ i18n "confirm.add" $.Page.Lang }}')">{{ i18n "button.add" $.Page.Lang }}</button>
-  </form>
-</details>
+
 <script defer>
   let allTagEle = document.getElementById('all-tag')
   let curTagEle = document.getElementById('current-tag')

@@ -87,3 +87,7 @@ func ValidateHash(hashedPassword, password string) error {
 func DefaultLanguage() string {
 	return "zh-CN"
 }
+
+func RandomN(max int) int {
+	return rand.Intn(max)
+}

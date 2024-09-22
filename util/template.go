@@ -12,6 +12,7 @@ func GetFuncMap() template.FuncMap {
 		"Increase":     tool.Increase,
 		"Decrease":     tool.Decrease,
 		"TimeFMT":      tool.TimeFMT,
+		"RandomN":      tool.RandomN,
 		"i18n":         local.Translate,
 	}
 }

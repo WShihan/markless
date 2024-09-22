@@ -4,8 +4,12 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
-    <link rel=“canonical” href=“https://example.com/sample-page/” />
     <meta name="description" content="{{i18n $.Env.Title $.Page.Lang}}，记录网联网。" />
+    <meta http-equiv="Expires" content="0">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Cache-control" content="no-cache">
+    <meta http-equiv="Cache" content="no-cache">
+    <link rel=“canonical” href=“https://example.com/sample-page/” />
     <link rel="icon" href="{{$.Env.BaseURL}}/static/img/favicon16.ico" sizes="16x16" type="image/x-icon">
     <link rel="icon" href="{{$.Env.BaseURL}}/static/img/favicon32.ico" sizes="32x32" type="image/x-icon">
     <link rel="icon" href="{{$.Env.BaseURL}}/static/img/favicon48.ico" sizes="48x48" type="image/x-icon">
@@ -31,36 +35,12 @@
           </span>
         </div>
         <div class="navs">
-          {{ if eq .Page.Active "all"}}
-          <span class="nav-item btn active"><a href="{{$.Env.BaseURL}}/all">{{i18n "nav.all" $.Page.Lang}}</a></span>
-          {{ else }}
-          <span class="nav-item btn"><a href="{{$.Env.BaseURL}}/all">{{i18n "nav.all" $.Page.Lang}}</a></span>
-          {{ end }}
-          {{ if eq .Page.Active "unread"}}
-          <span class="nav-item btn active"><a href="{{$.Env.BaseURL}}/unread">{{i18n "nav.unread" $.Page.Lang}}</a></span>
-          {{ else }}
-          <span class="nav-item btn"><a href="{{$.Env.BaseURL}}/unread">{{i18n "nav.unread" $.Page.Lang}}</a></span>
-          {{ end }}
-          {{ if eq .Page.Active "read"}}
-          <span class="nav-item btn active"><a href="{{$.Env.BaseURL}}/read">{{i18n "nav.read" $.Page.Lang}}</a></span>
-          {{ else }}
-          <span class="nav-item btn"><a href="{{$.Env.BaseURL}}/read">{{i18n "nav.read" $.Page.Lang}}</a></span>
-          {{ end }}
-          {{ if eq .Page.Active "link-find"}}
-          <span class="nav-item btn active"><a href="{{$.Env.BaseURL}}/link/find">{{i18n "nav.link-find" $.Page.Lang}}</a></span>
-          {{ else }}
-          <span class="nav-item btn"><a href="{{$.Env.BaseURL}}/link/find">{{i18n "nav.link-find" $.Page.Lang}}</a></span>
-          {{ end }}
-          {{ if eq .Page.Active "tags"}}
-          <span class="nav-item btn active"><a href="{{$.Env.BaseURL}}/tags">{{i18n "nav.tags" $.Page.Lang}}</a></span>
-          {{ else }}
-          <span class="nav-item btn"><a href="{{$.Env.BaseURL}}/tags">{{i18n "nav.tags" $.Page.Lang}}</a></span>
-          {{ end }}
-          {{ if eq .Page.Active "setting"}}
-          <span class="nav-item btn active"><a href="{{$.Env.BaseURL}}/setting">{{i18n "nav.setting" $.Page.Lang}}</a></span>
-          {{ else }}
-          <span class="nav-item btn"><a href="{{$.Env.BaseURL}}/setting">{{i18n "nav.setting" $.Page.Lang}}</a></span>
-          {{ end }}
+          <span class="nav-item btn {{ if eq .Page.Active "all"}} active {{end}}"><a href="{{$.Env.BaseURL}}/all">{{i18n "nav.all" $.Page.Lang}}</a></span>
+          <span class="nav-item btn {{ if eq .Page.Active "unread"}} active {{end}}"><a href="{{$.Env.BaseURL}}/unread">{{i18n "nav.unread" $.Page.Lang}}</a></span>
+          <span class="nav-item btn {{ if eq .Page.Active "read"}} active {{end}}"><a href="{{$.Env.BaseURL}}/read">{{i18n "nav.read" $.Page.Lang}}</a></span>
+          <span class="nav-item btn {{ if eq .Page.Active "link-find"}} active {{end}}"><a href="{{$.Env.BaseURL}}/link/find">{{i18n "nav.link-find" $.Page.Lang}}</a></span>
+          <span class="nav-item btn {{ if eq .Page.Active "tags"}} active {{end}}"><a href="{{$.Env.BaseURL}}/tags">{{i18n "nav.tags" $.Page.Lang}}</a></span>
+          <span class="nav-item btn {{ if eq .Page.Active "setting"}} active {{ end}}"><a href="{{$.Env.BaseURL}}/setting?n={{ RandomN 10 }}">{{i18n "nav.setting" $.Page.Lang}}</a></span>
           <span class="nav-item btn" onclick="logout('{{$.Env.BaseURL}}/login')">{{i18n "nav.logout" $.Page.Lang}}</span>
         </div>
       </header>

@@ -86,9 +86,10 @@ func UserLogin(w http.ResponseWriter, r *http.Request, params httprouter.Params)
 			handler.Redirect(w, r, "/login")
 			return
 		}
+		expires := time.Now().Add(time.Duration(Env.JWTExpire) * time.Minute)
 		claims := jwt.MapClaims{
 			"uid": user.Uid,
-			"exp": jwt.NewNumericDate(time.Now().Add(time.Minute * time.Duration(Env.JWTExpire))),
+			"exp": expires.Unix(),
 		}
 		token, err := util.CreateAndEncryptJWT(claims, []byte(Env.HmacSecret), []byte(Env.SecretKey))
 		if err != nil {
@@ -102,9 +103,9 @@ func UserLogin(w http.ResponseWriter, r *http.Request, params httprouter.Params)
 			Value: token,
 			Path:  "/",
 			// 其他可选字段
-			HttpOnly: false,       // 使 Cookie 仅通过 HTTP(S) 访问
-			Secure:   false,       // 在 HTTPS 下设置为 true
-			MaxAge:   60 * 60 * 1, // Cookie 的有效期（秒）
+			HttpOnly: false,        // 使 Cookie 仅通过 HTTP(S) 访问
+			Secure:   false,        // 在 HTTPS 下设置为 true
+			MaxAge:   60 * 60 * 24, // Cookie 的有效期（秒）
 		}
 		// 设置 Cookie
 		http.SetCookie(w, &cookie)
