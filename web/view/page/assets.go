@@ -6,8 +6,8 @@ import (
 	"net/http"
 	"strings"
 
-	"markless/assets"
 	"markless/util"
+	"markless/web/assets"
 
 	"github.com/julienschmidt/httprouter"
 )

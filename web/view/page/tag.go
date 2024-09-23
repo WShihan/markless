@@ -6,12 +6,12 @@ import (
 	"strings"
 	"time"
 
-	"markless/assets"
 	"markless/injection"
 	"markless/local"
 	"markless/model"
 	"markless/store"
 	"markless/util"
+	"markless/web/assets"
 	"markless/web/handler"
 
 	"github.com/julienschmidt/httprouter"

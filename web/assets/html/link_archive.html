@@ -47,25 +47,27 @@
         {{ end }}
       </span>
     </li>
-    <li>
-      <label >
-        <span>{{ i18n "page.link.archive.label.update-time" $.Page.Lang }}</span>
-      </label>
-      <input class="disable" type="text" readonly value="{{.Data.Archive.UpdateTime | TimeFMT}}">
-    </li>
+    {{ if  .Data.Archive}}
+      <li>
+        <label >
+          <span>{{ i18n "page.link.archive.label.update-time" $.Page.Lang }}</span>
+        </label>
+        <input class="disable" type="text" readonly value="{{.Data.Archive.UpdateTime | TimeFMT}}">
+      </li>
+    {{ end }}
   </ul>
-  {{ if eq .Data.Archive.Content "" }}
-    <button class="submit" type="submit" onclick="return confirm('{{ i18n "confirm.create" $.Page.Lang }}')">{{ i18n "page.link.archive.button.create" $.Page.Lang }}</button>
+  {{ if .Data.Archive}}
+  <button class="submit" type="submit" onclick="return confirm('{{ i18n "confirm.create" $.Page.Lang }}')">{{ i18n "page.link.archive.button.create" $.Page.Lang }}</button>
   {{ else }}
     <button class="submit" type="submit" onclick="return confirm('{{ i18n "confirm.update" $.Page.Lang }}')">{{ i18n "page.link.archive.button.update" $.Page.Lang }}</button>
-  {{end }}
+  {{ end }}
 </form>
 
 <div class="archive">
-  {{ if eq .Data.Archive.Content ""}}
-    <span>{{ i18n "page.link.archive.label.empty" $.Page.Lang }}</span>
-  {{ else }}
+  {{ if .Data.Archive}}
     {{ .Data.Archive.Content | HTML}}
+  {{ else }}
+    <span>{{ i18n "page.link.archive.label.empty" $.Page.Lang }}</span>
   {{ end }}
 </div>
 

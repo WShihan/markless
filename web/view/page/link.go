@@ -6,14 +6,15 @@ import (
 	"net/http"
 	"strconv"
 	"strings"
+	"time"
 
-	"markless/assets"
 	"markless/injection"
 	"markless/local"
 	"markless/model"
 	"markless/service"
 	"markless/store"
 	"markless/util"
+	"markless/web/assets"
 	"markless/web/handler"
 
 	"github.com/julienschmidt/httprouter"
@@ -347,8 +348,17 @@ func LinkUpdateArchive(w http.ResponseWriter, r *http.Request, params httprouter
 		handler.Redirect(w, r, r.Referer())
 		return
 	}
+	if link.Archive != nil {
+		link.Archive.Content = pageInfo.Content
+		link.Archive.UpdateTime = time.Now()
+	} else {
+		link.Archive = &model.Archive{
+			LinkID:     link.ID,
+			Content:    pageInfo.Content,
+			UpdateTime: time.Now(),
+		}
+	}
 
-	link.Archive.Content = pageInfo.Content
 	err = store.DB.Save(&link.Archive).Error
 	if err != nil {
 		handler.Redirect(w, r, r.Referer())

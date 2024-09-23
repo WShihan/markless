@@ -2,11 +2,11 @@ package page
 
 import (
 	"html/template"
-	"markless/assets"
 	"markless/injection"
 	"markless/local"
 	"markless/store"
 	"markless/util"
+	"markless/web/assets"
 	"net/http"
 )
 

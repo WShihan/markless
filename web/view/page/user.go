@@ -4,13 +4,13 @@ import (
 	"net/http"
 	"time"
 
-	"markless/assets"
 	"markless/injection"
 	"markless/local"
 	"markless/model"
 	"markless/store"
 	"markless/tool"
 	"markless/util"
+	"markless/web/assets"
 	"markless/web/handler"
 
 	"github.com/golang-jwt/jwt/v4"
