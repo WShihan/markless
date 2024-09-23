@@ -6,7 +6,6 @@
     "nav.setting": "Settings",
     "nav.link-find": "+Bookmark",
     "nav.logout": "Logout",
-
     "page.all": "All",
     "page.unread": "Unread",
     "page.read": "Read",
@@ -25,7 +24,6 @@
     "page.all.current-tip": "Current Page",
     "page.all.per-page": "Per Page",
     "page.all.total-page": "Total",
-
     "page.link-find.form.url.label": "URL",
     "page.link-find.form.url.placeholder": "Required Field",
     "page.link-find.form.desc.label": "Description",
@@ -35,14 +33,12 @@
     "page.link-find.details.info.summary": "Additional Information",
     "page.link-find.details.tags.summary": "Select Tags",
     "page.link-find.tags.handle-tip": "Double-click to add existing tags below ↑↑",
-
     "page.tags.detail.all.summary": "Tag Management",
     "page.tags.detail.all.header": "All Tags",
     "page.tags.detail.all.tip": "Double-click to add or remove tags",
     "page.tags.detail.delete.header": "Remove Tag",
     "page.tags.detail.add.summary": "Add Tag",
     "page.tags.detail.add.placeholder": "Separate multiple tags with &",
-
     "page.lin.edit.title.label": "Title",
     "page.lin.edit.url.label": "URL",
     "page.lin.edit.icon.label": "Icon",
@@ -52,7 +48,6 @@
     "page.lin.edit.all-tags.label": "All Tags",
     "page.lin.edit.detail.basic.summary": "Basic Information",
     "page.lin.edit.detail.tag.summary": "Modify Tags",
-
     "page.tag.edit.name.label": "Tag Name",
     "page.tag.edit.create-time.label": "Address",
     "page.tag.edit.tip": "Double-click to add or remove bookmarks",
@@ -60,7 +55,6 @@
     "page.tag.edit.all-tags.label": "Unapplied Bookmarks",
     "page.tag.edit.detail.basic.summary": "Basic Information",
     "page.tag.edit.detail.tag.summary": "Bookmark",
-
     "page.setting.detail.basic.summary": "Basic Information",
     "page.setting.detail.password.summary": "Password",
     "page.setting.detail.token.summary": "Key",
@@ -69,59 +63,67 @@
     "page.setting.password.label": "Original Password",
     "page.setting.password-new.label": "New Password",
     "page.setting.password-confirm.label": "Confirm Password",
-
     "page.login.username.label": "Username",
     "page.login.password.label": "Password",
     "page.login.to-register.lable": "Go to Register",
     "page.login.btn.label": "Password",
-
+    "page.login.error.password": "Wrong password",
     "page.register.username.label": "Username must be more than 4 characters",
     "page.register.password.label": "Password must be more than 6 characters",
     "page.register.password-confirm.label": "Confirm Password",
     "page.register.to-register.lable": "Go to Login",
     "page.register.btn.label": "Password",
-
+    "page.link.archive.title": "View Archive",
+    "page.link.archive.label.title": "Title",
+    "page.link.archive.label.url": "URL",
+    "page.link.archive.label.tag": "Title",
+    "page.link.archive.label.update-time": "Update Date",
+    "page.link.archive.label.empty": "No Archive",
+    "page.link.archive.button.create": "Create",
+    "page.link.archive.button.update": "Rebuild",
     "link.btn.read": "Mark as Read",
     "link.btn.unread": "Mark as Unread",
     "link.btn.edit": "Edit",
     "link.btn.delete": "Delete",
+    "link.btn.copy": "Copy Link",
+    "link.btn.copy.success": "",
+    "link.btn.copy.failed": "Copy failed",
+    "link.btn.archive": "View Archive",
     "link.btn.mark-as-read": "Mark All as Read",
     "link.btn.mark-as-unread": "Mark All as Unread",
-
     "button.add": "Add",
     "button.update": "Update",
     "button.create": "Create",
     "button.delete": "Delete",
     "button.login": "Login",
     "button.register": "Register",
-
     "confirm.add": "Confirm to add?",
     "confirm.delete": "Confirm to delete?",
     "confirm.update": "Confirm to update?",
     "confirm.create": "Confirm to create?",
-
     "msg.failed": "Operation failed",
     "msg.success": "Operation succeeded",
     "msg.deleted": "Deleted",
     "msg.created": "Created",
     "msg.updated": "Updated",
-
     "tip.user.not-exist": "User does not exist",
     "tip.password.wrong": "Incorrect password",
     "tip.password.not-match": "New passwords do not match",
     "tip.password.length": "Username or password length is incorrect",
     "tip.user.username-wrong": "Incorrect username",
     "tip.user.already-exist": "Username already exists",
-
     "tip.404.title": "Page Not Found",
     "tip.404.desctiption": "The page you are trying to view does not exist.",
     "tip.method-not-allowed.title": "Method Not Allowed",
     "tip.method-not-allowed.desctiption": "The request method is not allowed, please check and try again.",
-
     "tip.link.empty": "Link cannot be empty",
     "tip.link.not-exist": "Link does not exist",
     "tip.link.mark-as-read": "Mark all bookmarks as read",
     "tip.link.mark-as-unread": "Mark all bookmarks as unread",
-
-    "tip.tag.unique": "Current user tag is duplicated"
+    "tip.tag.unique": "Current user tag is duplicated",
+    "env.title": "Information of Application",
+    "env.label.version": "Version",
+    "env.label.commit": "Git commit ID",
+    "env.label.build-time": "Build Date",
+    "env.label.base-url": "Base URL"
 }

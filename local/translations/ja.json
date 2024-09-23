@@ -6,7 +6,6 @@
     "nav.setting": "設定",
     "nav.link-find": "+ブックマーク",
     "nav.logout": "ログアウト",
-
     "page.all": "すべて",
     "page.unread": "未読",
     "page.read": "既読",
@@ -25,7 +24,6 @@
     "page.all.current-tip": "現在のページ",
     "page.all.per-page": "ページあたり",
     "page.all.total-page": "合計",
-
     "page.link-find.form.url.label": "リンクアドレス",
     "page.link-find.form.url.placeholder": "必須項目",
     "page.link-find.form.desc.label": "説明文",
@@ -35,14 +33,12 @@
     "page.link-find.details.info.summary": "その他の情報",
     "page.link-find.details.tags.summary": "タグを選択",
     "page.link-find.tags.handle-tip": "既存のタグ項目を追加するには、ダブルクリックしてください↑↑",
-
     "page.tags.detail.all.summary": "タグ管理",
     "page.tags.detail.all.header": "すべてのタグ",
     "page.tags.detail.all.tip": "ダブルクリックしてタグを追加または削除します",
     "page.tags.detail.delete.header": "タグを削除",
     "page.tags.detail.add.summary": "タグを追加",
     "page.tags.detail.add.placeholder": "複数のタグは&で区切ります",
-
     "page.lin.edit.title.label": "タイトル",
     "page.lin.edit.url.label": "アドレス",
     "page.lin.edit.icon.label": "アイコン",
@@ -52,7 +48,6 @@
     "page.lin.edit.all-tags.label": "すべてのタグ",
     "page.lin.edit.detail.basic.summary": "基本情報",
     "page.lin.edit.detail.tag.summary": "タグを変更",
-
     "page.tag.edit.name.label": "タグ名",
     "page.tag.edit.create-time.label": "アドレス",
     "page.tag.edit.tip": "ダブルクリックしてブックマークを追加または削除します",
@@ -60,7 +55,6 @@
     "page.tag.edit.all-tags.label": "未適用のブックマーク",
     "page.tag.edit.detail.basic.summary": "基本情報",
     "page.tag.edit.detail.tag.summary": "ブックマーク",
-
     "page.setting.detail.basic.summary": "基本情報",
     "page.setting.detail.password.summary": "パスワード",
     "page.setting.detail.token.summary": "キー",
@@ -69,59 +63,67 @@
     "page.setting.password.label": "元のパスワード",
     "page.setting.password-new.label": "新しいパスワード",
     "page.setting.password-confirm.label": "パスワードを確認",
-
     "page.login.username.label": "ユーザー名",
     "page.login.password.label": "パスワード",
     "page.login.to-register.lable": "登録へ",
     "page.login.btn.label": "パスワード",
-
+    "page.login.error.password": "不正なパスワード",
     "page.register.username.label": "ユーザー名は4文字以上",
     "page.register.password.label": "パスワードは6文字以上",
     "page.register.password-confirm.label": "パスワードを確認",
     "page.register.to-register.lable": "ログインへ",
     "page.register.btn.label": "パスワード",
-
+    "page.link.archive.title": "查看快照",
+    "page.link.archive.label.title": "タイトル",
+    "page.link.archive.label.url": "リンク",
+    "page.link.archive.label.tag": "タグ",
+    "page.link.archive.label.update-time": "生成日期",
+    "page.link.archive.label.empty": "未生成快照",
+    "page.link.archive.button.create": "重新生成",
+    "page.link.archive.button.update": "重新生成",
     "link.btn.read": "既読にする",
     "link.btn.unread": "未読にする",
     "link.btn.edit": "編集",
     "link.btn.delete": "削除",
+    "link.btn.copy": "复制链接",
+    "link.btn.copy.success": "コピー成功",
+    "link.btn.copy.failed": "コピー失敗",
+    "link.btn.archive": "查看快照",
     "link.btn.mark-as-read": "すべてを既読にする",
     "link.btn.mark-as-unread": "すべてを未読にする",
-
     "button.add": "追加",
     "button.update": "更新",
     "button.create": "作成",
     "button.delete": "削除",
     "button.login": "ログイン",
     "button.register": "登録",
-
     "confirm.add": "追加してもよろしいですか？",
     "confirm.delete": "削除してもよろしいですか？",
     "confirm.update": "更新してもよろしいですか？",
     "confirm.create": "作成してもよろしいですか？",
-
     "msg.failed": "操作に失敗しました",
     "msg.success": "操作が成功しました",
     "msg.deleted": "削除されました",
     "msg.created": "作成されました",
     "msg.updated": "更新されました",
-
     "tip.user.not-exist": "ユーザーが存在しません",
     "tip.password.wrong": "パスワードが正しくありません",
     "tip.password.not-match": "新しいパスワードが一致しません",
     "tip.password.length": "ユーザー名またはパスワードの長さが正しくありません",
     "tip.user.username-wrong": "ユーザー名が正しくありません",
     "tip.user.already-exist": "ユーザー名はすでに存在します",
-
     "tip.404.title": "ページが見つかりません",
     "tip.404.desctiption": "表示しようとしているページは存在しません。",
     "tip.method-not-allowed.title": "許可されていないリクエストメソッド",
     "tip.method-not-allowed.desctiption": "許可されていないリクエストメソッドです。確認して再試行してください。",
-
     "tip.link.empty": "リンクは空にできません",
     "tip.link.not-exist": "リンクは存在しません",
     "tip.link.mark-as-read": "すべてのブックマークを既読にする",
     "tip.link.mark-as-unread": "すべてのブックマークを未読にする",
-
-    "tip.tag.unique": "現在のユーザーのタグが重複しています"
+    "tip.tag.unique": "現在のユーザーのタグが重複しています",
+    "env.title": "应用信息",
+    "env.label.version": "所属版本",
+    "env.label.commit": "GIT提交",
+    "env.label.build-time": "构建时间",
+    "env.label.base-url": "根路由"
 }

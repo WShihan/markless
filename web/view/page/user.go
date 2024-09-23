@@ -18,7 +18,13 @@ import (
 )
 
 func LoginPage(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
-	lang := local.GetPreferredLanguage(r)
+	var lang string
+	langCookie, err := r.Cookie("lang")
+	if err != nil {
+		lang = local.GetPreferredLanguage(r)
+	} else {
+		lang = langCookie.Value
+	}
 
 	tt, _ := util.GetBaseTemplate().ParseFS(assets.HTML, "html/template_unlogin.html", "html/login.html")
 	inject := injection.LinkPage{
@@ -34,7 +40,13 @@ func LoginPage(w http.ResponseWriter, r *http.Request, params httprouter.Params)
 }
 
 func RegisterPage(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
-	lang := local.GetPreferredLanguage(r)
+	var lang string
+	langCookie, err := r.Cookie("lang")
+	if err != nil {
+		lang = local.GetPreferredLanguage(r)
+	} else {
+		lang = langCookie.Value
+	}
 
 	tt, _ := util.GetBaseTemplate().ParseFS(assets.HTML, "html/template_unlogin.html", "html/register.html")
 	inject := injection.LinkPage{
@@ -98,7 +110,7 @@ func UserLogin(w http.ResponseWriter, r *http.Request, params httprouter.Params)
 			return
 		}
 
-		cookie := http.Cookie{
+		jwtCookie := http.Cookie{
 			Name:  "markless-token",
 			Value: token,
 			Path:  "/",
@@ -107,8 +119,17 @@ func UserLogin(w http.ResponseWriter, r *http.Request, params httprouter.Params)
 			Secure:   false,        // 在 HTTPS 下设置为 true
 			MaxAge:   60 * 60 * 24, // Cookie 的有效期（秒）
 		}
-		// 设置 Cookie
-		http.SetCookie(w, &cookie)
+
+		langCookie := http.Cookie{
+			Name:     "lang",
+			Value:    user.Lang,
+			Path:     "/",
+			HttpOnly: false,
+			Secure:   false,
+			MaxAge:   60 * 60 * 24,
+		}
+		http.SetCookie(w, &jwtCookie)
+		http.SetCookie(w, &langCookie)
 		handler.Redirect(w, r, "/")
 	} else {
 		msg := local.Translate("tip.user.not-exist", user.Lang)

@@ -7,6 +7,7 @@
 *.dll
 *.so
 *.dylib
+*temp.json
 
 # Test binary, built with `go test -c`
 *.test
@@ -33,3 +34,5 @@ maphoto.csv
 assets/static/js/pvr.js
 logs/*
 assets/html/test.html
+__pycache__/*
+local/translations/__pycache__
