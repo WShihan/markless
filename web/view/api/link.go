@@ -38,10 +38,6 @@ func LinkAddApi(w http.ResponseWriter, r *http.Request, params httprouter.Params
 		panic(err)
 	}
 	link.Read = postBody.Read
-	err = store.DB.Create(&link).Error
-	if err != nil {
-		panic(err)
-	}
 	service.LinkAttachTag(user, &link, strings.Split(postBody.Tags, "&"))
 
 	util.Logger.Info("add link success" + postBody.Url)
@@ -88,7 +84,8 @@ func LinkDel(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
 	id, _ := strconv.ParseInt(params.ByName("id"), 10, 64)
 	link, _ := store.GetLinkByUser(user, int(id))
 	store.DB.Where("user_id = ?", user.ID).First(&link, id)
-	err := store.DB.Unscoped().Delete(&link).Error
+	// err := store.DB.Unscoped().Delete(&link).Error
+	err := store.DB.Select("Archive").Unscoped().Delete(&link).Error
 	if err != nil {
 		util.Logger.Error("delete link failed" + err.Error())
 		handler.ApiSuccess(&w, &handler.ApiResponse{Msg: err.Error()})

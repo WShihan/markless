@@ -82,6 +82,15 @@
     "page.register.to-register.lable": "去登录",
     "page.register.btn.label": "密码",
 
+    "page.link.archive.title": "查看快照",
+    "page.link.archive.label.title": "标  题",
+    "page.link.archive.label.url": "链  接",
+    "page.link.archive.label.tag": "标  签",
+    "page.link.archive.label.update-time": "生成日期",
+    "page.link.archive.label.empty": "未生成快照",
+    "page.link.archive.button.create": "重新生成",
+    "page.link.archive.button.update": "重新生成",
+
     "link.btn.read": "标为已阅",
     "link.btn.unread": "标为未阅",
     "link.btn.edit": "编辑",
@@ -89,7 +98,7 @@
     "link.btn.copy": "复制链接",
     "link.btn.copy.success": "复制成功",
     "link.btn.copy.failed": "复制失败",
-    "link.btn.image": "快照",
+    "link.btn.archive": "查看快照",
     "link.btn.mark-as-read": "全部标记为已阅",
     "link.btn.mark-as-unread": "全部标记为未阅",
 

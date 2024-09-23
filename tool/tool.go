@@ -88,6 +88,6 @@ func DefaultLanguage() string {
 	return "zh-CN"
 }
 
-func RandomN(max int) int {
-	return rand.Intn(max)
+func RandomN() int {
+	return rand.Intn(100)
 }

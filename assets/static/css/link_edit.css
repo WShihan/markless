@@ -9,7 +9,7 @@
 
       li {
           display: flex;
-          justify-content: space-around;
+          justify-content: left;
           gap: 1em;
           margin: 1em 0em;
           input,
@@ -17,6 +17,8 @@
               flex: 1;
           }
           label {
+            display: flex;
+            align-items: center;
             min-width: 6em;
           }
       }

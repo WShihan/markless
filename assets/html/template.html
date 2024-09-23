@@ -35,12 +35,12 @@
           </span>
         </div>
         <div class="navs">
-          <span class="nav-item btn {{ if eq .Page.Active "all"}} active {{end}}"><a href="{{$.Env.BaseURL}}/all">{{i18n "nav.all" $.Page.Lang}}</a></span>
-          <span class="nav-item btn {{ if eq .Page.Active "unread"}} active {{end}}"><a href="{{$.Env.BaseURL}}/unread">{{i18n "nav.unread" $.Page.Lang}}</a></span>
-          <span class="nav-item btn {{ if eq .Page.Active "read"}} active {{end}}"><a href="{{$.Env.BaseURL}}/read">{{i18n "nav.read" $.Page.Lang}}</a></span>
-          <span class="nav-item btn {{ if eq .Page.Active "link-find"}} active {{end}}"><a href="{{$.Env.BaseURL}}/link/find">{{i18n "nav.link-find" $.Page.Lang}}</a></span>
-          <span class="nav-item btn {{ if eq .Page.Active "tags"}} active {{end}}"><a href="{{$.Env.BaseURL}}/tags">{{i18n "nav.tags" $.Page.Lang}}</a></span>
-          <span class="nav-item btn {{ if eq .Page.Active "setting"}} active {{ end}}"><a href="{{$.Env.BaseURL}}/setting?n={{ RandomN 10 }}">{{i18n "nav.setting" $.Page.Lang}}</a></span>
+          <span class="nav-item btn {{ if eq .Page.Active "all"}} active {{end}}"><a href="{{$.Env.BaseURL}}/all?rdn={{ RandomN }}">{{i18n "nav.all" $.Page.Lang}}</a></span>
+          <span class="nav-item btn {{ if eq .Page.Active "unread"}} active {{end}}"><a href="{{$.Env.BaseURL}}/unread?rdn={{ RandomN }}">{{i18n "nav.unread" $.Page.Lang}}</a></span>
+          <span class="nav-item btn {{ if eq .Page.Active "read"}} active {{end}}"><a href="{{$.Env.BaseURL}}/read?rdn={{ RandomN }}">{{i18n "nav.read" $.Page.Lang}}</a></span>
+          <span class="nav-item btn {{ if eq .Page.Active "link-find"}} active {{end}}"><a href="{{$.Env.BaseURL}}/link/find?rdn={{ RandomN }}">{{i18n "nav.link-find" $.Page.Lang}}</a></span>
+          <span class="nav-item btn {{ if eq .Page.Active "tags"}} active {{end}}"><a href="{{$.Env.BaseURL}}/tags?rdn={{ RandomN }}">{{i18n "nav.tags" $.Page.Lang}}</a></span>
+          <span class="nav-item btn {{ if eq .Page.Active "setting"}} active {{ end}}"><a href="{{$.Env.BaseURL}}/setting?rdn={{ RandomN }}">{{i18n "nav.setting" $.Page.Lang}}</a></span>
           <span class="nav-item btn" onclick="logout('{{$.Env.BaseURL}}/login')">{{i18n "nav.logout" $.Page.Lang}}</span>
         </div>
       </header>

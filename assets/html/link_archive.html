@@ -1,0 +1,72 @@
+{{ define "style"}}
+<link rel="stylesheet" href="{{$.Env.BaseURL}}/static/css/link_add.css" />
+<link rel="stylesheet" href="{{$.Env.BaseURL}}/static/css/link_edit.css" />
+<style>
+  .archive {
+    display: flex;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    justify-content: center;
+    align-items: center;
+    margin: 2em auto;
+    line-height: 2em !important;
+    div,
+    section,
+    img
+    {
+      max-width: 100% !important;
+    }
+  }
+</style>
+
+{{ end }} 
+
+{{ define "content"}}
+<form action="{{$.Env.BaseURL}}/api/link/update/archive/{{.Data.ID}}?rdn={{ RandomN}}" method="get">
+  <ul>
+    <li>
+      <label >
+        <span>{{ i18n "page.link.archive.label.title" $.Page.Lang }}</span>
+      </label>
+      <input class="disable" type="text" readonly value="{{.Data.Title}}">
+    </li>
+    <li>
+    <li>
+      <label >
+        <span>{{ i18n "page.link.archive.label.url" $.Page.Lang }}</span>
+      </label>
+      <input class="disable" type="text" readonly value="{{.Data.Url}}">
+    </li>
+    <li>
+      <label >
+        <span>{{ i18n "page.link.archive.label.tag" $.Page.Lang }}</span>
+      </label>
+      <span>
+        {{ range .Data.Tags }}
+        <span>#{{.Name}}&nbsp;&nbsp;</span>
+        {{ end }}
+      </span>
+    </li>
+    <li>
+      <label >
+        <span>{{ i18n "page.link.archive.label.update-time" $.Page.Lang }}</span>
+      </label>
+      <input class="disable" type="text" readonly value="{{.Data.Archive.UpdateTime | TimeFMT}}">
+    </li>
+  </ul>
+  {{ if eq .Data.Archive.Content "" }}
+    <button class="submit" type="submit" onclick="return confirm('{{ i18n "confirm.create" $.Page.Lang }}')">{{ i18n "page.link.archive.button.create" $.Page.Lang }}</button>
+  {{ else }}
+    <button class="submit" type="submit" onclick="return confirm('{{ i18n "confirm.update" $.Page.Lang }}')">{{ i18n "page.link.archive.button.update" $.Page.Lang }}</button>
+  {{end }}
+</form>
+
+<div class="archive">
+  {{ if eq .Data.Archive.Content ""}}
+    <span>{{ i18n "page.link.archive.label.empty" $.Page.Lang }}</span>
+  {{ else }}
+    {{ .Data.Archive.Content | HTML}}
+  {{ end }}
+</div>
+
+{{ end }}

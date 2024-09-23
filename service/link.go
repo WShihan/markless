@@ -13,17 +13,27 @@ import (
 
 func LinkCreate(user model.User, webURL string, desc string) (model.Link, error) {
 	link := model.Link{}
-	store.DB.Where("url = ? AND user_id = ?", webURL, user.ID).Find(&link)
+	store.DB.Where("url = ?", webURL).Find(&link)
 	if link.ID != 0 && link.UserID == user.ID {
 		util.Logger.Warn("link重复:" + webURL)
 		return link, errors.New("链接已存在")
 	} else if link.ID != 0 && link.UserID != user.ID {
+		existArch := model.Archive{}
+		store.DB.Model(&link).Association("Archive").Find(&existArch)
+
 		newLink := model.Link{}
 		newLink.UserID = user.ID
 		newLink.Url = webURL
 		newLink.Title = link.Title
 		newLink.Desc = desc
 		newLink.Icon = link.Icon
+		if existArch.Content != "" {
+			newLink.Archive = &model.Archive{
+				UpdateTime: time.Now(),
+				Content:    existArch.Content,
+			}
+		}
+		store.DB.Create(&newLink)
 		return newLink, nil
 	} else {
 		newLink := model.Link{
@@ -31,26 +41,26 @@ func LinkCreate(user model.User, webURL string, desc string) (model.Link, error)
 			UserID:     user.ID,
 			Url:        webURL,
 		}
-		pageINfo, perr := util.Scrape(webURL, 10)
-		if perr != nil {
-			return newLink, perr
+		pageInfo, err := util.ParsePage(webURL)
+		if err != nil {
+			return newLink, err
 		} else {
-			if pageINfo.Preview.Title != "" {
-				newLink.Title = pageINfo.Preview.Title
+			if pageInfo.Title != "" {
+				newLink.Title = pageInfo.Title
 			} else {
 				newLink.Title = webURL
 			}
 
 			if desc != "" {
 				newLink.Desc = desc
-			} else if pageINfo.Preview.Description != "" {
-				newLink.Desc = pageINfo.Preview.Description
+			} else if pageInfo.Desc != "" {
+				newLink.Desc = pageInfo.Desc
 			} else {
 				newLink.Desc = webURL
 			}
 
-			if pageINfo.Preview.Icon != "" && strings.Contains(pageINfo.Preview.Icon, "http") {
-				newLink.Icon = pageINfo.Preview.Icon
+			if pageInfo.Icon != "" && strings.Contains(pageInfo.Icon, "http") {
+				newLink.Icon = pageInfo.Icon
 			} else {
 				// 自行解析 URL拼接favicon
 				parsedURL, err := url.Parse(webURL)
@@ -60,6 +70,11 @@ func LinkCreate(user model.User, webURL string, desc string) (model.Link, error)
 				rootPath := fmt.Sprintf("%s://%s", parsedURL.Scheme, parsedURL.Host)
 				newLink.Icon = rootPath + "/favicon.ico"
 			}
+			newLink.Archive = &model.Archive{
+				UpdateTime: time.Now(),
+				Content:    pageInfo.Content,
+			}
+			store.DB.Create(&newLink)
 			return newLink, nil
 		}
 	}

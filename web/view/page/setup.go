@@ -21,6 +21,9 @@ func LoadPage(router *handler.RouterWithPrefix, env *injection.Env) {
 	router.GET("/link/edit/:id", handler.Protect(LinkEditPage))
 	router.GET("/link/mark/read", handler.Protect(LinkMarkAllAsRead))
 	router.GET("/link/mark/unread", handler.Protect(LinkMarkAllAsUnread))
+	router.GET("/link/archive/:id", handler.Protect(LinkArchViewPage))
+	router.GET("/api/link/update/archive/:id", handler.Protect(LinkUpdateArchive))
+
 	router.GET("/tags", handler.Protect(TagsPage))
 	router.GET("/tag/edit/:id", handler.Protect(TagEditPage))
 	router.GET("/register", RegisterPage)

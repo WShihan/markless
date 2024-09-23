@@ -18,8 +18,6 @@ func LoadAPI(router *handler.RouterWithPrefix) {
 	router.GET("/api/link/delete/:id", handler.Protect(LinkDel))
 	router.GET("/api/link/read/:id", handler.Protect(LinkRead))
 	router.GET("/api/link/unread/:id", handler.Protect(LinkUnread))
-
 	router.GET("/api/tag/delete/:name", handler.Protect(TagDelApi))
-	// router.GET("/api/tag/delete/:name", handler.Protect(TagDelApi))
 
 }

@@ -240,7 +240,7 @@ func LinkEditPage(w http.ResponseWriter, r *http.Request, params httprouter.Para
 	inject := injection.LinkPage{
 		Page: injection.PageInjection{
 			Lang:   user.Lang,
-			Title:  local.Translate("page.edit", user.Lang),
+			Title:  local.Translate("page.edit-link", user.Lang),
 			Active: "",
 		},
 		Env:  Env,
@@ -256,12 +256,32 @@ func LinkAddPage(w http.ResponseWriter, r *http.Request, params httprouter.Param
 	store.DB.Model(&user).Where("user_id = ?", user.ID).Association("Tags").Find(&tags)
 	inject := injection.LinkPage{
 		Page: injection.PageInjection{
-			Title:  local.Translate("page.edit-link", user.Lang),
+			Title:  local.Translate("page.link-find", user.Lang),
 			Lang:   user.Lang,
 			Active: "link-find",
 		},
 		Env:  Env,
 		Data: tags,
+	}
+	tt.ExecuteTemplate(w, "template", inject)
+}
+func LinkArchViewPage(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
+	user, _ := store.GetUserByUID(r.Header.Get("uid"))
+	linkID := params.ByName("id")
+
+	link := model.Link{}
+	store.DB.Preload("Archive").Find(&link, linkID)
+	store.DB.Preload("Tags").Find(&link, linkID)
+
+	tt, _ := util.GetBaseTemplate().ParseFS(assets.HTML, "html/template.html", "html/link_archive.html")
+	inject := injection.LinkPage{
+		Page: injection.PageInjection{
+			Title:  local.Translate("page.link.archive.title", user.Lang),
+			Lang:   user.Lang,
+			Active: "",
+		},
+		Env:  Env,
+		Data: link,
 	}
 	tt.ExecuteTemplate(w, "template", inject)
 }
@@ -279,12 +299,7 @@ func LinkAdd(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
 	if err != nil {
 		panic(err)
 	}
-	err = store.DB.Create(&link).Error
 	service.LinkAttachTag(user, &link, tagNames)
-
-	if err != nil {
-		panic(err)
-	}
 	handler.Redirect(w, r, "/")
 
 }
@@ -317,6 +332,30 @@ func LinkUpdate(w http.ResponseWriter, r *http.Request, params httprouter.Params
 		}
 	}
 	handler.Redirect(w, r, "/")
+}
+func LinkUpdateArchive(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
+	user, _ := store.GetUserByUID(r.Header.Get("uid"))
+	id := params.ByName("id")
+	link := model.Link{}
+	store.DB.Preload("Archive").Where("user_id = ? AND id = ?", user.ID, id).First(&link)
+	if link.Url == "" {
+		handler.Redirect(w, r, r.Referer())
+		return
+	}
+	pageInfo, err := util.ParsePage(link.Url)
+	if err != nil {
+		handler.Redirect(w, r, r.Referer())
+		return
+	}
+
+	link.Archive.Content = pageInfo.Content
+	err = store.DB.Save(&link.Archive).Error
+	if err != nil {
+		handler.Redirect(w, r, r.Referer())
+		return
+	}
+	util.Logger.Info("update link success" + link.Url)
+	handler.Redirect(w, r, r.Referer())
 }
 
 func LinkMarkAllAsRead(w http.ResponseWriter, r *http.Request, params httprouter.Params) {

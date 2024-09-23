@@ -14,6 +14,7 @@ type Link struct {
 	Title      string    `json:"title"`
 	Desc       string    `json:"desc"`
 	Read       bool      `json:"read"`
+	Archive    *Archive  `json:"archive"`
 	CreateTime time.Time `gorm:"autoCreateTime" json:"create_time" `
 	Tags       []Tag     `gorm:"many2many:link_tags;"`
 	UserID     int       `json:"user_id"`

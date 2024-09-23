@@ -6,6 +6,10 @@ import (
 	"markless/tool"
 )
 
+func RenderHTML(HTMLString string) template.HTML {
+	return template.HTML(HTMLString)
+}
+
 func GetFuncMap() template.FuncMap {
 	return template.FuncMap{
 		"JoinTagNames": tool.JoinTagNames,
@@ -14,6 +18,7 @@ func GetFuncMap() template.FuncMap {
 		"TimeFMT":      tool.TimeFMT,
 		"RandomN":      tool.RandomN,
 		"i18n":         local.Translate,
+		"HTML":         RenderHTML,
 	}
 }
 
