@@ -2,7 +2,7 @@ package api
 
 import (
 	"markless/injection"
-	"markless/web/handler"
+	handler "markless/web/server"
 )
 
 var (

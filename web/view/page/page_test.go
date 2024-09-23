@@ -5,7 +5,7 @@ import (
 	"markless/store"
 	"markless/tool"
 	"markless/util"
-	"markless/web/handler"
+	handler "markless/web/server"
 	"net/http"
 	"net/http/httptest"
 	"testing"

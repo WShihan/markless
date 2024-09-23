@@ -281,11 +281,10 @@ a {
     justify-content: space-between;
     width: var(--base-width);
     min-height: 100vh;
-    padding: 1em;
+    padding: .5em 1em;
     margin: 0px auto;
     font-size: var(--fonts-size);
     color: var(--font-color);
-    /* background-color: rgba(236, 236, 239, 0.587); */
     box-sizing: border-box;
 }
 

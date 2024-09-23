@@ -1,4 +1,4 @@
-package handler
+package server
 
 import (
 	"fmt"
@@ -44,18 +44,20 @@ func RunServer(env *injection.Env) {
 	util.Logger.Info(fmt.Sprintf("server run in:\thttp://%s", fmt.Sprintf("127.0.0.1:%d", Env.Port)+Env.BaseURL))
 	util.Logger.Info(
 		`
-		
-           ■■■■■■■■■            
-           ■■■■■■■■■            
-           ■■■■■■■■■            
-           ■■■■■■■■■            
-           ■■■■■■■■■            
-           ■■■■ ■■■■            
-           ■■■   ■■■            
-           ■■     ■■            
-           ■       ■            
-                                
-        Welcome to Markless            `)
+							
+							■■■■■■■■■            
+							■■■■■■■■■            
+							■■■■■■■■■            
+							■■■■■■■■■            
+							■■■■■■■■■            
+							■■■■ ■■■■            
+							■■■   ■■■            
+							■■     ■■            
+							■       ■            
+									  
+						    Welcome to Markless            
+							
+		`)
 	err := Server.ListenAndServe()
 	if err != nil {
 		fmt.Println("Error starting server:", err)

@@ -15,7 +15,7 @@ import (
 	"markless/store"
 	"markless/util"
 	"markless/web/assets"
-	"markless/web/handler"
+	"markless/web/server"
 
 	"github.com/julienschmidt/httprouter"
 )
@@ -106,7 +106,7 @@ func filterLinkByKeyword(opt *injection.Search, user model.User) []model.Link {
 }
 
 func IndexPage(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
-	handler.Redirect(w, r, "/all")
+	server.Redirect(w, r, "/all")
 }
 
 func LinkAllPage(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
@@ -301,7 +301,7 @@ func LinkAdd(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
 		panic(err)
 	}
 	service.LinkAttachTag(user, &link, tagNames)
-	handler.Redirect(w, r, "/")
+	server.Redirect(w, r, "/")
 
 }
 
@@ -332,7 +332,7 @@ func LinkUpdate(w http.ResponseWriter, r *http.Request, params httprouter.Params
 			panic(local.Translate("msg.failed", user.Lang) + err.Error())
 		}
 	}
-	handler.Redirect(w, r, "/")
+	server.Redirect(w, r, "/")
 }
 func LinkUpdateArchive(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
 	user, _ := store.GetUserByUID(r.Header.Get("uid"))
@@ -340,12 +340,12 @@ func LinkUpdateArchive(w http.ResponseWriter, r *http.Request, params httprouter
 	link := model.Link{}
 	store.DB.Preload("Archive").Where("user_id = ? AND id = ?", user.ID, id).First(&link)
 	if link.Url == "" {
-		handler.Redirect(w, r, r.Referer())
+		server.Redirect(w, r, r.Referer())
 		return
 	}
 	pageInfo, err := util.ParsePage(link.Url)
 	if err != nil {
-		handler.Redirect(w, r, r.Referer())
+		server.Redirect(w, r, r.Referer())
 		return
 	}
 	if link.Archive != nil {
@@ -361,11 +361,11 @@ func LinkUpdateArchive(w http.ResponseWriter, r *http.Request, params httprouter
 
 	err = store.DB.Save(&link.Archive).Error
 	if err != nil {
-		handler.Redirect(w, r, r.Referer())
+		server.Redirect(w, r, r.Referer())
 		return
 	}
 	util.Logger.Info("update link success" + link.Url)
-	handler.Redirect(w, r, r.Referer())
+	server.Redirect(w, r, r.Referer())
 }
 
 func LinkMarkAllAsRead(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
@@ -374,8 +374,8 @@ func LinkMarkAllAsRead(w http.ResponseWriter, r *http.Request, params httprouter
 	store.DB.Model(&link).Where("user_id = ?", user.ID).Updates(model.Link{Read: true})
 	msg := local.Translate("tip.link.mark-all-read", user.Lang)
 	util.Logger.Info(msg)
-	handler.SetMsg(&w, msg)
-	handler.Redirect(w, r, r.Referer())
+	server.SetMsg(&w, msg)
+	server.Redirect(w, r, r.Referer())
 
 }
 
@@ -389,6 +389,6 @@ func LinkMarkAllAsUnread(w http.ResponseWriter, r *http.Request, params httprout
 	}
 	msg := local.Translate("tip.link.mark-all-unread", user.Lang)
 	util.Logger.Info(msg)
-	handler.SetMsg(&w, msg)
-	handler.Redirect(w, r, r.Referer())
+	server.SetMsg(&w, msg)
+	server.Redirect(w, r, r.Referer())
 }

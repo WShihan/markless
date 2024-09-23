@@ -5,7 +5,7 @@ import (
 	"markless/model"
 	"markless/store"
 	"markless/util"
-	"markless/web/handler"
+	"markless/web/server"
 	"net/http"
 	"strings"
 
@@ -29,7 +29,7 @@ func TagDelApi(w http.ResponseWriter, r *http.Request, params httprouter.Params)
 		util.Logger.Error("deleted tag success" + v)
 	}
 
-	handler.ApiSuccess(&w, &handler.ApiResponse{Msg: "ok"})
+	server.ApiSuccess(&w, &server.ApiResponse{Msg: "ok"})
 }
 
 type TagUpdateTitlePost struct {
@@ -53,7 +53,7 @@ func TagUpdateName(w http.ResponseWriter, r *http.Request, params httprouter.Par
 		panic(err)
 	}
 
-	handler.ApiSuccess(&w, &handler.ApiResponse{Msg: "ok"})
+	server.ApiSuccess(&w, &server.ApiResponse{Msg: "ok"})
 }
 
 type TagUpdateLinkPost struct {
@@ -83,5 +83,5 @@ func TagUpdateLink(w http.ResponseWriter, r *http.Request, params httprouter.Par
 		panic(err)
 	}
 
-	handler.ApiSuccess(&w, &handler.ApiResponse{Msg: "ok"})
+	server.ApiSuccess(&w, &server.ApiResponse{Msg: "ok"})
 }

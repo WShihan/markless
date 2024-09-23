@@ -1,4 +1,4 @@
-package handler
+package server
 
 import (
 	"markless/util"

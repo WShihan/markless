@@ -12,7 +12,7 @@ import (
 	"markless/store"
 	"markless/util"
 	"markless/web/assets"
-	"markless/web/handler"
+	"markless/web/server"
 
 	"github.com/julienschmidt/httprouter"
 )
@@ -37,7 +37,7 @@ func TagAdd(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
 	user, _ := store.GetUserByUID(r.Header.Get("uid"))
 	tagVal := r.FormValue("tag")
 	if tagVal == "" {
-		handler.Redirect(w, r, "/tags")
+		server.Redirect(w, r, "/tags")
 		return
 	}
 	tagArr := strings.Split(tagVal, "&")
@@ -59,7 +59,7 @@ func TagAdd(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
 		util.Logger.Error(local.Translate("msg.failed", user.Lang) + err.Error())
 		return
 	}
-	handler.Redirect(w, r, "/tags")
+	server.Redirect(w, r, "/tags")
 }
 
 type TagEditPageData struct {

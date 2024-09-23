@@ -7,7 +7,7 @@ import (
 	"markless/service"
 	"markless/store"
 	"markless/util"
-	"markless/web/handler"
+	"markless/web/server"
 	"net/http"
 	"strconv"
 	"strings"
@@ -41,7 +41,7 @@ func LinkAddApi(w http.ResponseWriter, r *http.Request, params httprouter.Params
 	service.LinkAttachTag(user, &link, strings.Split(postBody.Tags, "&"))
 
 	util.Logger.Info("add link success" + postBody.Url)
-	handler.ApiSuccess(&w, &handler.ApiResponse{Msg: "ok", Data: link})
+	server.ApiSuccess(&w, &server.ApiResponse{Msg: "ok", Data: link})
 
 }
 
@@ -49,7 +49,7 @@ func LinkAllApi(w http.ResponseWriter, r *http.Request, params httprouter.Params
 	user, _ := store.GetUserByUID(r.Header.Get("uid"))
 	links := model.Link{}
 	store.DB.Where("user_id = ?", user.ID).Find(&links)
-	handler.ApiSuccess(&w, &handler.ApiResponse{Msg: "ok", Data: links})
+	server.ApiSuccess(&w, &server.ApiResponse{Msg: "ok", Data: links})
 }
 
 func LinkRead(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
@@ -59,10 +59,10 @@ func LinkRead(w http.ResponseWriter, r *http.Request, params httprouter.Params) 
 	link.Read = true
 	err := store.DB.Save(&link).Error
 	if err != nil {
-		handler.ApiSuccess(&w, &handler.ApiResponse{Msg: err.Error()})
+		server.ApiSuccess(&w, &server.ApiResponse{Msg: err.Error()})
 		return
 	}
-	handler.ApiSuccess(&w, &handler.ApiResponse{Msg: "ok", Data: link})
+	server.ApiSuccess(&w, &server.ApiResponse{Msg: "ok", Data: link})
 }
 
 func LinkUnread(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
@@ -73,10 +73,10 @@ func LinkUnread(w http.ResponseWriter, r *http.Request, params httprouter.Params
 	err := store.DB.Save(&link).Error
 	if err != nil {
 		util.Logger.Error("update link failed" + err.Error())
-		handler.ApiSuccess(&w, &handler.ApiResponse{Msg: err.Error()})
+		server.ApiSuccess(&w, &server.ApiResponse{Msg: err.Error()})
 		return
 	}
-	handler.ApiSuccess(&w, &handler.ApiResponse{Msg: "ok", Data: link})
+	server.ApiSuccess(&w, &server.ApiResponse{Msg: "ok", Data: link})
 }
 
 func LinkDel(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
@@ -88,9 +88,9 @@ func LinkDel(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
 	err := store.DB.Select("Archive").Unscoped().Delete(&link).Error
 	if err != nil {
 		util.Logger.Error("delete link failed" + err.Error())
-		handler.ApiSuccess(&w, &handler.ApiResponse{Msg: err.Error()})
+		server.ApiSuccess(&w, &server.ApiResponse{Msg: err.Error()})
 		return
 	}
 	util.Logger.Info("delete link success" + link.Url)
-	handler.ApiSuccess(&w, &handler.ApiResponse{Msg: "ok", Data: link})
+	server.ApiSuccess(&w, &server.ApiResponse{Msg: "ok", Data: link})
 }

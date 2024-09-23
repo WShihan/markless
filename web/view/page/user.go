@@ -11,7 +11,7 @@ import (
 	"markless/tool"
 	"markless/util"
 	"markless/web/assets"
-	"markless/web/handler"
+	"markless/web/server"
 
 	"github.com/golang-jwt/jwt/v4"
 	"github.com/julienschmidt/httprouter"
@@ -94,8 +94,8 @@ func UserLogin(w http.ResponseWriter, r *http.Request, params httprouter.Params)
 		}
 		err := tool.ValidateHash(user.Password, password)
 		if err != nil {
-			handler.SetMsg(&w, local.Translate("page.login.error.password", user.Lang))
-			handler.Redirect(w, r, "/login")
+			server.SetMsg(&w, local.Translate("page.login.error.password", user.Lang))
+			server.Redirect(w, r, "/login")
 			return
 		}
 		expires := time.Now().Add(time.Duration(Env.JWTExpire) * time.Minute)
@@ -105,8 +105,8 @@ func UserLogin(w http.ResponseWriter, r *http.Request, params httprouter.Params)
 		}
 		token, err := util.CreateAndEncryptJWT(claims, []byte(Env.HmacSecret), []byte(Env.SecretKey))
 		if err != nil {
-			handler.SetMsg(&w, "用户名或密码错误")
-			handler.Redirect(w, r, "/login")
+			server.SetMsg(&w, "用户名或密码错误")
+			server.Redirect(w, r, "/login")
 			return
 		}
 
@@ -130,11 +130,11 @@ func UserLogin(w http.ResponseWriter, r *http.Request, params httprouter.Params)
 		}
 		http.SetCookie(w, &jwtCookie)
 		http.SetCookie(w, &langCookie)
-		handler.Redirect(w, r, "/")
+		server.Redirect(w, r, "/")
 	} else {
 		msg := local.Translate("tip.user.not-exist", user.Lang)
-		handler.SetMsg(&w, msg)
-		handler.Redirect(w, r, "/login")
+		server.SetMsg(&w, msg)
+		server.Redirect(w, r, "/login")
 	}
 }
 
@@ -144,26 +144,26 @@ func UserRegister(w http.ResponseWriter, r *http.Request, params httprouter.Para
 	passwordConfirm := r.FormValue("password-confirm")
 
 	if password != passwordConfirm {
-		handler.SetMsg(&w, local.Translate("tip.password.not-match", r.FormValue("lang")))
-		handler.Redirect(w, r, "/register")
+		server.SetMsg(&w, local.Translate("tip.password.not-match", r.FormValue("lang")))
+		server.Redirect(w, r, "/register")
 		return
 	}
 	if len(username) < 3 || len(password) < 6 {
-		handler.SetMsg(&w, local.Translate("tip.password.length", r.FormValue("lang")))
-		handler.Redirect(w, r, "/register")
+		server.SetMsg(&w, local.Translate("tip.password.length", r.FormValue("lang")))
+		server.Redirect(w, r, "/register")
 		return
 	}
 	user := model.User{}
 	store.DB.Find(&user, "username = ?", username)
 	if user.Username == username {
-		handler.SetMsg(&w, local.Translate("tip.user.already-exist", r.FormValue("lang")))
-		handler.Redirect(w, r, "/register")
+		server.SetMsg(&w, local.Translate("tip.user.already-exist", r.FormValue("lang")))
+		server.Redirect(w, r, "/register")
 		return
 	} else {
 		pass, err := tool.HashMessage(password)
 		if err != nil {
-			handler.SetMsg(&w, local.Translate("msg.failed", r.FormValue("lang")))
-			handler.Redirect(w, r, "/register")
+			server.SetMsg(&w, local.Translate("msg.failed", r.FormValue("lang")))
+			server.Redirect(w, r, "/register")
 			return
 		}
 		user.Username = username
@@ -173,7 +173,7 @@ func UserRegister(w http.ResponseWriter, r *http.Request, params httprouter.Para
 		user.Uid = tool.ShortUID(10)
 	}
 	store.DB.Create(&user)
-	handler.Redirect(w, r, "/login")
+	server.Redirect(w, r, "/login")
 
 }
 
@@ -183,68 +183,68 @@ func UserChangePassword(w http.ResponseWriter, r *http.Request, params httproute
 	passwordConfirm := r.FormValue("password-confirm")
 
 	if password != passwordConfirm {
-		handler.SetMsg(&w, local.Translate("tip.password.not-match", r.FormValue("lang")))
-		handler.Redirect(w, r, "/setting")
+		server.SetMsg(&w, local.Translate("tip.password.not-match", r.FormValue("lang")))
+		server.Redirect(w, r, "/setting")
 		return
 	}
 	user, err := store.GetUserByUID(r.Header.Get("uid"))
 	if err != nil {
-		handler.SetMsg(&w, local.Translate("tip.user.not-exist", user.Lang))
-		handler.Redirect(w, r, "/setting")
+		server.SetMsg(&w, local.Translate("tip.user.not-exist", user.Lang))
+		server.Redirect(w, r, "/setting")
 		return
 	}
 
 	err = tool.ValidateHash(user.Password, passwordOld)
 	if err != nil {
-		handler.SetMsg(&w, local.Translate("tip.password.wrong", user.Lang))
-		handler.Redirect(w, r, "/setting")
+		server.SetMsg(&w, local.Translate("tip.password.wrong", user.Lang))
+		server.Redirect(w, r, "/setting")
 		return
 	}
 	passwordUpdated, err := tool.HashMessage(password)
 	if err != nil {
-		handler.SetMsg(&w, local.Translate("msg.failed", user.Lang))
-		handler.Redirect(w, r, "/setting")
+		server.SetMsg(&w, local.Translate("msg.failed", user.Lang))
+		server.Redirect(w, r, "/setting")
 		return
 	}
 	user.Password = passwordUpdated
 	store.DB.Save(&user)
-	handler.SetMsg(&w, local.Translate("msg.updated", user.Lang))
-	handler.Redirect(w, r, "/setting")
+	server.SetMsg(&w, local.Translate("msg.updated", user.Lang))
+	server.Redirect(w, r, "/setting")
 
 }
 
 func UserTokenAdd(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
 	user, err := store.GetUserByUID(r.Header.Get("uid"))
 	if err != nil {
-		handler.SetMsg(&w, local.Translate("tip.user.not-exist", user.Lang))
-		handler.Redirect(w, r, "/setting")
+		server.SetMsg(&w, local.Translate("tip.user.not-exist", user.Lang))
+		server.Redirect(w, r, "/setting")
 		return
 	}
 	tk, err := util.GenerateRandomKey(64)
 	if err != nil {
-		handler.SetMsg(&w, local.Translate("msg.failed", user.Lang))
-		handler.Redirect(w, r, "/setting")
+		server.SetMsg(&w, local.Translate("msg.failed", user.Lang))
+		server.Redirect(w, r, "/setting")
 		return
 	}
 	user.Token = &tk
-	handler.SetMsg(&w, local.Translate("msg.created", user.Lang))
+	server.SetMsg(&w, local.Translate("msg.created", user.Lang))
 
 	store.DB.Save(&user)
-	handler.Redirect(w, r, "/setting")
+	server.Redirect(w, r, "/setting")
 
 }
 
 func UserTokenDelete(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
 	user, err := store.GetUserByUID(r.Header.Get("uid"))
 	if err != nil {
-		handler.SetMsg(&w, local.Translate("msg.tip.user.not-exist", user.Lang))
-		handler.Redirect(w, r, "/setting")
+		server.SetMsg(&w, local.Translate("msg.tip.user.not-exist", user.Lang))
+		server.Redirect(w, r, "/setting")
 		return
 	}
 	user.Token = nil
 	store.DB.Save(&user)
-	handler.SetMsg(&w, local.Translate("msg.deleted", user.Lang))
-	handler.Redirect(w, r, "/setting")
+	server.SetMsg(&w, local.Translate("msg.deleted", user.Lang))
+	server.Redirect(w, r, "/setting")
 
 }
 
@@ -253,7 +253,7 @@ func UserBasicUpdate(w http.ResponseWriter, r *http.Request, params httprouter.P
 	lang := r.FormValue("lang")
 	user.Lang = lang
 	store.DB.Save(&user)
-	handler.SetMsg(&w, local.Translate("msg.success", user.Lang))
-	handler.Redirect(w, r, "/setting")
+	server.SetMsg(&w, local.Translate("msg.success", user.Lang))
+	server.Redirect(w, r, "/setting")
 
 }
