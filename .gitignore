@@ -37,3 +37,4 @@ assets/html/test.html
 __pycache__/*
 local/translations/__pycache__
 local/translations/trans_local.py
+tests/*
