@@ -18,13 +18,13 @@ var (
 )
 
 func main() {
-	Title := flag.String("title", "markless", "网站名称")
-	BaseURL := flag.String("baseurl", "", "根路由")
-	JWTExpire := flag.Int("jwtexpire", 60, "jwt过期时间（分）")
-	DataBaseURL := flag.String("databaseurl", tool.ExcutePath()+"/markless.db", "数据库地址")
-	Port := flag.Int("port", 5000, "运行端口")
-	adminName := flag.String("adminname", "admin", "初始用户名称")
-	adminPassword := flag.String("password", "admin1234", "初始用户密码")
+	Title := flag.String("title", "markless", "App Name")
+	BaseURL := flag.String("baseurl", "", "Base UTL")
+	JWTExpire := flag.Int("jwtexpire", 60, "JWT expires time in minutes")
+	DataBaseURL := flag.String("databaseurl", tool.ExcutePath()+"/markless.db", "Path to database file")
+	Port := flag.Int("port", 5000, "Port")
+	adminName := flag.String("adminname", "admin", "Iitial administrator user name")
+	adminPassword := flag.String("password", "admin1234", "Initial administrator user password")
 	flag.Parse()
 
 	env := injection.Env{
