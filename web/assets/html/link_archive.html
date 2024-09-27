@@ -57,9 +57,9 @@
     {{ end }}
   </ul>
   {{ if .Data.Archive}}
-  <button class="submit" type="submit" onclick="return confirm('{{ i18n "confirm.create" $.Page.Lang }}')">{{ i18n "page.link.archive.button.create" $.Page.Lang }}</button>
+  <button class="submit" type="submit" onclick="return confirm('{{ i18n "confirm.create" $.Page.Lang }}')">{{ i18n "page.link.archive.button.update" $.Page.Lang }}</button>
   {{ else }}
-    <button class="submit" type="submit" onclick="return confirm('{{ i18n "confirm.update" $.Page.Lang }}')">{{ i18n "page.link.archive.button.update" $.Page.Lang }}</button>
+    <button class="submit" type="submit" onclick="return confirm('{{ i18n "confirm.update" $.Page.Lang }}')">{{ i18n "page.link.archive.button.create" $.Page.Lang }}</button>
   {{ end }}
 </form>
 

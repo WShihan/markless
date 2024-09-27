@@ -62,7 +62,7 @@ func TestLinkApi(t *testing.T) {
 
 }
 
-func TestLinkAllApi(t *testing.T) {
+func TestLinkAll(t *testing.T) {
 	env := injection.Env{
 		BaseURL:     "/webapp/markless",
 		DataBaseURL: tool.ExcutePath() + "/markless.db",

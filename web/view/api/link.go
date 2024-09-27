@@ -22,7 +22,7 @@ type LinkAddPost struct {
 	Read bool   `json:"read"`
 }
 
-func LinkAddApi(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
+func LinkAdd(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
 	user, _ := store.GetUserByUID(r.Header.Get("uid"))
 	postBody := LinkAddPost{}
 	decoder := json.NewDecoder(r.Body)
@@ -45,7 +45,7 @@ func LinkAddApi(w http.ResponseWriter, r *http.Request, params httprouter.Params
 
 }
 
-func LinkAllApi(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
+func LinkAll(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
 	user, _ := store.GetUserByUID(r.Header.Get("uid"))
 	links := model.Link{}
 	store.DB.Where("user_id = ?", user.ID).Find(&links)
@@ -93,4 +93,35 @@ func LinkDel(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
 	}
 	util.Logger.Info("delete link success" + link.Url)
 	server.ApiSuccess(&w, &server.ApiResponse{Msg: "ok", Data: link})
+}
+
+type LinkExistPost struct {
+	Url string `json:"url"`
+}
+
+func ConvertJSON2Struct(data interface{}, r *http.Request) error {
+	decoder := json.NewDecoder(r.Body)
+	err := decoder.Decode(&data)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func LinkExist(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
+	user, _ := store.GetUserByUID(r.Header.Get("uid"))
+	postData := LinkExistPost{}
+	err := ConvertJSON2Struct(&postData, r)
+	if postData.Url == "" || err != nil {
+		server.ApiFailed(&w, 200, "Link does not exist!")
+		return
+	}
+	url := postData.Url
+	link := model.Link{}
+	store.DB.Where("url = ? AND user_id = ?", url, user.ID).Find(&link)
+	if link.Url != "" {
+		server.ApiSuccess(&w, &server.ApiResponse{})
+		return
+	}
+	server.ApiFailed(&w, 200, "Link does not exist!")
 }
