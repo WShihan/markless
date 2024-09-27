@@ -2,6 +2,7 @@ package api
 
 import (
 	"encoding/json"
+	"markless/injection"
 	"markless/local"
 	"markless/model"
 	"markless/service"
@@ -15,11 +16,20 @@ import (
 	"github.com/julienschmidt/httprouter"
 )
 
+var (
+	LIMIT = 20
+)
+
 type LinkAddPost struct {
 	Url  string `json:"url"`
 	Desc string `json:"desc"`
 	Tags string `json:"tags"`
 	Read bool   `json:"read"`
+}
+
+type LinkAllData struct {
+	Links  []model.Link     `json:"links"`
+	Search injection.Search `json:"search"`
 }
 
 func LinkAdd(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
@@ -47,9 +57,35 @@ func LinkAdd(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
 
 func LinkAll(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
 	user, _ := store.GetUserByUID(r.Header.Get("uid"))
-	links := model.Link{}
-	store.DB.Where("user_id = ?", user.ID).Find(&links)
-	server.ApiSuccess(&w, &server.ApiResponse{Msg: "ok", Data: links})
+	pageVal := r.URL.Query().Get("page")
+	keyword := r.URL.Query().Get("keyword")
+	tagName := ""
+	pagenum, _ := strconv.ParseInt(pageVal, 10, 64)
+	pagenum = pagenum - 1
+
+	var links []model.Link
+	if strings.Contains(keyword, "#") {
+		tagName = strings.Replace(keyword, "#", "", 1)
+	}
+	searchOpt := injection.Search{
+		PrePage:  int(pagenum) - 1,
+		Page:     int(pagenum),
+		Limit:    LIMIT,
+		NextPage: int(pagenum) + 2,
+		TagName:  tagName,
+		Keyword:  keyword,
+	}
+	if tagName != "" {
+		links = service.FilterLinkByTag(&searchOpt, user)
+	} else {
+		links = service.FlterLinkByKeyword(&searchOpt, user)
+	}
+	searchOpt.Page++
+	data := LinkAllData{
+		Links:  links,
+		Search: searchOpt,
+	}
+	server.ApiSuccess(&w, &data)
 }
 
 func LinkRead(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
@@ -62,7 +98,7 @@ func LinkRead(w http.ResponseWriter, r *http.Request, params httprouter.Params) 
 		server.ApiSuccess(&w, &server.ApiResponse{Msg: err.Error()})
 		return
 	}
-	server.ApiSuccess(&w, &server.ApiResponse{Msg: "ok", Data: link})
+	server.ApiSuccess(&w, &link)
 }
 
 func LinkUnread(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
@@ -73,10 +109,10 @@ func LinkUnread(w http.ResponseWriter, r *http.Request, params httprouter.Params
 	err := store.DB.Save(&link).Error
 	if err != nil {
 		util.Logger.Error("update link failed" + err.Error())
-		server.ApiSuccess(&w, &server.ApiResponse{Msg: err.Error()})
+		server.ApiSuccess(&w, nil)
 		return
 	}
-	server.ApiSuccess(&w, &server.ApiResponse{Msg: "ok", Data: link})
+	server.ApiSuccess(&w, &link)
 }
 
 func LinkDel(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
@@ -120,7 +156,7 @@ func LinkExist(w http.ResponseWriter, r *http.Request, params httprouter.Params)
 	link := model.Link{}
 	store.DB.Where("url = ? AND user_id = ?", url, user.ID).Find(&link)
 	if link.Url != "" {
-		server.ApiSuccess(&w, &server.ApiResponse{})
+		server.ApiSuccess(&w, nil)
 		return
 	}
 	server.ApiFailed(&w, 200, "Link does not exist!")

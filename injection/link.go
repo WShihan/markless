@@ -14,15 +14,15 @@ type TagStatstic struct {
 }
 
 type Search struct {
-	Keyword    string
-	PrePage    int
-	Page       int
-	Pages      int
-	Limit      int
-	NextPage   int
-	TagName    string
-	ReadStatus int // 0：所有 1:已阅 2:未阅
-	Count      int
+	Keyword    string `json:"keyword"`
+	PrePage    int    `json:"pre_page"`
+	Page       int    `json:"page"`
+	Pages      int    `json:"pages"`
+	Limit      int    `json:"limit"`
+	NextPage   int    `json:"next_page"`
+	TagName    string `json:"tag"`
+	ReadStatus int    `json:"read_state"` // 0：所有 1:已阅 2:未阅
+	Count      int    `json:"count"`
 }
 
 type LinkEditInjection struct {

@@ -11,19 +11,22 @@ type ApiResponse struct {
 	Status bool        `json:"status"`
 }
 
-func ApiSuccess(w *http.ResponseWriter, res *ApiResponse) {
+func ApiSuccess(w *http.ResponseWriter, data interface{}) {
 	(*w).Header().Set("Content-Type", "application/json")
-	res.Status = true
+	res := &ApiResponse{
+		Status: true,
+		Data:   data,
+	}
 	jsonData, _ := json.Marshal(res)
 	(*w).Write(jsonData)
 }
 
 func ApiFailed(w *http.ResponseWriter, code int, msg string) {
 	(*w).Header().Set("Content-Type", "application/json")
-	post := &ApiResponse{
+	res := &ApiResponse{
 		Msg:    msg,
 		Status: false,
 	}
-	jsonData, _ := json.Marshal(post)
+	jsonData, _ := json.Marshal(res)
 	(*w).Write(jsonData)
 }

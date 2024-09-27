@@ -3,12 +3,18 @@ package service
 import (
 	"errors"
 	"fmt"
+	"markless/injection"
 	"markless/model"
 	"markless/store"
 	"markless/util"
+	"math"
 	"net/url"
 	"strings"
 	"time"
+)
+
+var (
+	LIMIT = 20
 )
 
 func LinkCreate(user model.User, webURL string, desc string) (model.Link, error) {
@@ -93,4 +99,84 @@ func LinkAttachTag(user model.User, link *model.Link, tagNames []string) {
 		tags = append(tags, tag)
 	}
 	store.DB.Model(&link).Where("id = ? AND user_id =?", link.ID, user.ID).Association("Tags").Append(&tags)
+}
+func detectPages(count int, limit int) int {
+	res := float64(count) / float64(limit)
+	return int(math.Ceil(res))
+}
+
+func FilterLinkByTag(opt *injection.Search, user model.User) []model.Link {
+	rawLinks := []model.Link{}
+	offset := opt.Page * opt.Limit
+	targetTag := model.Tag{}
+	store.DB.Where("name = ? and user_id", opt.TagName, user.ID).Find(&targetTag)
+	store.DB.Model(&targetTag).Where("user_id = ?", user.ID).Association("Links").Find(&rawLinks)
+	links := rawLinks[:0]
+	if opt.ReadStatus == 0 {
+		links = append(links, rawLinks...)
+	} else if opt.ReadStatus == 1 {
+		for _, v := range rawLinks {
+			if v.Read {
+				links = append(links, v)
+			}
+		}
+	} else if opt.ReadStatus == 2 {
+		for _, v := range rawLinks {
+			if !v.Read {
+				links = append(links, v)
+			}
+		}
+	}
+	opt.Count = len(links)
+	opt.Pages = detectPages(len(links), opt.Limit)
+	opt.Keyword = "#" + opt.TagName
+
+	if int(offset) < len(links) {
+		end := int(offset) + opt.Limit
+		if end > len(links) {
+			end = len(links)
+		}
+		links = links[offset:end]
+	}
+
+	// 绑定标签
+	for i, v := range links {
+		tags := []model.Tag{}
+		store.DB.Model(&v).Association("Tags").Find(&tags)
+		links[i].Tags = tags
+	}
+
+	return links
+}
+
+func FlterLinkByKeyword(opt *injection.Search, user model.User) []model.Link {
+	links := []model.Link{}
+	offset := opt.Page * opt.Limit
+	var count int64
+	condition := "%" + opt.Keyword + "%"
+	var err error
+	if opt.ReadStatus == 0 {
+		store.DB.Model(&model.Link{}).Where("user_id = ?", user.ID).Where("Title LIKE ? OR Desc LIKE ?", condition, condition).Count(&count)
+		err = store.DB.Where("user_id = ?", user.ID).Where("Title LIKE ? OR Desc LIKE ?", condition, condition).Order("created_at DESC").Limit(opt.Limit).Offset(int(offset)).Find(&links).Error
+	} else if opt.ReadStatus == 1 {
+		store.DB.Model(&model.Link{}).Where("user_id = ?", user.ID).Where("Title LIKE ? OR Desc LIKE ?", condition, condition).Where("read = ?", true).Count(&count)
+		err = store.DB.Where("user_id = ?", user.ID).Where("Title LIKE ? OR Desc LIKE ?", condition, condition).Where("read = ?", true).Order("created_at DESC").Limit(opt.Limit).Offset(int(offset)).Find(&links).Error
+	} else {
+		store.DB.Model(&model.Link{}).Where("user_id = ?", user.ID).Where("Title LIKE ? OR Desc LIKE ?", condition, condition).Where("read = ?", false).Count(&count)
+		err = store.DB.Where("user_id = ?", user.ID).Where("Title LIKE ? OR Desc LIKE ?", condition, condition).Where("read = ?", false).Limit(opt.Limit).Order("created_at DESC").Offset(int(offset)).Find(&links).Error
+	}
+	if err != nil {
+		util.Logger.Error(err.Error())
+	}
+	opt.Count = int(count)
+	opt.Pages = detectPages(opt.Count, opt.Limit)
+
+	// 绑定标签
+	for i, v := range links {
+		tags := []model.Tag{}
+		store.DB.Model(&v).Association("Tags").Find(&tags)
+		links[i].Tags = tags
+	}
+
+	return links
 }
