@@ -13,7 +13,6 @@ A very simple bookmark manager that only collects, organizes, and manages bookma
 * Simple and lightweight
 * Deployment-friendly, only includes one executable file
 * Uses `Sqlite`
-* Basic `GO` + `HTML` + `CSS` + `JS`
 
 
 

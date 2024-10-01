@@ -6,11 +6,11 @@ import (
 )
 
 type TagStatstic struct {
-	ID         int
-	Name       string
-	Count      int
-	CreateTime time.Time
-	Links      []model.Link
+	ID         int          `json:"id"`
+	Name       string       `json:"name"`
+	Count      int          `json:"count"`
+	CreateTime time.Time    `json:"create_time"`
+	Links      []model.Link `json:"links"`
 }
 
 type Search struct {

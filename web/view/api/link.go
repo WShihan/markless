@@ -13,6 +13,7 @@ import (
 	"net/http"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/julienschmidt/httprouter"
 )
@@ -36,6 +37,23 @@ type LinkAllData struct {
 type LinkMarkLinkPost struct {
 	Links []int `json:"links"`
 	Read  bool  `json:"read"`
+}
+
+type LinkExistPost struct {
+	Url string `json:"url"`
+}
+
+type LinkUpdatePost struct {
+	ID    int    `json:"id"`
+	Url   string `json:"url"`
+	Title string `json:"title"`
+	Desc  string `json:"desc"`
+	Read  bool   `json:"read"`
+}
+
+type LinkAttachTagsPost struct {
+	ID   int      `json:"id"`
+	Tags []string `json:"tags"`
 }
 
 func LinkAll(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
@@ -67,6 +85,17 @@ func LinkAdd(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
 
 	util.Logger.Info("add link success" + postBody.Url)
 	server.ApiSuccess(&w, &server.ApiResponse{Msg: "ok", Data: link})
+
+}
+
+func LinkOne(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
+	user, _ := store.GetUserByUID(r.Header.Get("uid"))
+	id := params.ByName("id")
+	link := model.Link{}
+	store.DB.Preload("Archive").Where("id = ? AND user_id =?", id, user.ID).Find(&link)
+	store.DB.Preload("Tags").Where("id = ? AND user_id =?", id, user.ID).Find(&link)
+
+	server.ApiSuccess(&w, link)
 
 }
 
@@ -149,10 +178,6 @@ func LinkDel(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
 	server.ApiSuccess(&w, &server.ApiResponse{Msg: "ok", Data: link})
 }
 
-type LinkExistPost struct {
-	Url string `json:"url"`
-}
-
 func LinkExist(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
 	user, _ := store.GetUserByUID(r.Header.Get("uid"))
 	postData := LinkExistPost{}
@@ -180,5 +205,103 @@ func MarkAllAsReadOrRead(w http.ResponseWriter, r *http.Request, params httprout
 		return
 	}
 	store.DB.Model(&model.Link{}).Where("user_id = ? and id in ?", user.ID, post.Links).Update("read", post.Read)
+	server.ApiSuccess(&w, nil)
+}
+
+func LinkUpdate(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
+	user, _ := store.GetUserByUID(r.Header.Get("uid"))
+	post := LinkUpdatePost{}
+	err := tool.ConvertJSON2Struct(&post, r)
+	if err != nil {
+		server.ApiFailed(&w, 201, "参数错误")
+		return
+	}
+	link := model.Link{}
+	err = store.DB.Where("id =? AND user_id=?", post.ID, user.ID).First(&link).Error
+	if err != nil {
+		server.ApiFailed(&w, 201, "参数"+err.Error())
+		return
+	}
+	link.Url = post.Url
+	link.Title = post.Title
+	link.Desc = post.Desc
+	link.Read = post.Read
+	err = store.DB.Save(&link).Error
+	if err != nil {
+		server.ApiFailed(&w, 201, "参数"+err.Error())
+		return
+	}
+	server.ApiSuccess(&w, nil)
+
+}
+
+func LinkAttachTags(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
+	user, _ := store.GetUserByUID(r.Header.Get("uid"))
+	link := model.Link{}
+	post := LinkAttachTagsPost{}
+	err := tool.ConvertJSON2Struct(&post, r)
+	if err != nil {
+		server.ApiFailed(&w, 201, "参数错误")
+		return
+	}
+
+	err = store.DB.Where("id=? AND user_id=?", post.ID, user.ID).First(&link).Error
+	if err != nil {
+		server.ApiFailed(&w, 201, "错误"+err.Error())
+		return
+	}
+
+	updatedTags := []model.Tag{}
+	for _, v := range post.Tags {
+		if v == "" {
+			continue
+		}
+		tag := model.Tag{
+			Name:       v,
+			UserID:     user.ID,
+			CreateTime: time.Now(),
+		}
+		store.DB.Where("name=? AND user_id=?", v, user.ID).First(&tag)
+		updatedTags = append(updatedTags, tag)
+	}
+	store.DB.Model(&link).Association("Tags").Clear()
+	err = store.DB.Model(&link).Association("Tags").Append(&updatedTags)
+	if err != nil {
+		server.ApiFailed(&w, 201, err.Error())
+	}
+	server.ApiSuccess(&w, nil)
+}
+
+func LinkUpdateArchive(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
+	user, _ := store.GetUserByUID(r.Header.Get("uid"))
+	id := params.ByName("id")
+	link := model.Link{}
+	store.DB.Preload("Archive").Where("user_id = ? AND id = ?", user.ID, id).First(&link)
+	if link.Url == "" {
+		server.ApiFailed(&w, 201, "书签不存在")
+		return
+	}
+	pageInfo, err := util.ParsePage(link.Url)
+	if err != nil {
+		server.ApiFailed(&w, 201, "解析书签异常"+err.Error())
+		return
+	}
+	if link.Archive != nil {
+		link.Archive.Content = pageInfo.Content
+		link.Archive.UpdateTime = time.Now()
+	} else {
+		link.Archive = &model.Archive{
+			LinkID:     link.ID,
+			Content:    pageInfo.Content,
+			UpdateTime: time.Now(),
+		}
+	}
+
+	err = store.DB.Save(&link.Archive).Error
+	if err != nil {
+		server.ApiFailed(&w, 201, "更新书签异常"+err.Error())
+		return
+	}
+	util.Logger.Info("update link success" + link.Url)
 	server.ApiSuccess(&w, nil)
 }
