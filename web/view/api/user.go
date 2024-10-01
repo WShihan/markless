@@ -24,6 +24,7 @@ type UserLoginRes struct {
 	Username    string `json:"username"`
 	AccessToken string `json:"access_token"`
 	Lang        string `json:"lang"`
+	Theme       string `json:"theme"`
 }
 
 type UserInfo struct {
@@ -31,6 +32,7 @@ type UserInfo struct {
 	Token    *string `json:"token"`
 	Lang     string  `json:"lang"`
 	Admin    bool    `json:"admin"`
+	Theme    string  `json:"theme"`
 }
 
 type UserPasswordUpdatePost struct {
@@ -78,6 +80,7 @@ func UserLogin(w http.ResponseWriter, r *http.Request, params httprouter.Params)
 			Username:    user.Username,
 			AccessToken: token,
 			Lang:        user.Lang,
+			Theme:       user.Theme,
 		}
 		server.ApiSuccess(&w, &data)
 	} else {
@@ -86,8 +89,15 @@ func UserLogin(w http.ResponseWriter, r *http.Request, params httprouter.Params)
 }
 
 func UserRegister(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
+	var lang string
+	langCookie, err := r.Cookie("narkless-lang")
+	if err != nil {
+		lang = local.GetPreferredLanguage(r)
+	} else {
+		lang = langCookie.Value
+	}
 	post := UserLoginPost{}
-	err := tool.ConvertJSON2Struct(&post, r)
+	err = tool.ConvertJSON2Struct(&post, r)
 	if err != nil {
 		util.Logger.Error(err.Error())
 		server.ApiFailed(&w, 200, "用户名或密码错误")
@@ -114,8 +124,7 @@ func UserRegister(w http.ResponseWriter, r *http.Request, params httprouter.Para
 		}
 		user.Username = post.Username
 		user.Password = pass
-		user.Lang = tool.DefaultLanguage()
-		user.Lang = local.GetPreferredLanguage(r)
+		user.Lang = lang
 		user.Uid = tool.ShortUID(10)
 	}
 	err = store.DB.Create(&user).Error
@@ -132,11 +141,16 @@ func UserInfoGet(w http.ResponseWriter, r *http.Request, params httprouter.Param
 	if user.Username == "" {
 		server.ApiFailed(&w, 200, "用户不存在")
 	}
+	if user.Theme == "" {
+		user.Theme = "normal"
+		store.DB.Save(&user)
+	}
 	data := UserInfo{
 		Username: user.Username,
 		Token:    user.Token,
 		Lang:     user.Lang,
 		Admin:    user.Admin,
+		Theme:    user.Theme,
 	}
 	server.ApiSuccess(&w, data)
 }
@@ -148,6 +162,7 @@ func UserInfoUpdate(w http.ResponseWriter, r *http.Request, params httprouter.Pa
 		server.ApiFailed(&w, 200, "参数错误")
 	}
 	user.Lang = post.Lang
+	user.Theme = post.Theme
 	store.DB.Save(&user)
 
 	server.ApiSuccess(&w, nil)

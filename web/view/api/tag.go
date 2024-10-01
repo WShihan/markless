@@ -179,3 +179,9 @@ func AttachLinks(w http.ResponseWriter, r *http.Request, params httprouter.Param
 	server.ApiSuccess(&w, nil)
 
 }
+
+func TagStastic(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
+	user, _ := store.GetUserByUID(r.Header.Get("uid"))
+	info := store.TagStat(user)
+	server.ApiSuccess(&w, info)
+}

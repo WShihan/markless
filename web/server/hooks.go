@@ -67,7 +67,7 @@ func Protect(next httprouter.Handle) httprouter.Handle {
 			tokenCookie, trr := r.Cookie("markless-token")
 			if trr != nil && authHeader == "" {
 				util.Logger.Info("Authorization by jwt failed: no token")
-				http.Redirect(w, r, Env.BaseURL+"/login", http.StatusForbidden)
+				http.Redirect(w, r, Env.BaseURL+"/#/login", http.StatusForbidden)
 				return
 			}
 			jwt = tokenCookie.Value
@@ -78,20 +78,20 @@ func Protect(next httprouter.Handle) httprouter.Handle {
 
 		if jwt == "" {
 			util.Logger.Info("Authorization by jwt failed: no token")
-			http.Redirect(w, r, Env.BaseURL+"/login", http.StatusForbidden)
+			http.Redirect(w, r, Env.BaseURL+"/#/login", http.StatusForbidden)
 			return
 		}
 		uid, err := util.DecryptAndVerifyJWT(jwt, []byte(Env.HmacSecret), []byte(Env.SecretKey))
 		if err != nil {
 			util.Logger.Info("Authorization  by jwt failed: validate fails")
-			http.Redirect(w, r, Env.BaseURL+"/login", http.StatusForbidden)
+			http.Redirect(w, r, Env.BaseURL+"/#/login", http.StatusForbidden)
 			return
 		}
 		user := model.User{}
 		err = store.DB.Find(&user, "uid = ?", uid).Error
 		if err != nil {
 			util.Logger.Info("Authorization  by jwt failed: validate fails")
-			http.Redirect(w, r, Env.BaseURL+"/login", http.StatusForbidden)
+			http.Redirect(w, r, Env.BaseURL+"/#/login", http.StatusForbidden)
 			return
 		}
 		r.Header.Set("uid", uid)

@@ -14,6 +14,7 @@ type User struct {
 	Password   string     `json:"password"`
 	Token      *string    `json:"token"`
 	Lang       string     `json:"lang"`
+	Theme      string     `json:"theme"`
 	LastLogin  *time.Time `json:"last_login"`
 	Categroies []Category
 	Admin      bool `json:"admin"`

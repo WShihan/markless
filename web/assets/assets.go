@@ -3,7 +3,7 @@ package assets
 import "embed"
 
 var (
-	//go:embed html/*.html
+	//go:embed *.html
 	HTML embed.FS
 	//go:embed static/js/*
 	JS embed.FS
