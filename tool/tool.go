@@ -1,12 +1,14 @@
 package tool
 
 import (
+	"encoding/json"
 	"fmt"
 	"html/template"
 	"log/slog"
 	"markless/model"
 	"math/big"
 	"math/rand"
+	"net/http"
 	"os"
 	"path/filepath"
 	"strings"
@@ -90,4 +92,12 @@ func DefaultLanguage() string {
 
 func RandomN() int {
 	return rand.Intn(100)
+}
+func ConvertJSON2Struct(data interface{}, r *http.Request) error {
+	decoder := json.NewDecoder(r.Body)
+	err := decoder.Decode(&data)
+	if err != nil {
+		return err
+	}
+	return nil
 }

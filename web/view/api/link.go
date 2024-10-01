@@ -7,6 +7,7 @@ import (
 	"markless/model"
 	"markless/service"
 	"markless/store"
+	"markless/tool"
 	"markless/util"
 	"markless/web/server"
 	"net/http"
@@ -32,6 +33,20 @@ type LinkAllData struct {
 	Search injection.Search `json:"search"`
 }
 
+type LinkMarkLinkPost struct {
+	Links []int `json:"links"`
+	Read  bool  `json:"read"`
+}
+
+func LinkAll(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
+	user, _ := store.GetUserByUID(r.Header.Get("uid"))
+	err := store.DB.Preload("Links").Find(&user).Error
+	if err != nil {
+		server.ApiFailed(&w, 200, err.Error())
+		return
+	}
+	server.ApiSuccess(&w, &user.Links)
+}
 func LinkAdd(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
 	user, _ := store.GetUserByUID(r.Header.Get("uid"))
 	postBody := LinkAddPost{}
@@ -55,12 +70,14 @@ func LinkAdd(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
 
 }
 
-func LinkAll(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
+func LinkPagination(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
 	user, _ := store.GetUserByUID(r.Header.Get("uid"))
 	pageVal := r.URL.Query().Get("page")
 	keyword := r.URL.Query().Get("keyword")
+	readVal := r.URL.Query().Get("read")
 	tagName := ""
 	pagenum, _ := strconv.ParseInt(pageVal, 10, 64)
+	read, _ := strconv.ParseInt(readVal, 10, 64)
 	pagenum = pagenum - 1
 
 	var links []model.Link
@@ -68,12 +85,13 @@ func LinkAll(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
 		tagName = strings.Replace(keyword, "#", "", 1)
 	}
 	searchOpt := injection.Search{
-		PrePage:  int(pagenum) - 1,
-		Page:     int(pagenum),
-		Limit:    LIMIT,
-		NextPage: int(pagenum) + 2,
-		TagName:  tagName,
-		Keyword:  keyword,
+		PrePage:    int(pagenum) - 1,
+		Page:       int(pagenum),
+		Limit:      LIMIT,
+		NextPage:   int(pagenum) + 2,
+		TagName:    tagName,
+		Keyword:    keyword,
+		ReadStatus: int(read),
 	}
 	if tagName != "" {
 		links = service.FilterLinkByTag(&searchOpt, user)
@@ -135,19 +153,10 @@ type LinkExistPost struct {
 	Url string `json:"url"`
 }
 
-func ConvertJSON2Struct(data interface{}, r *http.Request) error {
-	decoder := json.NewDecoder(r.Body)
-	err := decoder.Decode(&data)
-	if err != nil {
-		return err
-	}
-	return nil
-}
-
 func LinkExist(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
 	user, _ := store.GetUserByUID(r.Header.Get("uid"))
 	postData := LinkExistPost{}
-	err := ConvertJSON2Struct(&postData, r)
+	err := tool.ConvertJSON2Struct(&postData, r)
 	if postData.Url == "" || err != nil {
 		server.ApiFailed(&w, 200, "Link does not exist!")
 		return
@@ -160,4 +169,16 @@ func LinkExist(w http.ResponseWriter, r *http.Request, params httprouter.Params)
 		return
 	}
 	server.ApiFailed(&w, 200, "Link does not exist!")
+}
+
+func MarkAllAsReadOrRead(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
+	user, _ := store.GetUserByUID(r.Header.Get("uid"))
+	post := LinkMarkLinkPost{}
+	err := tool.ConvertJSON2Struct(&post, r)
+	if err != nil {
+		server.ApiFailed(&w, 200, err.Error())
+		return
+	}
+	store.DB.Model(&model.Link{}).Where("user_id = ? and id in ?", user.ID, post.Links).Update("read", post.Read)
+	server.ApiSuccess(&w, nil)
 }

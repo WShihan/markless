@@ -5,7 +5,7 @@ import (
 	"net/url"
 )
 
-func SetMsg(w *http.ResponseWriter, message string) {
+func SetMsg(w *http.ResponseWriter, message string) string {
 	http.SetCookie(*w, &http.Cookie{
 		Name:  "message",
 		Value: url.QueryEscape(message),
@@ -16,4 +16,6 @@ func SetMsg(w *http.ResponseWriter, message string) {
 		Value: "false",
 		Path:  "/",
 	})
+
+	return message
 }

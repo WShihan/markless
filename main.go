@@ -43,7 +43,7 @@ func main() {
 	store.InitDB(*DataBaseURL)
 	store.InitAdmin(*adminName, *adminPassword)
 	handler.InitEnv(&env)
-	api.LoadAPI(&handler.Router)
+	api.LoadAPI(&handler.Router, &env)
 	page.LoadPage(&handler.Router, &env)
 	handler.RunServer(&env)
 }

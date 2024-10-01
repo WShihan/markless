@@ -26,7 +26,7 @@ func TestLinkApi(t *testing.T) {
 	store.InitDB(env.DataBaseURL)
 	store.InitAdmin("admin", "admin1234")
 	handler.InitEnv(&env)
-	LoadAPI(&handler.Router)
+	LoadAPI(&handler.Router, &env)
 
 	// 创建书签
 	postdata := LinkAddPost{
@@ -74,7 +74,7 @@ func TestLinkAll(t *testing.T) {
 	store.InitDB(env.DataBaseURL)
 	store.InitAdmin("admin", "admin1234")
 	handler.InitEnv(&env)
-	LoadAPI(&handler.Router)
+	LoadAPI(&handler.Router, &env)
 
 	// 获取所有书签
 	req, err := http.NewRequest(http.MethodGet, env.BaseURL+"/api/link/all", nil)
@@ -114,7 +114,7 @@ func TestLinkDelApi(t *testing.T) {
 	store.InitDB(env.DataBaseURL)
 	store.InitAdmin("admin", "admin1234")
 	handler.InitEnv(&env)
-	LoadAPI(&handler.Router)
+	LoadAPI(&handler.Router, &env)
 	// 删除元素
 
 	req, err := http.NewRequest(http.MethodGet, env.BaseURL+"/api/link/all", nil)
