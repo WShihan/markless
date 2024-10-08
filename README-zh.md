@@ -13,7 +13,6 @@ Markless
 * 简洁轻量
 * 部署友好，仅包含一个可执行文件
 * 使用`Sqlite` 
-* 基础的`GO` + `HTML` + `CSS` + `JS`
 
 
 
@@ -68,7 +67,8 @@ markless -h
 **通过IOS快捷指令收藏网页**
 
 [下载](./example/Markless.shortcut)快捷指令，修改并填写`url`为实例地址，请求头部里的`X-Token`填入前面安装浏览器插件获取的token值。
-<p align="center"><img style="width:15em" src="./example/ios-shotcut.jpeg" /></p>
+
+<p align="center"><img style="width:15em" src="./example/ios-shotcut.PNG" /></p>
 
 双击快捷指令后，进入详细信息，开启`在共享表单中显示`
 

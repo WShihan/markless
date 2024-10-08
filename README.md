@@ -65,7 +65,10 @@ Then you can start collecting web pages, the *link* is a required field, other i
 **Collect webpages through iOS shortcuts.**
 
 Download the shortcut [here](./example/Markless.shortcut), modify and fill in the `url` with the actual address, and insert the token value obtained from installing the browser plugin in the `X-Token` of the request header.
-<p align="center"><img style="width:15em" src="./example/ios-shotcut.jpeg" /></p>
+
+
+
+<p align="center"><img style="width:15em" src="./example/ios-shotcut.PNG" /></p>
 
 After double-clicking on the shortcut command, enter the detailed information and enable `Show in shared form`.
 
