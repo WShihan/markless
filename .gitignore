@@ -21,7 +21,11 @@
 # Go workspace file
 go.work
 go.work.sum
+#  static file
 
+web/assets/static/css/
+web/assets/static/js/
+web/assets/*.html
 # env file
 .env
 chore/*

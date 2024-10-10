@@ -21,22 +21,23 @@ func LogRequest(next http.Handler) http.Handler {
 			util.Logger.Info(r.URL.Path)
 			if err := recover(); err != nil {
 				err := errors.New(fmt.Sprint(err))
-				util.Logger.Fatal(err)
-				// 接口返回标准数据
 				if strings.Contains(r.URL.Path, "api") {
-					ApiFailed(&w, 1, err.Error())
-					return
-					// 页面接口返回原始页面
+					// 接口返回标准数据
+					switch e := err.(type) {
+					case *APIError:
+						util.Logger.Error(err)
+						ApiFailed(&w, 201, e.Error())
+					default:
+						util.Logger.Fatal(err)
+						ApiFailed(&w, 500, e.Error())
+					}
 				} else {
+					// 页面接口返回原始页面
 					SetMsg(&w, err.Error())
 					Redirect(w, r, r.Referer())
 				}
 			}
 		}()
-
-		w.Header().Set("Access-Control-Allow-Origin", "*")
-		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
-		w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
 		start := time.Now()
 		util.Logger.Info(fmt.Sprintf("Started %s %s", r.Method, r.URL.Path))
 		next.ServeHTTP(w, r)

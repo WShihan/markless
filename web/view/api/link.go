@@ -60,8 +60,10 @@ func LinkAll(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
 	user, _ := store.GetUserByUID(r.Header.Get("uid"))
 	err := store.DB.Preload("Links").Find(&user).Error
 	if err != nil {
-		server.ApiFailed(&w, 200, err.Error())
-		return
+		panic(&server.APIError{
+			Msg:  err.Error(),
+			Code: 201,
+		})
 	}
 	server.ApiSuccess(&w, &user.Links)
 }
@@ -71,14 +73,23 @@ func LinkAdd(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
 	decoder := json.NewDecoder(r.Body)
 	err := decoder.Decode(&postBody)
 	if err != nil {
-		panic(err)
+		panic(&server.APIError{
+			Msg:  err.Error(),
+			Code: 201,
+		})
 	}
 	if postBody.Url == "" {
-		panic(local.Translate("tip.link.empty", user.Lang))
+		panic(&server.APIError{
+			Msg:  local.Translate("tip.link.empty", user.Lang),
+			Code: 201,
+		})
 	}
 	link, err := service.LinkCreate(user, postBody.Url, postBody.Desc)
 	if err != nil {
-		panic(err)
+		panic(&server.APIError{
+			Msg:  err.Error(),
+			Code: 201,
+		})
 	}
 	link.Read = postBody.Read
 	service.LinkAttachTag(user, &link, strings.Split(postBody.Tags, "&"))
@@ -142,8 +153,11 @@ func LinkRead(w http.ResponseWriter, r *http.Request, params httprouter.Params) 
 	link.Read = true
 	err := store.DB.Save(&link).Error
 	if err != nil {
-		server.ApiSuccess(&w, &server.ApiResponse{Msg: err.Error()})
-		return
+		panic(&server.APIError{
+			Msg:  err.Error(),
+			Code: 201,
+		})
+
 	}
 	server.ApiSuccess(&w, &link)
 }
@@ -155,9 +169,10 @@ func LinkUnread(w http.ResponseWriter, r *http.Request, params httprouter.Params
 	link.Read = false
 	err := store.DB.Save(&link).Error
 	if err != nil {
-		util.Logger.Error("update link failed" + err.Error())
-		server.ApiSuccess(&w, nil)
-		return
+		panic(&server.APIError{
+			Msg:  err.Error(),
+			Code: 201,
+		})
 	}
 	server.ApiSuccess(&w, &link)
 }
@@ -170,9 +185,10 @@ func LinkDel(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
 	// err := store.DB.Unscoped().Delete(&link).Error
 	err := store.DB.Select("Archive").Unscoped().Delete(&link).Error
 	if err != nil {
-		util.Logger.Error("delete link failed" + err.Error())
-		server.ApiSuccess(&w, &server.ApiResponse{Msg: err.Error()})
-		return
+		panic(&server.APIError{
+			Msg:  local.Translate("msg.failed", user.Lang) + err.Error(),
+			Code: 201,
+		})
 	}
 	util.Logger.Info("delete link success" + link.Url)
 	server.ApiSuccess(&w, &server.ApiResponse{Msg: "ok", Data: link})
@@ -183,8 +199,10 @@ func LinkExist(w http.ResponseWriter, r *http.Request, params httprouter.Params)
 	postData := LinkExistPost{}
 	err := tool.ConvertJSON2Struct(&postData, r)
 	if postData.Url == "" || err != nil {
-		server.ApiFailed(&w, 200, "Link does not exist!")
-		return
+		panic(&server.APIError{
+			Msg:  local.Translate("tip.link.unexist", user.Lang) + err.Error(),
+			Code: 201,
+		})
 	}
 	url := postData.Url
 	link := model.Link{}
@@ -193,7 +211,10 @@ func LinkExist(w http.ResponseWriter, r *http.Request, params httprouter.Params)
 		server.ApiSuccess(&w, nil)
 		return
 	}
-	server.ApiFailed(&w, 200, "Link does not exist!")
+	panic(&server.APIError{
+		Msg:  local.Translate("tip.link.unexist", user.Lang) + err.Error(),
+		Code: 201,
+	})
 }
 
 func MarkAllAsReadOrRead(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
@@ -213,14 +234,18 @@ func LinkUpdate(w http.ResponseWriter, r *http.Request, params httprouter.Params
 	post := LinkUpdatePost{}
 	err := tool.ConvertJSON2Struct(&post, r)
 	if err != nil {
-		server.ApiFailed(&w, 201, "参数错误")
-		return
+		panic(&server.APIError{
+			Msg:  local.Translate("tip.params.wrong", user.Lang) + err.Error(),
+			Code: 201,
+		})
 	}
 	link := model.Link{}
 	err = store.DB.Where("id =? AND user_id=?", post.ID, user.ID).First(&link).Error
 	if err != nil {
-		server.ApiFailed(&w, 201, "参数"+err.Error())
-		return
+		panic(&server.APIError{
+			Msg:  local.Translate("tip.params.wrong", user.Lang) + err.Error(),
+			Code: 201,
+		})
 	}
 	link.Url = post.Url
 	link.Title = post.Title
@@ -228,8 +253,10 @@ func LinkUpdate(w http.ResponseWriter, r *http.Request, params httprouter.Params
 	link.Read = post.Read
 	err = store.DB.Save(&link).Error
 	if err != nil {
-		server.ApiFailed(&w, 201, "参数"+err.Error())
-		return
+		panic(&server.APIError{
+			Msg:  local.Translate("tip.params.wrong", user.Lang) + err.Error(),
+			Code: 201,
+		})
 	}
 	server.ApiSuccess(&w, nil)
 
@@ -241,14 +268,18 @@ func LinkAttachTags(w http.ResponseWriter, r *http.Request, params httprouter.Pa
 	post := LinkAttachTagsPost{}
 	err := tool.ConvertJSON2Struct(&post, r)
 	if err != nil {
-		server.ApiFailed(&w, 201, "参数错误")
-		return
+		panic(&server.APIError{
+			Msg:  local.Translate("tip.params.wrong", user.Lang) + err.Error(),
+			Code: 201,
+		})
 	}
 
 	err = store.DB.Where("id=? AND user_id=?", post.ID, user.ID).First(&link).Error
 	if err != nil {
-		server.ApiFailed(&w, 201, "错误"+err.Error())
-		return
+		panic(&server.APIError{
+			Msg:  local.Translate("tip.params.wrong", user.Lang) + err.Error(),
+			Code: 201,
+		})
 	}
 
 	updatedTags := []model.Tag{}
@@ -278,13 +309,17 @@ func LinkUpdateArchive(w http.ResponseWriter, r *http.Request, params httprouter
 	link := model.Link{}
 	store.DB.Preload("Archive").Where("user_id = ? AND id = ?", user.ID, id).First(&link)
 	if link.Url == "" {
-		server.ApiFailed(&w, 201, "书签不存在")
-		return
+		panic(&server.APIError{
+			Msg:  local.Translate("tip.link.unexist", user.Lang),
+			Code: 201,
+		})
 	}
 	pageInfo, err := util.ParsePage(link.Url)
 	if err != nil {
-		server.ApiFailed(&w, 201, "解析书签异常"+err.Error())
-		return
+		panic(&server.APIError{
+			Msg:  local.Translate("msg.failed", user.Lang) + err.Error(),
+			Code: 201,
+		})
 	}
 	if link.Archive != nil {
 		link.Archive.Content = pageInfo.Content
@@ -299,8 +334,10 @@ func LinkUpdateArchive(w http.ResponseWriter, r *http.Request, params httprouter
 
 	err = store.DB.Save(&link.Archive).Error
 	if err != nil {
-		server.ApiFailed(&w, 201, "更新书签异常"+err.Error())
-		return
+		panic(&server.APIError{
+			Msg:  local.Translate("msg.failed", user.Lang) + err.Error(),
+			Code: 201,
+		})
 	}
 	util.Logger.Info("update link success" + link.Url)
 	server.ApiSuccess(&w, nil)

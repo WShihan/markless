@@ -44,9 +44,8 @@ func UserLogin(w http.ResponseWriter, r *http.Request, params httprouter.Params)
 	post := UserLoginPost{}
 	err := tool.ConvertJSON2Struct(&post, r)
 	if err != nil {
-		util.Logger.Error(err.Error())
-		server.ApiFailed(&w, 200, "用户名或密码错误")
-		return
+		panic(server.APIError{Msg: local.Translate("tip.params.wrong", r.FormValue("lang")), Code: 201})
+
 	}
 	user := model.User{}
 	store.DB.Where("username = ?", post.Username).Find(&user)
@@ -63,8 +62,7 @@ func UserLogin(w http.ResponseWriter, r *http.Request, params httprouter.Params)
 		}
 		err := tool.ValidateHash(user.Password, post.Password)
 		if err != nil {
-			server.ApiFailed(&w, 200, "密码错误")
-			return
+			panic(server.APIError{Msg: local.Translate("tip.password.wrong", user.Lang), Code: 201})
 		}
 		expires := time.Now().Add(time.Duration(Env.JWTExpire) * time.Minute)
 		claims := jwt.MapClaims{
@@ -73,8 +71,8 @@ func UserLogin(w http.ResponseWriter, r *http.Request, params httprouter.Params)
 		}
 		token, err := util.CreateAndEncryptJWT(claims, []byte(Env.HmacSecret), []byte(Env.SecretKey))
 		if err != nil {
-			server.ApiFailed(&w, 200, "用户名或密码错误")
-			return
+			panic(server.APIError{Msg: local.Translate("tip.password.wrong", user.Lang), Code: 201})
+
 		}
 		data := UserLoginRes{
 			Username:    user.Username,
@@ -84,7 +82,8 @@ func UserLogin(w http.ResponseWriter, r *http.Request, params httprouter.Params)
 		}
 		server.ApiSuccess(&w, &data)
 	} else {
-		server.ApiFailed(&w, 200, "用户名错误或不存在")
+		panic(server.APIError{Msg: local.Translate("tip.user.unexist", user.Lang), Code: 201})
+
 	}
 }
 
@@ -99,28 +98,26 @@ func UserRegister(w http.ResponseWriter, r *http.Request, params httprouter.Para
 	post := UserLoginPost{}
 	err = tool.ConvertJSON2Struct(&post, r)
 	if err != nil {
-		util.Logger.Error(err.Error())
-		server.ApiFailed(&w, 200, "用户名或密码错误")
-		return
+		panic(server.APIError{Msg: local.Translate("tip.params.wrong", lang), Code: 201})
+
 	}
 
 	if len(post.Username) < 3 || len(post.Password) < 6 {
 		msg := server.SetMsg(&w, local.Translate("tip.password.length", r.FormValue("lang")))
-		server.ApiFailed(&w, 200, msg)
-		return
+		panic(server.APIError{Msg: msg, Code: 201})
 	}
 	user := model.User{}
 	store.DB.Find(&user, "username = ?", post.Username)
 	if user.Username == post.Password {
-		msg := server.SetMsg(&w, local.Translate("tip.user.already-exist", r.FormValue("lang")))
+		msg := server.SetMsg(&w, local.Translate("tip.user.existed", r.FormValue("lang")))
 		server.ApiFailed(&w, 200, msg)
 		return
 	} else {
 		pass, err := tool.HashMessage(post.Password)
 		if err != nil {
 			msg := server.SetMsg(&w, local.Translate("msg.failed", r.FormValue("lang")))
-			server.ApiFailed(&w, 200, msg)
-			return
+			panic(server.APIError{Msg: msg, Code: 201})
+
 		}
 		user.Username = post.Username
 		user.Password = pass
@@ -129,8 +126,7 @@ func UserRegister(w http.ResponseWriter, r *http.Request, params httprouter.Para
 	}
 	err = store.DB.Create(&user).Error
 	if err != nil {
-		server.ApiFailed(&w, 200, local.Translate("msg.failed", r.FormValue("lang")))
-		return
+		panic(server.APIError{Msg: local.Translate("msg.failed", r.FormValue("lang")), Code: 201})
 	}
 	server.ApiSuccess(&w, nil)
 
@@ -139,7 +135,7 @@ func UserRegister(w http.ResponseWriter, r *http.Request, params httprouter.Para
 func UserInfoGet(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
 	user, _ := store.GetUserByUID(r.Header.Get("uid"))
 	if user.Username == "" {
-		server.ApiFailed(&w, 200, "用户不存在")
+		panic(server.APIError{Msg: local.Translate("tip.user.unexist", r.FormValue("lang")), Code: 201})
 	}
 	if user.Theme == "" {
 		user.Theme = "normal"
@@ -159,7 +155,8 @@ func UserInfoUpdate(w http.ResponseWriter, r *http.Request, params httprouter.Pa
 	post := UserInfo{}
 	err := tool.ConvertJSON2Struct(&post, r)
 	if err != nil {
-		server.ApiFailed(&w, 200, "参数错误")
+		panic(server.APIError{Msg: local.Translate("tip.params.wrong", user.Lang), Code: 201})
+
 	}
 	user.Lang = post.Lang
 	user.Theme = post.Theme
@@ -175,9 +172,8 @@ func UserEnvGet(w http.ResponseWriter, r *http.Request, params httprouter.Params
 func UserTokenDelete(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
 	user, err := store.GetUserByUID(r.Header.Get("uid"))
 	if err != nil {
-		msg := server.SetMsg(&w, local.Translate("msg.tip.user.not-exist", user.Lang))
-		server.ApiFailed(&w, 200, msg)
-		return
+		msg := server.SetMsg(&w, local.Translate("msg.tip.user.unexist", user.Lang))
+		panic(server.APIError{Msg: msg, Code: 201})
 	}
 	user.Token = nil
 	store.DB.Save(&user)
@@ -188,20 +184,19 @@ func UserTokenDelete(w http.ResponseWriter, r *http.Request, params httprouter.P
 func UserTokenRefresh(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
 	user, err := store.GetUserByUID(r.Header.Get("uid"))
 	if err != nil {
-		msg := server.SetMsg(&w, local.Translate("tip.user.not-exist", user.Lang))
-		server.ApiFailed(&w, 200, msg)
-		return
+		msg := server.SetMsg(&w, local.Translate("tip.user.unexist", user.Lang))
+		panic(server.APIError{Msg: msg, Code: 201})
 	}
 	tk, err := util.GenerateRandomKey(64)
 	if err != nil {
 		msg := server.SetMsg(&w, local.Translate("msg.failed", user.Lang))
-		server.ApiFailed(&w, 200, msg)
-		return
+		panic(server.APIError{Msg: msg, Code: 201})
 	}
 	user.Token = &tk
 	err = store.DB.Save(&user).Error
 	if err != nil {
-		server.ApiFailed(&w, 200, "操作失败")
+		panic(server.APIError{Msg: local.Translate("msg.failed", user.Lang), Code: 201})
+
 	}
 	server.ApiSuccess(&w, nil)
 
@@ -212,20 +207,20 @@ func UserUpdatePassword(w http.ResponseWriter, r *http.Request, params httproute
 	post := UserPasswordUpdatePost{}
 	err := tool.ConvertJSON2Struct(&post, r)
 	if err != nil {
-		server.ApiFailed(&w, 200, "参数错误")
+		panic(server.APIError{Msg: local.Translate("tip.params.wrong", user.Lang), Code: 201})
+
 	}
 
 	err = tool.ValidateHash(user.Password, post.PasswordOld)
 	if err != nil {
 		msg := server.SetMsg(&w, local.Translate("tip.password.wrong", user.Lang))
-		server.ApiFailed(&w, 200, msg)
-		return
+		panic(server.APIError{Msg: msg, Code: 201})
+
 	}
 	passwordUpdated, err := tool.HashMessage(post.Password)
 	if err != nil {
 		msg := server.SetMsg(&w, local.Translate("msg.failed", user.Lang))
-		server.ApiFailed(&w, 200, msg)
-		return
+		panic(server.APIError{Msg: msg, Code: 201})
 	}
 	user.Password = passwordUpdated
 	store.DB.Save(&user)

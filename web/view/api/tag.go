@@ -2,6 +2,7 @@ package api
 
 import (
 	"encoding/json"
+	"markless/local"
 	"markless/model"
 	"markless/store"
 	"markless/tool"
@@ -44,10 +45,12 @@ func TagDelApi(w http.ResponseWriter, r *http.Request, params httprouter.Params)
 		store.DB.Where("name = ? AND user_id = ?", v, user.ID).Find(&tag)
 		err := store.DB.Unscoped().Delete(&tag).Error
 		if err != nil {
-			util.Logger.Error("delete tag failed" + err.Error())
-			panic(err)
+			panic(server.APIError{
+				Msg:  local.Translate("tip.params.wrong", user.Lang) + err.Error(),
+				Code: 201},
+			)
 		}
-		util.Logger.Error("deleted tag success" + v)
+		util.Logger.Error(local.Translate("tip.tag.deleted", user.Lang) + v)
 	}
 
 	server.ApiSuccess(&w, &server.ApiResponse{Msg: "ok"})
@@ -57,8 +60,8 @@ func TagAll(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
 	user, _ := store.GetUserByUID(r.Header.Get("uid"))
 	err := store.DB.Preload("Tags").Where("id = ?", user.ID).Find(&user).Error
 	if err != nil {
-		server.ApiFailed(&w, 200, err.Error())
-		return
+		panic(server.APIError{Msg: err.Error(), Code: 201})
+
 	}
 	server.ApiSuccess(&w, &user.Tags)
 }
@@ -67,16 +70,17 @@ func TagUpdateName(w http.ResponseWriter, r *http.Request, params httprouter.Par
 	user, _ := store.GetUserByUID(r.Header.Get("uid"))
 
 	var data TagUpdateTitlePost
-	err := json.NewDecoder(r.Body).Decode(&data) // 读取post数据
+	err := json.NewDecoder(r.Body).Decode(&data)
 	if err != nil {
-		panic(err)
+		panic(server.APIError{Msg: err.Error(), Code: 201})
+
 	}
 	tag := model.Tag{}
 	store.DB.Where("id = ? AND user_id = ?", data.ID, user.ID).Find(&tag)
 	tag.Name = data.Name
 	err = store.DB.Save(&tag).Error
 	if err != nil {
-		panic(err)
+		panic(server.APIError{Msg: err.Error(), Code: 201})
 	}
 
 	server.ApiSuccess(&w, &server.ApiResponse{Msg: "ok"})
@@ -87,8 +91,7 @@ func TagAdd(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
 	var data TagAddPost
 	err := tool.ConvertJSON2Struct(&data, r)
 	if err != nil {
-		server.ApiFailed(&w, 200, err.Error())
-		return
+		panic(server.APIError{Msg: err.Error(), Code: 201})
 	}
 
 	for _, v := range data.Names {
@@ -105,8 +108,7 @@ func TagAdd(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
 	}
 	err = store.DB.Save(&user).Error
 	if err != nil {
-		server.ApiFailed(&w, 200, err.Error())
-		return
+		panic(server.APIError{Msg: err.Error(), Code: 201})
 	}
 	server.ApiSuccess(&w, nil)
 
@@ -118,7 +120,7 @@ func TagUpdateLink(w http.ResponseWriter, r *http.Request, params httprouter.Par
 	var data TagUpdateLinkPost
 	err := json.NewDecoder(r.Body).Decode(&data) // 读取post数据
 	if err != nil {
-		panic(err)
+		panic(server.APIError{Msg: err.Error(), Code: 201})
 	}
 	tag := model.Tag{}
 	store.DB.Where("id = ? AND user_id = ?", data.ID, user.ID).Find(&tag)
@@ -131,7 +133,7 @@ func TagUpdateLink(w http.ResponseWriter, r *http.Request, params httprouter.Par
 	}
 	err = store.DB.Save(&tag).Error
 	if err != nil {
-		panic(err)
+		panic(server.APIError{Msg: err.Error(), Code: 201})
 	}
 
 	server.ApiSuccess(&w, &server.ApiResponse{Msg: "ok"})
@@ -143,8 +145,7 @@ func TagRelatedLinks(w http.ResponseWriter, r *http.Request, params httprouter.P
 	tag := model.Tag{}
 	err := store.DB.Where("name = ? AND user_id = ?", tagVal, user.ID).Find(&tag).Error
 	if err != nil {
-		server.ApiFailed(&w, 200, err.Error())
-		return
+		panic(server.APIError{Msg: err.Error(), Code: 201})
 	}
 	store.DB.Preload("Links").Find(&tag)
 	server.ApiSuccess(&w, &tag.Links)
@@ -156,22 +157,19 @@ func AttachLinks(w http.ResponseWriter, r *http.Request, params httprouter.Param
 	post := TagAttachLinksPost{}
 	err := tool.ConvertJSON2Struct(&post, r)
 	if err != nil {
-		server.ApiFailed(&w, 200, err.Error())
-		return
+		panic(server.APIError{Msg: err.Error(), Code: 201})
 	}
 	tag := model.Tag{}
 	err = store.DB.Where("name = ? AND user_id = ?", post.Tag, user.ID).Find(&tag).Error
 	if err != nil {
-		server.ApiFailed(&w, 200, err.Error())
-		return
+		panic(server.APIError{Msg: err.Error(), Code: 201})
 	}
 	store.DB.Model(&tag).Association("Links").Clear()
 	for _, v := range post.Links {
 		link := model.Link{}
 		err := store.DB.Where("id = ? AND user_id = ?", v, user.ID).Find(&link).Error
 		if err != nil {
-			server.ApiFailed(&w, 200, err.Error())
-			return
+			panic(server.APIError{Msg: err.Error(), Code: 201})
 		}
 		store.DB.Model(&tag).Association("Links").Append(&link)
 	}

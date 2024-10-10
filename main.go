@@ -6,7 +6,7 @@ import (
 	"markless/store"
 	"markless/tool"
 	"markless/util"
-	handler "markless/web/server"
+	server "markless/web/server"
 	"markless/web/view/api"
 	"markless/web/view/page"
 )
@@ -42,8 +42,8 @@ func main() {
 	util.InitENV(&env)
 	store.InitDB(*DataBaseURL)
 	store.InitAdmin(*adminName, *adminPassword)
-	handler.InitEnv(&env)
-	api.LoadAPI(&handler.Router, &env)
-	page.LoadPage(&handler.Router, &env)
-	handler.RunServer(&env)
+	server.InitEnv(&env)
+	api.LoadAPI(&server.Router, &env)
+	page.LoadPage(&server.Router, &env)
+	server.RunServer(&env)
 }
